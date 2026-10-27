@@ -1,0 +1,110 @@
+{
+  "testedAt": "2026-10-27T10:09:13.341Z",
+  "allPass": true,
+  "passed": 14,
+  "total": 14,
+  "baselines": [
+    {
+      "project": "night-to-dawn",
+      "source": {
+        "branch": "main",
+        "commit": "cfed35a",
+        "note": "Baseline resmi sebelum pengembangan Tahap 3"
+      }
+    },
+    {
+      "project": "train-night-rain",
+      "source": {
+        "branch": "main",
+        "commit": "cfed35a",
+        "note": "Baseline resmi sebelum pengembangan Tahap 3"
+      }
+    }
+  ],
+  "checks": [
+    {
+      "id": "night-to-dawn:manifest",
+      "name": "night-to-dawn: hasil render terbaru dan sukses",
+      "pass": true,
+      "detail": "status complete, selesai 2026-10-27T10:00:45.322Z | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest"
+    },
+    {
+      "id": "night-to-dawn:frames",
+      "name": "night-to-dawn: jumlah frame sama",
+      "pass": true,
+      "detail": "450 (baseline 450)"
+    },
+    {
+      "id": "night-to-dawn:frame-size",
+      "name": "night-to-dawn: ukuran frame sama",
+      "pass": true,
+      "detail": "480x270 (baseline 480x270)"
+    },
+    {
+      "id": "night-to-dawn:pixels",
+      "name": "night-to-dawn: piksel setiap frame identik",
+      "pass": true,
+      "detail": "450 frame identik piksel demi piksel"
+    },
+    {
+      "id": "night-to-dawn:video-format",
+      "name": "night-to-dawn: format video sama (decoding kompatibel)",
+      "pass": true,
+      "detail": "h264 High level 41, 1920x1080, 30/1, 450 frame, 15 detik, yuv420p"
+    },
+    {
+      "id": "night-to-dawn:decoded",
+      "name": "night-to-dawn: frame hasil decode identik",
+      "pass": true,
+      "detail": "450 frame identik"
+    },
+    {
+      "id": "night-to-dawn:sha256",
+      "name": "night-to-dawn: file MP4 identik byte demi byte",
+      "pass": true,
+      "detail": "aa188168ec04b5d7... (baseline aa188168ec04b5d7...)"
+    },
+    {
+      "id": "train-night-rain:manifest",
+      "name": "train-night-rain: hasil render terbaru dan sukses",
+      "pass": true,
+      "detail": "status complete, selesai 2026-10-27T10:03:09.233Z | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest"
+    },
+    {
+      "id": "train-night-rain:frames",
+      "name": "train-night-rain: jumlah frame sama",
+      "pass": true,
+      "detail": "150 (baseline 150)"
+    },
+    {
+      "id": "train-night-rain:frame-size",
+      "name": "train-night-rain: ukuran frame sama",
+      "pass": true,
+      "detail": "480x270 (baseline 480x270)"
+    },
+    {
+      "id": "train-night-rain:pixels",
+      "name": "train-night-rain: piksel setiap frame identik",
+      "pass": true,
+      "detail": "150 frame identik piksel demi piksel"
+    },
+    {
+      "id": "train-night-rain:video-format",
+      "name": "train-night-rain: format video sama (decoding kompatibel)",
+      "pass": true,
+      "detail": "h264 High level 41, 1920x1080, 30/1, 150 frame, 5 detik, yuv420p"
+    },
+    {
+      "id": "train-night-rain:decoded",
+      "name": "train-night-rain: frame hasil decode identik",
+      "pass": true,
+      "detail": "150 frame identik"
+    },
+    {
+      "id": "train-night-rain:sha256",
+      "name": "train-night-rain: file MP4 identik byte demi byte",
+      "pass": true,
+      "detail": "28e9a3a3c503dabd... (baseline 28e9a3a3c503dabd...)"
+    }
+  ]
+}

@@ -4,6 +4,7 @@ const fs = require('fs');
 const os = require('os');
 const { spawnSync } = require('child_process');
 const { ROOT } = require('./config.cjs');
+const { describeProjects } = require('./projects.cjs');
 
 const results = [];
 const report = (name, ok, detail, fix = '') => results.push({ name, ok, detail, fix });
@@ -17,7 +18,7 @@ async function main() {
   report('Sistem operasi', true, `${os.type()} ${os.release()} (${os.platform()}/${os.arch()})`);
 
   const major = Number(process.versions.node.split('.')[0]);
-  report('Node.js (runtime JavaScript)', major >= 18, process.version, 'Pasang Node.js versi 18 ke atas dari https://nodejs.org');
+  report('Node.js (runtime JavaScript)', major >= 20, process.version, 'Pasang Node.js versi 20 ke atas dari https://nodejs.org');
 
   let playwright = null;
   try {
@@ -58,7 +59,8 @@ async function main() {
     if (!r.ok && r.fix) console.log(`            cara pasang: ${r.fix}`);
   }
   const missing = results.filter((r) => !r.ok).length;
-  console.log(missing ? `\n${missing} komponen belum siap.` : '\nSemua komponen siap. Jalankan: npm run build');
+  console.log(`\nProyek yang tersedia:\n${describeProjects()}`);
+  console.log(missing ? `\n${missing} komponen belum siap.` : '\nSemua komponen siap. Contoh: npm run build -- --project old-town-morning');
   if (missing) process.exitCode = 1;
 }
 

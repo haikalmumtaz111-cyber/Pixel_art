@@ -1,0 +1,11 @@
+{
+  "id": "s02-morning-walk",
+  "name": "Jalan pagi",
+  "module": "compose",
+  "stage": "old-town-street",
+  "start": 4,
+  "end": 8,
+  "cast": ["pak-darto", "sepeda", "pengayuh", "pak-tua", "penyapu", "bu-sari"],
+  "camera": { "track": "walk-follow" },
+  "transitionOut": null
+}

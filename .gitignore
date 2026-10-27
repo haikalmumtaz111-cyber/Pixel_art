@@ -1,8 +1,12 @@
 node_modules/
-# Frame PNG hasil render bisa dibuat ulang kapan saja dengan "npm run render".
-output/frames/
 .DS_Store
-# Video per adegan untuk pengecekan (dibuat dengan "npm run render:scene -- <id>").
+# Frame PNG hasil render bisa dibuat ulang kapan saja dengan "npm run render -- --project <id>".
+output/frames/
+# Frame lepas untuk pengecekan cepat (npm run render -- --project <id> --frame <n>).
+output/stills/
+# Video per adegan untuk pengecekan (npm run render -- --project <id> --scene <adegan>).
 output/scenes/
 # Laporan render per adegan, pasangan dari output/scenes/.
 output/reports/*--*-render.json
+# File MP4 setengah jadi selama encoding (diganti nama setelah FFmpeg sukses).
+output/video/.*.partial

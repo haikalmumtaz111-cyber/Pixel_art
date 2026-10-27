@@ -1,0 +1,1852 @@
+{
+  "testedAt": "2026-10-27T10:06:29.824Z",
+  "project": "old-town-morning",
+  "config": "config/old-town-morning.json",
+  "includes": [
+    "config/old-town-morning/palettes.json",
+    "config/old-town-morning/assets.json",
+    "config/old-town-morning/stage.json",
+    "config/old-town-morning/cast.json",
+    "config/old-town-morning/scenes/s01-old-town-morning.json",
+    "config/old-town-morning/scenes/s02-morning-walk.json",
+    "config/old-town-morning/scenes/s03-town-awakens.json"
+  ],
+  "allPass": true,
+  "passed": 33,
+  "total": 33,
+  "groups": [
+    {
+      "title": "Jumlah frame tepat",
+      "pass": true
+    },
+    {
+      "title": "Durasi video tepat",
+      "pass": true
+    },
+    {
+      "title": "Resolusi sesuai target",
+      "pass": true
+    },
+    {
+      "title": "FPS sesuai target",
+      "pass": true
+    },
+    {
+      "title": "Interval waktu adegan valid",
+      "pass": true
+    },
+    {
+      "title": "Tidak ada frame yang hilang",
+      "pass": true
+    },
+    {
+      "title": "Tidak ada frame kosong",
+      "pass": true
+    },
+    {
+      "title": "Frame terakhir valid",
+      "pass": true
+    },
+    {
+      "title": "Tidak ada error JavaScript",
+      "pass": true
+    },
+    {
+      "title": "Transisi tanpa artefak",
+      "pass": true
+    },
+    {
+      "title": "Aset konsisten antar adegan",
+      "pass": true
+    },
+    {
+      "title": "Adegan bisa dirender terpisah",
+      "pass": true
+    },
+    {
+      "title": "Mesin bersama, modul proyek terisolasi",
+      "pass": true
+    },
+    {
+      "title": "Video berasal dari render terbaru",
+      "pass": true
+    },
+    {
+      "title": "Rendering deterministik",
+      "pass": true
+    },
+    {
+      "title": "FFmpeg membaca seluruh video",
+      "pass": true
+    },
+    {
+      "title": "Video dapat diputar",
+      "pass": true
+    },
+    {
+      "title": "Render ulang konsisten",
+      "pass": true
+    }
+  ],
+  "checks": [
+    {
+      "id": "timeline",
+      "name": "Interval adegan valid",
+      "pass": true,
+      "detail": "3 adegan menutup 360/360 frame tanpa celah: s01-old-town-morning [0, 120), s02-morning-walk [120, 240), s03-town-awakens [240, 360)"
+    },
+    {
+      "id": "timeline-transitions",
+      "name": "Transisi berada di dalam durasi film",
+      "pass": true,
+      "detail": "dissolve 108-131"
+    },
+    {
+      "id": "manifest:status",
+      "name": "Render terakhir selesai dengan sukses",
+      "pass": true,
+      "detail": "status complete, selesai 2026-10-27T10:02:03.041Z"
+    },
+    {
+      "id": "manifest:fresh",
+      "name": "Video berasal dari render terbaru (bukan sisa render lama)",
+      "pass": true,
+      "detail": "konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest"
+    },
+    {
+      "id": "file",
+      "name": "File MP4 ada",
+      "pass": true,
+      "detail": "old-town-morning.mp4 (7.09 MB)"
+    },
+    {
+      "id": "container",
+      "name": "Kontainer MP4",
+      "pass": true,
+      "detail": "mov,mp4,m4a,3gp,3g2,mj2"
+    },
+    {
+      "id": "codec",
+      "name": "Codec video H.264",
+      "pass": true,
+      "detail": "h264 (High)"
+    },
+    {
+      "id": "resolution",
+      "name": "Resolusi output",
+      "pass": true,
+      "detail": "1920x1080"
+    },
+    {
+      "id": "aspect",
+      "name": "Rasio 16:9",
+      "pass": true,
+      "detail": "1920:1080"
+    },
+    {
+      "id": "fps",
+      "name": "Frame rate",
+      "pass": true,
+      "detail": "30/1 (rata-rata 30/1)"
+    },
+    {
+      "id": "frame-count",
+      "name": "Jumlah frame",
+      "pass": true,
+      "detail": "360 dari 360 frame"
+    },
+    {
+      "id": "duration",
+      "name": "Durasi",
+      "pass": true,
+      "detail": "12.000 detik (target 12.000)"
+    },
+    {
+      "id": "pixel-format",
+      "name": "Format piksel",
+      "pass": true,
+      "detail": "yuv420p"
+    },
+    {
+      "id": "playable",
+      "name": "Video dapat diputar di perangkat umum",
+      "pass": true,
+      "detail": "profil High, level 4.1, yuv420p, piksel 1:1, faststart ya"
+    },
+    {
+      "id": "decode",
+      "name": "FFmpeg membaca seluruh video tanpa error",
+      "pass": true,
+      "detail": "semua frame terbaca bersih"
+    },
+    {
+      "id": "decoded-frames",
+      "name": "Tidak ada frame yang hilang saat decode",
+      "pass": true,
+      "detail": "360 frame ter-decode, 360 frame terukur"
+    },
+    {
+      "id": "blank",
+      "name": "Tidak ada frame kosong",
+      "pass": true,
+      "detail": "kecerahan rata-rata terendah 141.2, rentang terendah 188"
+    },
+    {
+      "id": "motion",
+      "name": "Animasi bergerak (bukan gambar statis)",
+      "pass": true,
+      "detail": "360 frame unik, 0 pasang frame berurutan identik"
+    },
+    {
+      "id": "end-frame",
+      "name": "Frame terakhir valid",
+      "pass": true,
+      "detail": "frame 359: kecerahan rata-rata 145.2, rentang 208"
+    },
+    {
+      "id": "no-flash",
+      "name": "Tidak ada kilatan cahaya mendadak",
+      "pass": true,
+      "detail": "perubahan kecerahan terbesar antar frame 0.6 (batas 8)"
+    },
+    {
+      "id": "no-hard-cut",
+      "name": "Tidak ada potongan kasar (hard cut)",
+      "pass": true,
+      "detail": "semua pergantian gambar berlangsung bertahap"
+    },
+    {
+      "id": "png-frames",
+      "name": "Frame PNG lengkap dan berurutan",
+      "pass": true,
+      "detail": "360/360 file PNG 1920x1080"
+    },
+    {
+      "id": "engine-modules",
+      "name": "Hanya modul milik proyek ini yang dimuat",
+      "pass": true,
+      "detail": "7 modul: /src/assets/common/environment.js, /src/assets/town/buildings.js, /src/assets/town/vegetation.js, /src/assets/town/props.js, /src/assets/town/street.js, /src/assets/town/vehicles.js, /src/assets/characters/rig.js"
+    },
+    {
+      "id": "engine-isolation",
+      "name": "Tidak ada modul proyek lain yang ikut terunduh",
+      "pass": true,
+      "detail": "24 file JS terunduh (/src/engine/: 15, /src/assets/: 9, /src/scenes/: 0)"
+    },
+    {
+      "id": "boundary:s01-old-town-morning->s02-morning-walk",
+      "name": "Transisi s01-old-town-morning->s02-morning-walk menyambung tanpa lompatan",
+      "pass": true,
+      "detail": "frame 108 sama dengan s01-old-town-morning, frame 131 sama dengan s02-morning-walk"
+    },
+    {
+      "id": "scene:s01-old-town-morning",
+      "name": "Adegan s01-old-town-morning bisa dirender terpisah",
+      "pass": true,
+      "detail": "frame 0, 54, 107 identik dengan film utuh"
+    },
+    {
+      "id": "scene:s02-morning-walk",
+      "name": "Adegan s02-morning-walk bisa dirender terpisah",
+      "pass": true,
+      "detail": "frame 132, 186, 239 identik dengan film utuh"
+    },
+    {
+      "id": "scene:s03-town-awakens",
+      "name": "Adegan s03-town-awakens bisa dirender terpisah",
+      "pass": true,
+      "detail": "frame 240, 300, 359 identik dengan film utuh"
+    },
+    {
+      "id": "consistency:pak-darto-asset",
+      "name": "Aset pak-darto dipakai bersama oleh adegan-adegannya",
+      "pass": true,
+      "detail": "satu definisi aset \"pak-darto\" dipakai adegan s02-morning-walk, s03-town-awakens"
+    },
+    {
+      "id": "consistency:pak-darto-colors",
+      "name": "Warna identitas pak-darto konsisten",
+      "pass": true,
+      "detail": "warna #ece6d6, #5a4a3a, #1c1a1e ditemukan persis di frame 160, 330"
+    },
+    {
+      "id": "determinism",
+      "name": "Rendering deterministik (render ulang identik, urutan terbalik)",
+      "pass": true,
+      "detail": "360/360 frame identik byte demi byte, 3/3 frame identik saat dirender dua kali"
+    },
+    {
+      "id": "js-errors",
+      "name": "Tidak ada error JavaScript selama rendering",
+      "pass": true,
+      "detail": "0 error saat render, 0 error saat pengujian"
+    },
+    {
+      "id": "reencode",
+      "name": "Encode ulang menghasilkan MP4 identik",
+      "pass": true,
+      "detail": "SHA-256 sama: 761c76b535b5f092..."
+    }
+  ],
+  "sheets": [
+    {
+      "name": "contact-sheet",
+      "frames": [
+        0,
+        79,
+        162,
+        216,
+        295,
+        359
+      ],
+      "file": "output/reports/old-town-morning-contact-sheet.png"
+    },
+    {
+      "name": "scene-s01-old-town-morning",
+      "frames": [
+        0,
+        36,
+        71,
+        107
+      ],
+      "file": "output/reports/old-town-morning-scene-s01-old-town-morning.png"
+    },
+    {
+      "name": "scene-s02-morning-walk",
+      "frames": [
+        132,
+        168,
+        203,
+        239
+      ],
+      "file": "output/reports/old-town-morning-scene-s02-morning-walk.png"
+    },
+    {
+      "name": "scene-s03-town-awakens",
+      "frames": [
+        240,
+        280,
+        319,
+        359
+      ],
+      "file": "output/reports/old-town-morning-scene-s03-town-awakens.png"
+    },
+    {
+      "name": "transition-s01-old-town-morning-to-s02-morning-walk",
+      "frames": [
+        108,
+        111,
+        115,
+        118,
+        121,
+        124,
+        128,
+        131
+      ],
+      "file": "output/reports/old-town-morning-transition-s01-old-town-morning-to-s02-morning-walk.png"
+    }
+  ],
+  "engine": {
+    "name": "Pixel History Studio",
+    "version": "0.3.0",
+    "engineHash": "bc272267a41d3bc9ad92730f3e7ecf42698c3a33457fadc671fc516a524ebb49",
+    "libraryHash": "4378116df3a09f47bdae19eb571a65cac2816c2c0ff9537a0ab968f110f0690c",
+    "modules": [
+      "/src/assets/common/environment.js",
+      "/src/assets/town/buildings.js",
+      "/src/assets/town/vegetation.js",
+      "/src/assets/town/props.js",
+      "/src/assets/town/street.js",
+      "/src/assets/town/vehicles.js",
+      "/src/assets/characters/rig.js"
+    ]
+  },
+  "environment": {
+    "os": "Linux 6.18.44-fc-v165 (linux/x64)",
+    "node": "v22.22.0",
+    "chromium": "153.0.8010.12",
+    "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+    "ffprobe": "ffprobe version 6.1.1-3ubuntu5 Copyright (c) 2007-2023 the FFmpeg developers"
+  },
+  "render": {
+    "project": "old-town-morning",
+    "name": "old-town-morning",
+    "job": {
+      "kind": "film",
+      "first": 0,
+      "count": 360,
+      "scene": null
+    },
+    "configFile": "config/old-town-morning.json",
+    "inputsHash": "eca9daa981d288b67a66512ea4d6be3ea04cf5ad87e4f578acfe470cfda14b42",
+    "engineHash": "bc272267a41d3bc9ad92730f3e7ecf42698c3a33457fadc671fc516a524ebb49",
+    "libraryHash": "4378116df3a09f47bdae19eb571a65cac2816c2c0ff9537a0ab968f110f0690c",
+    "engineVersion": "0.3.0",
+    "status": "complete",
+    "startedAt": "2026-10-27T10:01:32.015Z",
+    "finishedAt": "2026-10-27T10:02:03.041Z",
+    "renderSeconds": 13.574,
+    "encodeSeconds": 17.45,
+    "chromiumVersion": "153.0.8010.12",
+    "jsErrors": 0,
+    "loadedModules": [
+      "/src/assets/common/environment.js",
+      "/src/assets/town/buildings.js",
+      "/src/assets/town/vegetation.js",
+      "/src/assets/town/props.js",
+      "/src/assets/town/street.js",
+      "/src/assets/town/vehicles.js",
+      "/src/assets/characters/rig.js"
+    ],
+    "frameSize": {
+      "width": 1920,
+      "height": 1080
+    },
+    "framesHash": "780e1cd1f5a13e3cddef80926f8d2720777b296434c9d19738ebd18fb0aeb1c4",
+    "video": "output/video/old-town-morning.mp4",
+    "videoSha256": "761c76b535b5f09267e87da94607264bf39c5b6eb1a9784579f6fe2b2805c393",
+    "ffmpegCommand": "ffmpeg -y -v error -framerate 30 -start_number 0 -i output/frames/old-town-morning/frame_%04d.png -frames:v 360 -vf scale=1920:1080:flags=neighbor:out_color_matrix=bt709:out_range=tv,format=yuv420p -c:v libx264 -preset slow -crf 16 -tune animation -profile:v high -level:v 4.1 -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv -r 30 -movflags +faststart -f mp4 output/video/old-town-morning.mp4"
+  },
+  "lumaSummary": [
+    [
+      141.5,
+      0
+    ],
+    [
+      141.5,
+      0
+    ],
+    [
+      141.5,
+      0.1
+    ],
+    [
+      141.5,
+      0
+    ],
+    [
+      141.5,
+      0.1
+    ],
+    [
+      141.5,
+      6.4
+    ],
+    [
+      141.5,
+      0.3
+    ],
+    [
+      141.5,
+      0
+    ],
+    [
+      141.5,
+      0
+    ],
+    [
+      141.5,
+      6.5
+    ],
+    [
+      141.5,
+      0.1
+    ],
+    [
+      141.5,
+      6.7
+    ],
+    [
+      141.5,
+      0.1
+    ],
+    [
+      141.5,
+      6.4
+    ],
+    [
+      141.5,
+      0.4
+    ],
+    [
+      141.5,
+      6.6
+    ],
+    [
+      141.5,
+      6.7
+    ],
+    [
+      141.5,
+      0
+    ],
+    [
+      141.5,
+      6.4
+    ],
+    [
+      141.5,
+      6.9
+    ],
+    [
+      141.5,
+      6.4
+    ],
+    [
+      141.4,
+      6.7
+    ],
+    [
+      141.4,
+      6.7
+    ],
+    [
+      141.4,
+      6.6
+    ],
+    [
+      141.4,
+      6.8
+    ],
+    [
+      141.4,
+      6.4
+    ],
+    [
+      141.4,
+      6.9
+    ],
+    [
+      141.4,
+      6.7
+    ],
+    [
+      141.3,
+      6.8
+    ],
+    [
+      141.3,
+      6.6
+    ],
+    [
+      141.3,
+      6.7
+    ],
+    [
+      141.2,
+      10.1
+    ],
+    [
+      141.2,
+      6.8
+    ],
+    [
+      141.2,
+      6.4
+    ],
+    [
+      141.5,
+      7.5
+    ],
+    [
+      141.5,
+      10.1
+    ],
+    [
+      141.4,
+      7.1
+    ],
+    [
+      141.5,
+      10.1
+    ],
+    [
+      141.5,
+      7.1
+    ],
+    [
+      141.5,
+      10.1
+    ],
+    [
+      141.5,
+      6.8
+    ],
+    [
+      141.5,
+      10.2
+    ],
+    [
+      141.5,
+      7.1
+    ],
+    [
+      141.5,
+      10.2
+    ],
+    [
+      141.6,
+      7.1
+    ],
+    [
+      141.6,
+      10.2
+    ],
+    [
+      141.6,
+      7.2
+    ],
+    [
+      141.6,
+      10.2
+    ],
+    [
+      141.6,
+      10.4
+    ],
+    [
+      141.7,
+      7
+    ],
+    [
+      141.7,
+      10.4
+    ],
+    [
+      141.7,
+      10.3
+    ],
+    [
+      141.7,
+      7.1
+    ],
+    [
+      141.8,
+      10.2
+    ],
+    [
+      141.8,
+      10.4
+    ],
+    [
+      141.8,
+      7.1
+    ],
+    [
+      141.9,
+      10.5
+    ],
+    [
+      141.9,
+      10.2
+    ],
+    [
+      141.9,
+      7.1
+    ],
+    [
+      141.9,
+      10.5
+    ],
+    [
+      142,
+      10.4
+    ],
+    [
+      142,
+      10.4
+    ],
+    [
+      142,
+      6.9
+    ],
+    [
+      142,
+      10.4
+    ],
+    [
+      142,
+      10.2
+    ],
+    [
+      142,
+      7.2
+    ],
+    [
+      141.9,
+      10.2
+    ],
+    [
+      141.9,
+      10.3
+    ],
+    [
+      141.9,
+      7
+    ],
+    [
+      141.9,
+      10.3
+    ],
+    [
+      141.8,
+      10
+    ],
+    [
+      141.8,
+      7.1
+    ],
+    [
+      141.7,
+      10.1
+    ],
+    [
+      141.7,
+      10.1
+    ],
+    [
+      141.7,
+      7
+    ],
+    [
+      141.6,
+      10
+    ],
+    [
+      141.6,
+      7.1
+    ],
+    [
+      141.7,
+      10.3
+    ],
+    [
+      141.7,
+      7.1
+    ],
+    [
+      141.7,
+      10.2
+    ],
+    [
+      141.3,
+      7.4
+    ],
+    [
+      141.3,
+      10.1
+    ],
+    [
+      141.3,
+      6.9
+    ],
+    [
+      141.3,
+      10.1
+    ],
+    [
+      141.3,
+      7
+    ],
+    [
+      141.3,
+      9.8
+    ],
+    [
+      141.5,
+      7.8
+    ],
+    [
+      141.5,
+      8
+    ],
+    [
+      141.5,
+      12.4
+    ],
+    [
+      141.5,
+      11.9
+    ],
+    [
+      141.6,
+      9.3
+    ],
+    [
+      141.8,
+      12
+    ],
+    [
+      142.1,
+      10.3
+    ],
+    [
+      142.2,
+      11.9
+    ],
+    [
+      142.5,
+      11.2
+    ],
+    [
+      142.5,
+      12.1
+    ],
+    [
+      142.3,
+      12.3
+    ],
+    [
+      142.5,
+      12
+    ],
+    [
+      142.6,
+      12.3
+    ],
+    [
+      142.7,
+      12.4
+    ],
+    [
+      142.8,
+      12.5
+    ],
+    [
+      142.7,
+      12.8
+    ],
+    [
+      143.1,
+      12.8
+    ],
+    [
+      143.1,
+      12.3
+    ],
+    [
+      143,
+      13.1
+    ],
+    [
+      143.1,
+      13.1
+    ],
+    [
+      143,
+      12.8
+    ],
+    [
+      143.2,
+      11.8
+    ],
+    [
+      142.9,
+      12.4
+    ],
+    [
+      142.9,
+      14.2
+    ],
+    [
+      142.9,
+      9.1
+    ],
+    [
+      142.7,
+      13.7
+    ],
+    [
+      142.7,
+      8.2
+    ],
+    [
+      142.7,
+      10
+    ],
+    [
+      142.8,
+      6
+    ],
+    [
+      142.7,
+      7.8
+    ],
+    [
+      142.6,
+      8.2
+    ],
+    [
+      142.9,
+      2.8
+    ],
+    [
+      143,
+      1.9
+    ],
+    [
+      143,
+      0.2
+    ],
+    [
+      143,
+      0.3
+    ],
+    [
+      143,
+      0.3
+    ],
+    [
+      143,
+      0.3
+    ],
+    [
+      143,
+      0.6
+    ],
+    [
+      142.9,
+      5.8
+    ],
+    [
+      142.9,
+      0.8
+    ],
+    [
+      142.9,
+      1.2
+    ],
+    [
+      142.8,
+      6.9
+    ],
+    [
+      142.9,
+      7.8
+    ],
+    [
+      142.8,
+      2
+    ],
+    [
+      142.9,
+      7.8
+    ],
+    [
+      142.8,
+      9.4
+    ],
+    [
+      142.8,
+      8.2
+    ],
+    [
+      142.8,
+      1.1
+    ],
+    [
+      142.7,
+      8.3
+    ],
+    [
+      142.7,
+      12.9
+    ],
+    [
+      142.7,
+      8.7
+    ],
+    [
+      142.6,
+      8.2
+    ],
+    [
+      142.6,
+      8.9
+    ],
+    [
+      142.8,
+      9.1
+    ],
+    [
+      142.8,
+      8.6
+    ],
+    [
+      142.8,
+      8.7
+    ],
+    [
+      142.8,
+      9
+    ],
+    [
+      142.8,
+      8.4
+    ],
+    [
+      142.7,
+      8.9
+    ],
+    [
+      142.7,
+      9
+    ],
+    [
+      142.7,
+      8.3
+    ],
+    [
+      142.7,
+      8.7
+    ],
+    [
+      142.7,
+      8.8
+    ],
+    [
+      142.7,
+      12.5
+    ],
+    [
+      142.9,
+      9.1
+    ],
+    [
+      142.9,
+      8.8
+    ],
+    [
+      142.9,
+      8.4
+    ],
+    [
+      142.9,
+      8.9
+    ],
+    [
+      142.8,
+      8.9
+    ],
+    [
+      142.8,
+      8.3
+    ],
+    [
+      142.9,
+      9
+    ],
+    [
+      142.9,
+      8.7
+    ],
+    [
+      142.9,
+      8.4
+    ],
+    [
+      142.8,
+      9.2
+    ],
+    [
+      143,
+      9
+    ],
+    [
+      142.9,
+      8.4
+    ],
+    [
+      142.8,
+      8.9
+    ],
+    [
+      142.9,
+      13
+    ],
+    [
+      142.9,
+      8.4
+    ],
+    [
+      142.9,
+      9.1
+    ],
+    [
+      143,
+      8.5
+    ],
+    [
+      143,
+      8.9
+    ],
+    [
+      143,
+      9
+    ],
+    [
+      143,
+      8.4
+    ],
+    [
+      143.4,
+      9.4
+    ],
+    [
+      143.3,
+      9.2
+    ],
+    [
+      143.2,
+      8.5
+    ],
+    [
+      143.2,
+      9
+    ],
+    [
+      143.2,
+      8.9
+    ],
+    [
+      143.2,
+      8.5
+    ],
+    [
+      143.1,
+      8.8
+    ],
+    [
+      143.1,
+      13.3
+    ],
+    [
+      143.1,
+      8.7
+    ],
+    [
+      143.1,
+      8.9
+    ],
+    [
+      143.2,
+      9.2
+    ],
+    [
+      143.2,
+      8.7
+    ],
+    [
+      143.2,
+      8.9
+    ],
+    [
+      143.2,
+      9.2
+    ],
+    [
+      143.3,
+      8.7
+    ],
+    [
+      143.3,
+      8.8
+    ],
+    [
+      143.2,
+      8.9
+    ],
+    [
+      143.1,
+      8.6
+    ],
+    [
+      143.1,
+      8.8
+    ],
+    [
+      143,
+      8.8
+    ],
+    [
+      143.3,
+      8.9
+    ],
+    [
+      143.4,
+      13.2
+    ],
+    [
+      143.4,
+      8.8
+    ],
+    [
+      143.4,
+      8.6
+    ],
+    [
+      143.3,
+      9.1
+    ],
+    [
+      143.4,
+      8.9
+    ],
+    [
+      143.3,
+      8.5
+    ],
+    [
+      143.3,
+      8.9
+    ],
+    [
+      143.2,
+      9.3
+    ],
+    [
+      143.2,
+      8.5
+    ],
+    [
+      143.5,
+      9.3
+    ],
+    [
+      143.4,
+      9.2
+    ],
+    [
+      143.4,
+      8.6
+    ],
+    [
+      143.4,
+      9.1
+    ],
+    [
+      143.4,
+      8.9
+    ],
+    [
+      143.4,
+      12.8
+    ],
+    [
+      143.4,
+      9
+    ],
+    [
+      143.4,
+      9.2
+    ],
+    [
+      143.4,
+      8.9
+    ],
+    [
+      143.4,
+      9
+    ],
+    [
+      143.5,
+      9.2
+    ],
+    [
+      143.5,
+      8.7
+    ],
+    [
+      143.5,
+      9.3
+    ],
+    [
+      143.6,
+      9
+    ],
+    [
+      143.6,
+      8.7
+    ],
+    [
+      143.6,
+      9.1
+    ],
+    [
+      143.6,
+      8.9
+    ],
+    [
+      143.5,
+      8.9
+    ],
+    [
+      143.5,
+      9.1
+    ],
+    [
+      143.4,
+      13.1
+    ],
+    [
+      143.4,
+      8.6
+    ],
+    [
+      143.7,
+      9.5
+    ],
+    [
+      143.6,
+      9.1
+    ],
+    [
+      143.7,
+      9
+    ],
+    [
+      143.6,
+      9
+    ],
+    [
+      143.6,
+      9
+    ],
+    [
+      143.6,
+      8.9
+    ],
+    [
+      143.6,
+      9
+    ],
+    [
+      143.6,
+      9.4
+    ],
+    [
+      143.6,
+      8.9
+    ],
+    [
+      143.6,
+      8.9
+    ],
+    [
+      143.8,
+      9.2
+    ],
+    [
+      143.9,
+      8.9
+    ],
+    [
+      143.9,
+      13.2
+    ],
+    [
+      143.9,
+      9.1
+    ],
+    [
+      144,
+      8.8
+    ],
+    [
+      144,
+      9.1
+    ],
+    [
+      144,
+      9
+    ],
+    [
+      144.1,
+      8.8
+    ],
+    [
+      144.1,
+      9
+    ],
+    [
+      144.2,
+      9.2
+    ],
+    [
+      144.2,
+      8.8
+    ],
+    [
+      144.1,
+      9.4
+    ],
+    [
+      144.2,
+      9.4
+    ],
+    [
+      144.3,
+      8.8
+    ],
+    [
+      144.3,
+      9.1
+    ],
+    [
+      144.3,
+      9
+    ],
+    [
+      144.4,
+      13.1
+    ],
+    [
+      144.4,
+      9
+    ],
+    [
+      144.3,
+      9.1
+    ],
+    [
+      144.4,
+      9.1
+    ],
+    [
+      144.4,
+      9.1
+    ],
+    [
+      144.4,
+      9.1
+    ],
+    [
+      144.4,
+      8.8
+    ],
+    [
+      144.5,
+      9.2
+    ],
+    [
+      144.7,
+      9.2
+    ],
+    [
+      144.8,
+      8.9
+    ],
+    [
+      145.2,
+      9.5
+    ],
+    [
+      145.2,
+      9.1
+    ],
+    [
+      145.1,
+      12.9
+    ],
+    [
+      145,
+      9
+    ],
+    [
+      145,
+      9.5
+    ],
+    [
+      144.9,
+      9.1
+    ],
+    [
+      144.8,
+      13.3
+    ],
+    [
+      144.7,
+      8.9
+    ],
+    [
+      144.7,
+      9.3
+    ],
+    [
+      144.6,
+      13.8
+    ],
+    [
+      144.5,
+      9.5
+    ],
+    [
+      144.8,
+      13.7
+    ],
+    [
+      144.7,
+      9.5
+    ],
+    [
+      144.7,
+      13.7
+    ],
+    [
+      145.2,
+      10.2
+    ],
+    [
+      145.2,
+      13.9
+    ],
+    [
+      145.3,
+      15.4
+    ],
+    [
+      145.3,
+      13.8
+    ],
+    [
+      145.5,
+      10
+    ],
+    [
+      145.4,
+      14.1
+    ],
+    [
+      145.4,
+      14.1
+    ],
+    [
+      145.4,
+      10.5
+    ],
+    [
+      145.3,
+      14.3
+    ],
+    [
+      145.4,
+      18.6
+    ],
+    [
+      145.4,
+      14
+    ],
+    [
+      145.3,
+      10.8
+    ],
+    [
+      145.5,
+      14.7
+    ],
+    [
+      145.4,
+      14.7
+    ],
+    [
+      145.6,
+      18.5
+    ],
+    [
+      146.1,
+      15
+    ],
+    [
+      146,
+      11.1
+    ],
+    [
+      146.5,
+      18.3
+    ],
+    [
+      146,
+      15
+    ],
+    [
+      146.1,
+      15.1
+    ],
+    [
+      146.4,
+      18.2
+    ],
+    [
+      146.3,
+      15.2
+    ],
+    [
+      146.3,
+      15.4
+    ],
+    [
+      146.5,
+      17.9
+    ],
+    [
+      146.3,
+      15.4
+    ],
+    [
+      146.3,
+      17.4
+    ],
+    [
+      146.1,
+      11.9
+    ],
+    [
+      146.2,
+      17.3
+    ],
+    [
+      145.9,
+      15.1
+    ],
+    [
+      145.7,
+      17.3
+    ],
+    [
+      145.9,
+      16.6
+    ],
+    [
+      145.7,
+      15.1
+    ],
+    [
+      145.7,
+      16.9
+    ],
+    [
+      145.6,
+      15
+    ],
+    [
+      145.5,
+      16.7
+    ],
+    [
+      145.2,
+      14.5
+    ],
+    [
+      145.3,
+      16.7
+    ],
+    [
+      145.2,
+      14.4
+    ],
+    [
+      145,
+      14.3
+    ],
+    [
+      145.1,
+      16.5
+    ],
+    [
+      145.2,
+      10.8
+    ],
+    [
+      144.8,
+      13.8
+    ],
+    [
+      145.3,
+      16.3
+    ],
+    [
+      145,
+      13.7
+    ],
+    [
+      145,
+      13.3
+    ],
+    [
+      145.1,
+      16.3
+    ],
+    [
+      145.1,
+      10
+    ],
+    [
+      144.9,
+      13.1
+    ],
+    [
+      144.8,
+      12.9
+    ],
+    [
+      144.8,
+      13.2
+    ],
+    [
+      144.8,
+      16.2
+    ],
+    [
+      144.7,
+      9.4
+    ],
+    [
+      144.6,
+      12.3
+    ],
+    [
+      144.6,
+      12.2
+    ],
+    [
+      144.6,
+      9.1
+    ],
+    [
+      144.7,
+      12.2
+    ],
+    [
+      144.7,
+      8.8
+    ],
+    [
+      144.8,
+      15.7
+    ],
+    [
+      144.8,
+      11.9
+    ],
+    [
+      144.8,
+      8.3
+    ],
+    [
+      144.8,
+      11.6
+    ],
+    [
+      144.7,
+      8.4
+    ],
+    [
+      144.7,
+      8.1
+    ],
+    [
+      144.8,
+      11.5
+    ],
+    [
+      144.8,
+      8.2
+    ],
+    [
+      144.8,
+      11.8
+    ],
+    [
+      144.8,
+      7.5
+    ],
+    [
+      144.8,
+      7.9
+    ],
+    [
+      144.8,
+      11.1
+    ],
+    [
+      144.9,
+      7.7
+    ],
+    [
+      144.9,
+      7.9
+    ],
+    [
+      144.8,
+      7.3
+    ],
+    [
+      144.8,
+      7.8
+    ],
+    [
+      144.9,
+      7.7
+    ],
+    [
+      144.8,
+      11
+    ],
+    [
+      144.8,
+      7.7
+    ],
+    [
+      144.9,
+      7.7
+    ],
+    [
+      144.9,
+      7.5
+    ],
+    [
+      144.9,
+      7.7
+    ],
+    [
+      145,
+      7.6
+    ],
+    [
+      145,
+      7.3
+    ],
+    [
+      145,
+      7.8
+    ],
+    [
+      145.1,
+      7.6
+    ],
+    [
+      145.1,
+      7.3
+    ],
+    [
+      145.1,
+      7.8
+    ],
+    [
+      145.1,
+      7.6
+    ],
+    [
+      145.1,
+      7.2
+    ],
+    [
+      145.2,
+      7.6
+    ],
+    [
+      145.2,
+      11.2
+    ]
+  ]
+}

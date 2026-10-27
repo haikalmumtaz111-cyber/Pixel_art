@@ -1,0 +1,63 @@
+{
+  "sky": { "type": "gradient-sky", "horizon": 128, "sunX": 64, "sunY": 120, "sunRadius": 11, "sunGlow": 20 },
+  "clouds": { "type": "cloud-field", "count": 7, "span": 900, "yMin": 18, "yMax": 84, "speed": 3 },
+  "volcano": {
+    "type": "ridge", "shape": "volcano", "peakX": 300, "peakY": 62, "crater": 7, "slope": 0.42,
+    "base": 122, "amp": 8, "freq": 0.012, "color": "mountainFar", "rim": "mountainFarRim", "bottom": 280
+  },
+  "hills": { "type": "ridge", "shape": "hills", "base": 114, "amp": 20, "freq": 0.018, "color": "mountain", "rim": "mountainRim", "bottom": 280, "seedOffset": 3 },
+  "skyline": { "type": "skyline", "base": 118, "color": "farRoof", "light": "farRoofLight", "tree": "farTree" },
+  "tree-round": { "type": "tree", "kind": "round", "height": 104, "crown": 22, "sway": 1 },
+  "tree-palm": { "type": "tree", "kind": "palm", "height": 124, "sway": 1.5 },
+  "shrub": { "type": "tree", "kind": "round", "height": 26, "crown": 12, "sway": 1.5 },
+  "ruko": { "type": "shophouse", "width": 72, "floors": 2, "roof": "tile", "wall": "wallCream", "trim": "trimWhite", "shutter": "shutterGreen", "awning": "none", "windows": 2, "plants": false },
+  "lamp": { "type": "street-lamp", "height": 74 },
+  "kiosk": { "type": "kiosk", "width": 46, "sign": "KOPI" },
+  "bench": { "type": "bench", "width": 30 },
+  "street": { "type": "street", "sidewalkTop": 196, "curbTop": 213, "roadTop": 217, "roadBottom": 254, "bottom": 280 },
+  "bicycle": { "type": "bicycle", "wheelRadius": 8, "color": "bikeFrame" },
+  "pigeons": { "type": "birds", "mode": "ground", "count": 5, "spread": 34, "color": "bird", "bodyColor": "pigeon" },
+  "flock": { "type": "birds", "mode": "fly", "count": 6, "speed": 34, "spread": 26, "flapFps": 9, "color": "bird" },
+  "steam": { "type": "particles", "rate": 4, "life": 2.4, "vx": 3, "vy": -9, "spread": 10, "size0": 1, "size1": 3, "colors": ["steam", "steamFade"], "alpha": 0.55 },
+  "rays": { "type": "light-rays", "count": 6, "width": 12, "spacing": 70, "slope": 0.55, "length": 200, "color": "ray", "alpha": 0.16 },
+
+  "pak-darto": {
+    "type": "rig-character", "height": 44, "build": "regular", "sleeves": "long", "hat": "peci", "accessory": "parcel",
+    "skin": "#c48a5c", "skinShade": "#97633e", "shirt": "#ece6d6", "shirtShade": "#c4bca8", "collar": "#c4bca8",
+    "pants": "#5a4a3a", "pantsShade": "#40352a", "shoes": "#2a211b", "hatColor": "#1c1a1e", "hatShade": "#33303a",
+    "accessoryColor": "#b98a52", "accessoryShade": "#8a6236", "strideLength": 30, "seed": 11
+  },
+  "bu-sari": {
+    "type": "rig-character", "height": 40, "build": "stout", "sleeves": "long", "hairStyle": "bun",
+    "skin": "#b77b50", "skinShade": "#8a5634", "hair": "#1d1512", "shirt": "#d98a9a", "shirtShade": "#b06a7a", "collar": "#f0d0d6",
+    "sarong": "#6a4a8a", "sarongPattern": "#e0c070", "shoes": "#3a2a22", "seed": 22
+  },
+  "mbok-sumi": {
+    "type": "rig-character", "height": 38, "build": "regular", "sleeves": "long", "hat": "kerudung", "accessory": "basket",
+    "skin": "#a8704a", "skinShade": "#7c4c2e", "shirt": "#c8a060", "shirtShade": "#a07c44", "collar": "#e0c890",
+    "sarong": "#7a4a2e", "sarongPattern": "#d8b070", "shoes": "#3a2a22", "hatColor": "#3f8a86", "hatShade": "#2c6662",
+    "accessoryColor": "#c49a5a", "accessoryShade": "#8a6a3a", "strideLength": 22, "seed": 33
+  },
+  "pak-tua": {
+    "type": "rig-character", "height": 42, "build": "slim", "sleeves": "short", "hat": "peci", "accessory": "newspaper",
+    "skin": "#b98256", "skinShade": "#8c5a36", "hair": "#9a9a9a", "shirt": "#7a9cc0", "shirtShade": "#5a7ca0", "collar": "#9ab8d8",
+    "pants": "#4a4a52", "pantsShade": "#34343a", "shoes": "#2a211b", "hatColor": "#1c1a1e", "hatShade": "#33303a", "seed": 44
+  },
+  "penyapu": {
+    "type": "rig-character", "height": 41, "build": "regular", "sleeves": "short", "hat": "caping", "accessory": "broom",
+    "skin": "#a86c44", "skinShade": "#7a4a2a", "shirt": "#7c8a4a", "shirtShade": "#5e6a36", "collar": "#94a060",
+    "pants": "#3e3a34", "pantsShade": "#2c2924", "shoes": "#2a211b", "hatColor": "#d8b46a", "hatShade": "#a8843e",
+    "accessoryColor": "#c8a868", "accessoryShade": "#8a7040", "seed": 55
+  },
+  "pengayuh": {
+    "type": "rig-character", "height": 42, "build": "slim", "sleeves": "long",
+    "skin": "#b47a50", "skinShade": "#87563a", "hair": "#1f1611", "shirt": "#4a6aa0", "shirtShade": "#34508a", "collar": "#6a8ac0",
+    "pants": "#3a3a40", "pantsShade": "#2a2a30", "shoes": "#2a211b", "seed": 66
+  },
+  "anak-sekolah": {
+    "type": "rig-character", "height": 32, "build": "slim", "sleeves": "short", "accessory": "bag",
+    "skin": "#bf8458", "skinShade": "#915c3a", "hair": "#1a1310", "shirt": "#f2f0ea", "shirtShade": "#cfcbc0", "collar": "#d8d4c8",
+    "pants": "#b23a3a", "pantsShade": "#8a2a2a", "shoes": "#2a211b", "accessoryColor": "#3a5a8a", "accessoryShade": "#2a4066",
+    "strideLength": 24, "seed": 77
+  }
+}

@@ -9,7 +9,8 @@ const { FFMPEG, FFPROBE, run } = require('./pipeline.cjs');
 const sha256 = (buffer) => crypto.createHash('sha256').update(buffer).digest('hex');
 const result = (id, name, pass, detail) => ({ id, name, pass: Boolean(pass), detail: String(detail) });
 
-// Batas yang dipakai pemeriksaan transisi dan frame kosong.
+// Batas bawaan pemeriksaan transisi dan frame kosong. Nilai resminya ada di config/engine.json
+// (bagian "validation") dan diteruskan lewat config.validationLimits.
 const LIMITS = {
   maxLumaStep: 8, // perubahan kecerahan rata-rata maksimum antar frame (skala 0-255)
   cutSpikeRatio: 3, // lonjakan perbedaan frame dianggap potongan kasar bila 3x tetangganya
@@ -29,14 +30,15 @@ function timelineChecks(config) {
   const scenes = config.timeline.scenes;
   const issues = config.timelineIssues || [];
   const covered = scenes.reduce((sum, s) => sum + s.durationFrames, 0);
-  const ranges = scenes.map((s) => `${s.id} ${s.startFrame}-${s.endFrame}`).join(', ');
+  const ranges = scenes.map((s) => `${s.id} [${s.startFrame}, ${s.endFrame})`).join(', ');
   const out = [
     result('timeline', 'Interval adegan valid', issues.length === 0 && covered === config.totalFrames,
       issues.length ? issues.join(' | ') : `${scenes.length} adegan menutup ${covered}/${config.totalFrames} frame tanpa celah: ${ranges}`)
   ];
   const transitions = config.timeline.transitions;
-  out.push(result('timeline-transitions', 'Transisi berada di dalam durasi film', transitions.every((t) => t.startFrame >= 0 && t.endFrame < config.totalFrames),
-    transitions.length ? transitions.map((t) => `${t.type} ${t.startFrame}-${t.endFrame}`).join(', ') : 'tidak ada transisi'));
+  // endFrame tidak ikut (setengah terbuka), lastFrame = frame terakhir transisi
+  out.push(result('timeline-transitions', 'Transisi berada di dalam durasi film', transitions.every((t) => t.startFrame >= 0 && t.endFrame <= config.totalFrames && t.lastFrame === t.endFrame - 1),
+    transitions.length ? transitions.map((t) => `${t.type} ${t.startFrame}-${t.lastFrame}`).join(', ') : 'tidak ada transisi'));
   return out;
 }
 
@@ -134,46 +136,77 @@ function frameHashes(file) {
   return r.stdout.split('\n').filter((l) => l && !l.startsWith('#')).map((l) => l.split(',').pop().trim());
 }
 
-function frameChecks(stats, hashes, expectFrames) {
-  const blank = stats.map((s, i) => ({ i, s })).filter(({ s }) => s.ymax - s.ymin < LIMITS.blankRange || s.yavg < LIMITS.blankMean);
+const isBlank = (s, limits) => s.ymax - s.ymin < limits.blankRange || s.yavg < limits.blankMean;
+
+function frameChecks(stats, hashes, expectFrames, limits = LIMITS) {
+  const blank = stats.map((s, i) => ({ i, s })).filter(({ s }) => isBlank(s, limits));
+  const last = stats[expectFrames - 1];
   let identical = 0;
   for (let i = 1; i < hashes.length; i++) if (hashes[i] === hashes[i - 1]) identical++;
   return [
     result('decoded-frames', 'Tidak ada frame yang hilang saat decode', hashes.length === expectFrames && stats.length === expectFrames, `${hashes.length} frame ter-decode, ${stats.length} frame terukur`),
     result('blank', 'Tidak ada frame kosong', blank.length === 0,
       blank.length ? `frame kosong: ${blank.slice(0, 8).map((b) => b.i).join(', ')}` : `kecerahan rata-rata terendah ${Math.min(...stats.map((s) => s.yavg)).toFixed(1)}, rentang terendah ${Math.min(...stats.map((s) => s.ymax - s.ymin))}`),
-    result('motion', 'Animasi bergerak (bukan gambar statis)', identical === 0 && new Set(hashes).size === hashes.length, `${new Set(hashes).size} frame unik, ${identical} pasang frame berurutan identik`)
+    result('motion', 'Animasi bergerak (bukan gambar statis)', identical === 0 && new Set(hashes).size === hashes.length, `${new Set(hashes).size} frame unik, ${identical} pasang frame berurutan identik`),
+    // film harus berakhir di gambar yang utuh, bukan layar hitam atau frame yang hilang
+    result('end-frame', 'Frame terakhir valid', Boolean(last) && !isBlank(last, limits),
+      last ? `frame ${expectFrames - 1}: kecerahan rata-rata ${last.yavg.toFixed(1)}, rentang ${last.ymax - last.ymin}` : `frame ${expectFrames - 1} tidak ada di video`)
   ];
 }
 
 // Cari kilatan (lompatan kecerahan) dan potongan kasar (lonjakan beda frame yang berdiri sendiri).
-function lumaEvents(stats, offset = 0) {
+function lumaEvents(stats, offset = 0, limits = LIMITS) {
   const flashes = [];
   const cuts = [];
   for (let i = 1; i < stats.length; i++) {
     const step = stats[i].yavg - stats[i - 1].yavg;
-    if (Math.abs(step) > LIMITS.maxLumaStep) flashes.push({ frame: i + offset, step });
+    if (Math.abs(step) > limits.maxLumaStep) flashes.push({ frame: i + offset, step });
     const around = [i - 2, i - 1, i + 1, i + 2].filter((j) => j >= 1 && j < stats.length).map((j) => stats[j].ydif);
     const neighbor = Math.max(...around, 0.5);
-    if (stats[i].ydif > LIMITS.cutSpikeMin && stats[i].ydif > LIMITS.cutSpikeRatio * neighbor) cuts.push({ frame: i + offset, ydif: stats[i].ydif });
+    if (stats[i].ydif > limits.cutSpikeMin && stats[i].ydif > limits.cutSpikeRatio * neighbor) cuts.push({ frame: i + offset, ydif: stats[i].ydif });
   }
   let maxStep = 0;
   for (let i = 1; i < stats.length; i++) maxStep = Math.max(maxStep, Math.abs(stats[i].yavg - stats[i - 1].yavg));
   return { flashes, cuts, maxStep };
 }
 
-function transitionLumaChecks(stats, transitions, offset = 0) {
-  const { flashes, cuts, maxStep } = lumaEvents(stats, offset);
+function transitionLumaChecks(stats, transitions, offset = 0, limits = LIMITS) {
+  const { flashes, cuts, maxStep } = lumaEvents(stats, offset, limits);
   const where = (f) => {
-    const t = transitions.find((x) => f >= x.startFrame - 1 && f <= x.endFrame + 1);
+    const t = transitions.find((x) => f >= x.startFrame - 1 && f <= x.endFrame);
     return t ? `, di transisi ${t.type}` : '';
   };
   return [
     result('no-flash', 'Tidak ada kilatan cahaya mendadak', flashes.length === 0,
-      flashes.length ? `lompatan kecerahan di frame ${flashes.slice(0, 6).map((f) => `${f.frame} (${f.step.toFixed(1)})`).join(', ')}` : `perubahan kecerahan terbesar antar frame ${maxStep.toFixed(1)} (batas ${LIMITS.maxLumaStep})`),
+      flashes.length ? `lompatan kecerahan di frame ${flashes.slice(0, 6).map((f) => `${f.frame} (${f.step.toFixed(1)})`).join(', ')}` : `perubahan kecerahan terbesar antar frame ${maxStep.toFixed(1)} (batas ${limits.maxLumaStep})`),
     result('no-hard-cut', 'Tidak ada potongan kasar (hard cut)', cuts.length === 0,
       cuts.length ? `lonjakan di frame ${cuts.slice(0, 6).map((c) => `${c.frame} (beda ${c.ydif.toFixed(1)}${where(c.frame)})`).join(', ')}` : 'semua pergantian gambar berlangsung bertahap')
   ];
+}
+
+// ---------- manifest render ----------
+
+// MP4 hanya diterima bila berasal dari render terakhir yang selesai dengan sukses, dan konfigurasi,
+// mesin, pustaka aset, frame PNG, serta file MP4 masih sama persis dengan yang dicatat saat itu.
+// Jadi render yang gagal tidak bisa "tertolong" oleh MP4 lama yang kebetulan masih ada.
+function manifestChecks(config, manifest, { framesDir = config.paths.frames, video = config.paths.video } = {}) {
+  const M = require('./manifest.cjs');
+  if (!manifest) {
+    return [result('manifest:status', 'Render terakhir selesai dengan sukses', false, 'manifest render tidak ditemukan, jalankan render dulu')];
+  }
+  const out = [result('manifest:status', 'Render terakhir selesai dengan sukses', manifest.status === 'complete',
+    manifest.status === 'complete' ? `status complete, selesai ${manifest.finishedAt}` : `status "${manifest.status}"${manifest.error ? `: ${manifest.error}` : ''}`)];
+  const current = {
+    'konfigurasi proyek': [manifest.inputsHash, M.inputsHash(config.configFile)],
+    'mesin inti': [manifest.engineHash, M.engineHash()],
+    'pustaka aset': [manifest.libraryHash, M.libraryHash()],
+    'frame PNG': [manifest.framesHash, fs.existsSync(framesDir) ? M.framesHash(framesDir, config.totalFrames) : 'tidak ada'],
+    'file MP4': [manifest.videoSha256, fs.existsSync(video) ? sha256(fs.readFileSync(video)) : 'tidak ada']
+  };
+  const changed = Object.entries(current).filter(([, [then, now]]) => !then || then !== now).map(([what]) => what);
+  out.push(result('manifest:fresh', 'Video berasal dari render terbaru (bukan sisa render lama)', changed.length === 0,
+    changed.length ? `berubah sejak render terakhir: ${changed.join(', ')}` : 'konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest'));
+  return out;
 }
 
 // ---------- frame PNG ----------
@@ -203,5 +236,5 @@ function pngChecks(framesDir, count, width, height) {
 
 module.exports = {
   LIMITS, sha256, result, timelineChecks, probeVideo, videoChecks, decodeChecks,
-  lumaStats, frameHashes, frameChecks, lumaEvents, transitionLumaChecks, pngChecks
+  lumaStats, frameHashes, frameChecks, lumaEvents, transitionLumaChecks, manifestChecks, pngChecks
 };

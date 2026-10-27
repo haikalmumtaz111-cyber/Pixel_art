@@ -1,133 +1,217 @@
 # Arsitektur Pixel History Studio
 
-Dokumen ini menjelaskan cara mesin animasi bekerja sejak Tahap 2 (sistem multi-adegan).
+Dokumen ini menjelaskan cara mesin animasi bekerja sejak Tahap 3 (mesin reusable untuk banyak proyek). Panduan praktis membuat proyek baru ada di [`REUSABILITY_GUIDE.md`](REUSABILITY_GUIDE.md).
 
 ## Gambaran besar
 
 ```
-config/<film>.json  ──►  src/render/config.cjs + timeline.cjs  ──►  browser (Playwright + Chromium)
-   (timeline JSON)        memeriksa dan merapikan timeline           src/engine/runtime.js
-                                                                      └─ film.js
-                                                                          ├─ adegan (src/scenes/*)
-                                                                          ├─ transisi (transitions.js)
-                                                                          └─ aset bersama (src/assets/registry.js)
-                                                                    ──►  PNG 480x270 per frame
-                                                                    ──►  FFmpeg: perbesar 4x nearest neighbor ──► MP4 H.264
-                                                                    ──►  validate.cjs + negative-tests.cjs ──► laporan
+config/engine.json ─┐                                         ┌─ src/engine (mesin inti, sama untuk semua proyek)
+src/assets/catalog.json ─┤                                    │    film.js ── schedule.js (adegan/transisi per frame)
+                        ├─► src/render/projects.cjs ──► browser ─┤         ├── registry.js (aset dari katalog)
+config/<proyek>.json ───┘   (project loader + validasi)  (Chromium)│         ├── composer.js (adegan tersusun dari data)
+  + file $include                                             │         ├── entities.js, tracks.js, camera.js
+                                                              │         ├── environment.js, palette.js
+                                                              │         ├── transitions.js, presenter.js
+                                                              │         └── pixel.js, random.js, math.js
+                                                              └─ src/assets/** dan src/scenes/** (pustaka bersama)
+   ──► PNG per frame ──► FFmpeg (H.264) ──► MP4 + manifest render
+   ──► validate.cjs, negative-tests.cjs, regression.cjs, project-tests.cjs ──► laporan di output/reports/
 ```
 
-Kode browser (`src/engine`, `src/assets`, `src/scenes`) ditulis sebagai ES module `.js`. Kode Node (`src/render`) ditulis sebagai CommonJS `.cjs`, supaya Playwright bisa dimuat dari instalasi lokal maupun global.
+Tiga lapisan dipisah dengan tegas:
 
-## Timeline berbasis data
+| Lapisan | Folder | Isi | Tahu tentang cerita? |
+|---------|--------|-----|----------------------|
+| Mesin inti | `src/engine/` | timeline, jadwal adegan, kamera, easing, lapisan, entitas, registry aset, transisi, palet, acak deterministik, penyaji frame | Tidak sama sekali |
+| Pustaka aset dan adegan | `src/assets/`, `src/scenes/` | gambar prosedural: kereta, ruko, karakter rig, pohon, langit, dan adegan kustom Tahap 2 | Hanya tentang bentuk benda, bukan cerita |
+| Proyek | `config/<proyek>.json` (+ folder `config/<proyek>/`) | judul, durasi, palet, daftar aset, set, pemeran, adegan, kamera, transisi | Ya, di sinilah ceritanya |
 
-File timeline berisi:
+Kode browser (`src/engine`, `src/assets`, `src/scenes`) adalah ES module `.js`. Kode Node (`src/render`) adalah CommonJS `.cjs`. `npm run lint` memeriksa aturan ini, melarang `Math.random()`/`Date` di kode browser, dan memastikan `src/engine` tidak mengimpor aset atau menyebut nama jenis aset mana pun.
 
-| Bagian | Isi |
-|--------|-----|
-| pengaturan film | `name`, `title`, `seed`, resolusi, `fps`, `durationSeconds`, `output`, `encoding` |
-| `assets` | definisi aset bersama, dengan `type` dan parameternya |
-| `environment` | track keyframe cuaca dan cahaya untuk seluruh film: `dawn`, `rain`, `clouds`, `fog`, `lights`, `sun` |
-| `cameraTracks` | track kamera yang dipakai bersama beberapa adegan |
-| `timeline.scenes` | daftar adegan berurutan |
-| `validation` | pengaturan pengujian, misalnya frame tempat kereta terlihat |
+## Konfigurasi berlapis
 
-Setiap adegan wajib punya `id`, `name`, `module`, `startFrame`, `endFrame`, `durationFrames`, `assets`, `characters`, `camera`, `environment`, dan `transitionOut` (atau `null` untuk adegan terakhir).
+| Lapisan konfigurasi | File | Isi |
+|---------------------|------|-----|
+| Mesin global | `config/engine.json` | daftar katalog aset, jenis transisi, easing, jenis kamera, anchor, default rendering dan encoding, batas validasi |
+| Katalog aset | `src/assets/catalog.json` | setiap jenis aset: modul JS, kategori, skema parameter, status animasi, kunci palet yang dibutuhkan |
+| Proyek | `config/<proyek>.json` | `id`, `name`, `title`, `seed`, resolusi, `aspectRatio`, `fps`, `durationSeconds`, `rendering`, `output`, `encoding`, `palettes`, `assets`, `stages`, `cast`, `environment`, `lighting`, `cameraTracks`, `timeline`, `validation` |
+| Adegan | entri `timeline.scenes` (boleh file terpisah lewat `$include`) | `id`, `name`, `module`, `start`, `end` (detik), `stage`, `cast`, `entities`, `camera`, `transitionOut` |
 
-Format keyframe: `[[frame, nilai, easing?], ...]`. Easing ditulis di key tujuan, artinya cara bergerak dari key sebelumnya ke key itu. Easing yang tersedia: `linear`, `inQuad`, `outQuad`, `inCubic`, `outCubic`, `inOutCubic`, `inOutSine`, `smoothstep`.
+Semua daftar jenis (transisi, easing, kamera, aset) punya satu sumber: `engine.json` dan `catalog.json`. Node dan browser membaca data yang sama, jadi tidak ada lagi daftar yang ditulis dua kali (backlog T4).
 
-`src/render/timeline.cjs` memeriksa aturan berikut sebelum render:
+`{ "$include": "folder/file.json" }` di mana pun dalam file proyek diganti dengan isi file itu (jalur relatif terhadap file yang memanggil, tidak boleh keluar dari repository). Palet boleh mewarisi palet lain dengan `"extends": "<nama palet>"`.
 
-- adegan pertama mulai di frame 0, adegan terakhir berakhir di frame terakhir
-- setiap adegan mulai tepat setelah adegan sebelumnya (tanpa celah, tanpa tumpang tindih)
-- `durationFrames` cocok dengan `startFrame..endFrame`
-- modul adegan, aset, track kamera, dan nama efek benar-benar ada
-- transisi menuju adegan berikutnya, rentangnya melewati batas adegan, dan tidak bertumpuk
-- keyframe berurutan naik dan berada di dalam durasi film
+## Project loader (`src/render/projects.cjs`)
 
-Konfigurasi lama tanpa `timeline` (Tahap 1) otomatis diubah menjadi timeline satu adegan.
+1. Menemukan proyek: setiap file `config/*.json` yang punya `id` (kecuali `engine.json`). `--project <id>` atau jalur file JSON.
+2. Membaca file dan menyelesaikan semua `$include`.
+3. Memeriksa pengaturan proyek: resolusi 16:9, skala output bilangan bulat, `fps x durationSeconds` menjadi frame bulat, mode upscale, encoding.
+4. Memeriksa timeline dan seluruh isi proyek lewat `timeline.cjs` dan `schema.cjs` (lihat di bawah).
+5. Menghasilkan konfigurasi lengkap: `totalFrames`, `frameSize`, `timeline` yang sudah dinormalisasi ke frame, daftar file `$include`, jalur output.
+
+Jika proyek tidak diisi atau tidak ditemukan, semua perintah menampilkan daftar proyek yang tersedia.
+
+## Timeline dan aturan waktu
+
+- Durasi ditulis dalam detik lalu diubah menjadi frame bulat. Nilai yang tidak pas (misalnya 0,01 detik pada 30 FPS) ditolak, bukan dibulatkan diam-diam.
+- Adegan memakai interval setengah terbuka `[startFrame, endFrame)`: frame awal ikut, frame akhir tidak. Adegan 0-120 berisi frame 0 sampai 119, adegan berikutnya mulai tepat di 120.
+- Adegan harus berurutan tanpa celah, tanpa tumpang tindih, dan menutup seluruh durasi film.
+- Transisi ditulis sebagai `transitionOut: { type, start, duration, params }` (detik). Hasilnya `startFrame`, `endFrame` (tidak ikut), `lastFrame`, dan `durationFrames`. Rentangnya harus melewati batas adegan dan tidak boleh bertumpuk.
+- Keyframe: `[[frame, nilai, easing?], ...]`, frame berurutan naik dan berada di dalam film. Easing ditulis di key tujuan.
+
+`src/engine/schedule.js` menjawab "frame ini milik adegan atau transisi mana" untuk setiap frame. Di transisi, `p = 0` di frame pertama dan `p = 1` di frame terakhir.
+
+## Validasi skema (`src/render/schema.cjs`, `timeline.cjs`)
+
+Sebelum render, loader menolak (dengan pesan berbahasa Indonesia, semua kesalahan sekaligus):
+
+- ID adegan ganda, celah, tumpang tindih, durasi tidak valid atau tidak bulat, adegan terakhir tidak menutup film
+- aset, jenis aset, lapisan, stage, pemeran, induk entitas, entitas yang diikuti kamera, atau track kamera yang tidak ada; rantai induk berputar
+- parameter aset/entitas yang tidak dikenal, salah tipe, atau di luar batas (dari skema katalog)
+- keyframe tidak berurutan, di luar durasi, atau easing tidak dikenal
+- status animasi/warna yang tidak dimiliki aset, `paramTracks` untuk parameter yang tidak bisa dianimasikan
+- skala entitas bukan bilangan bulat (grid piksel rusak), zoom di luar 1..4, zoom kamera tanpa mode upscale `browser`
+- palet yang kurang warna untuk aset yang tampil, jenis transisi tidak dikenal, transisi yang tidak melewati batas adegan, nama efek salah ketik
 
 ## Mesin film (`src/engine/film.js`)
 
-Untuk setiap nomor frame, `segmentAt(frame)` menentukan apakah frame itu milik satu adegan atau sebuah transisi. Lalu:
+`createFilm(config)`:
 
-- frame adegan: adegan dirender dengan `shot = { frame, time, local, progress }`
-- frame transisi: transisi menerima `p` (0 di frame awal, 1 di frame akhir) dan dua fungsi gambar, `drawFrom` dan `drawTo`
+1. `registry.js` memuat hanya modul aset yang jenisnya dipakai proyek (lewat katalog), lalu membuat setiap aset sekali dan membagikannya ke semua adegan.
+2. `environment.js` membuat track lingkungan bebas dari bagian `environment` (misalnya `daylight`, `rain`). Mesin tidak tahu arti nilainya; aset yang membaca yang menentukan.
+3. Setiap adegan dibuat dari modulnya: `compose` (adegan tersusun bawaan mesin) atau modul kustom di `src/scenes/`.
+4. `render(ctx, frame)` menggambar satu frame dari nol berdasarkan nomor frame saja. Tidak ada keadaan yang dibawa antar frame, jadi frame bisa dirender dalam urutan apa pun.
 
-Setiap frame digambar dari nol. Tidak ada keadaan yang dibawa dari frame sebelumnya, jadi frame bisa dirender dalam urutan apa pun.
+## Sistem entitas (`src/engine/entities.js`)
 
-## Kontrak adegan
+Entitas = objek yang ditempatkan dan dianimasikan di adegan (karakter, ruko, pohon, sepeda, awan, lampu). Satu entitas memakai satu aset.
+
+| Field | Arti |
+|-------|------|
+| `id`, `asset`, `layer` | identitas, aset yang dipakai, lapisan gambar |
+| `position`, `motion: { x, y }` | posisi dunia dan gerak keyframe |
+| `anchor` | titik tumpu: `bottom-center`, `top-left`, ... |
+| `visible`, `state`, `color`, `flip`, `frame` | nilai tetap atau keyframe bertangga (status animasi, status warna, cermin, pilihan sprite atau `{ cycle: { fps, count } }`) |
+| `parent` | entitas induk (posisi ikut induk), misalnya pengendara di atas sepeda |
+| `params`, `paramTracks` | parameter tampilan tetap dan parameter animasi (menimpa default aset) |
+| `scale`, `z` | skala bilangan bulat, urutan dalam lapisan |
+
+`stateAt(frame, time)` menghitung semuanya langsung dari frame global, termasuk rantai induk dan kecepatan (`speedX`). Unit test membuktikan hasilnya sama walau frame dihitung dengan urutan acak.
+
+Kontrak aset entitas:
 
 ```js
-export function createScene({ film, scene, assets, environment }) {
-  return {
-    supportsPortal: true,          // opsional, bila adegan bisa dipakai sebagai "from" transisi portal
-    render(ctx, shot) { ... }      // shot.portal ada saat transisi portal berlangsung
-  };
-}
+export const assetTypes = {
+  'nama-jenis': {
+    create(def, ctx) {                    // def = definisi aset dari proyek, ctx = { film, key, registry, seed, width, height }
+      return {
+        defaultState: 'idle',
+        size(e, fc) { return { w, h }; }, // ukuran lokal (untuk anchor)
+        draw(ctx, e, fc) { ... },         // menggambar di koordinat lokal (0,0 = pojok kiri atas)
+        identityColors() { return ['#rrggbb', ...]; }   // opsional, untuk uji konsistensi
+      };
+    }
+  }
+};
 ```
 
-- `film`: konfigurasi film lengkap
-- `scene`: entri adegan dari timeline (kamera, karakter, efek)
-- `assets.pick(scene.assets, type)`: mengambil aset bersama dari daftar referensi aset adegan
-- `environment.at(frame)`: nilai cuaca dan cahaya pada frame tersebut
+`e` berisi keadaan entitas (`state`, `color`, `params`, `worldX`, `time`, `local` = bagian lokal yang terlihat di layar, `layer`). `fc` (frame context) berisi `frame`, `time`, `fps`, `env`, `pal` (palet aktif), `camera`, `width`, `height`, `seed`, `scene`.
 
-## Sistem transisi (`src/engine/transitions.js`)
+## Adegan tersusun (`src/engine/composer.js`)
+
+Adegan dengan `"module": "compose"` dibangun sepenuhnya dari data, tanpa kode:
+
+- `stages[<id>]`: set lingkungan berisi `layers` (`id`, `parallax`, `parallaxY`, `sortByY`) dan `entities` tetap (langit, ruko, lampu)
+- `cast`: pemeran proyek yang bisa tampil di banyak adegan; `scene.cast` memilih siapa yang tampil
+- `scene.entities`: entitas khusus adegan itu
+- `scene.camera`: kamera langsung atau `{ "track": "<id>" }` dari `cameraTracks`
+- `lighting`: `{ from, to, track, steps }` = palet berubah bertahap (palette ramp) mengikuti track lingkungan
+
+Lapisan digambar dari jauh ke dekat. Setiap lapisan bergeser `kamera x parallax` (dibulatkan ke piksel). Di dalam lapisan, entitas diurutkan menurut `z`, lalu posisi y bila `sortByY`, lalu urutan definisi.
+
+## Kamera (`src/engine/camera.js`)
+
+| Jenis | Isi |
+|-------|-----|
+| `keys` | `x`, `y`, `zoom` berupa keyframe (pan, crane, push-in, pullback) |
+| `follow-entity` | mengikuti entitas: `entity`, `screenX` (angka atau keyframe), `smoothing` (rata-rata bergerak N frame), `y`, `zoom` |
+| `follow`, `speed` | kamera film kereta Tahap 2 (mengikuti titik kepala target dari adegan kustom) |
+
+Semua jenis adalah fungsi murni dari nomor frame. `smoothing` dihitung dari posisi entitas di frame-frame sebelumnya, bukan dari keadaan yang disimpan.
+
+## Penyaji frame dan zoom tajam (`src/engine/presenter.js`)
+
+| Mode `rendering.upscale` | Cara kerja | Dipakai |
+|--------------------------|-----------|---------|
+| `ffmpeg` (bawaan) | browser menyimpan PNG 480x270, FFmpeg memperbesar 4x nearest neighbor | Project A, prototipe |
+| `browser` | dunia tetap digambar di 480x270, lalu browser memotong bagian tengah sesuai zoom dan memperbesarnya nearest neighbor ke 1920x1080 | Project B (kamera zoom) |
+
+Di mode `browser`, zoom 1, 1,25, 1,5, dan 2 menghasilkan piksel art berukuran persis sama (4, 5, 6, 8 piksel layar). Di antara nilai itu selisihnya paling banyak 1 piksel layar, tanpa blur dan tanpa anti-aliasing. Skema menolak zoom di mode `ffmpeg` karena di mode itu zoom tidak bisa tajam.
+
+Untuk adegan kustom, `pixel.js` tetap menyediakan *view* `{ s, ox, oy, flip }`: setiap bentuk digambar ulang pada posisi `o + posisi x s`, dibulatkan ke piksel (dipakai transisi portal Tahap 2).
+
+## Transisi (`src/engine/transitions.js`)
 
 | Jenis | Cara kerja |
 |-------|------------|
 | `cut` | potong langsung di frame batas adegan |
-| `dissolve` | larut berdither: piksel adegan baru muncul bertahap mengikuti pola Bayer 4x4 (16 tingkat), tetap tajam |
-| `portal` | adegan lama di-zoom ke sebuah "lubang" (jendela). Adegan baru terlihat di dalam lubang sampai memenuhi layar |
+| `dissolve` | larut berdither pola Bayer 4x4 (16 tingkat), mengikuti ukuran sel piksel penyaji agar tetap tajam |
+| `portal` | adegan lama di-zoom ke sebuah "lubang" (jendela), adegan baru terlihat di dalamnya sampai memenuhi layar |
 
-Aturan yang dijaga semua transisi: di `p = 0` hasilnya sama persis dengan adegan lama, di `p = 1` sama persis dengan adegan baru. Pengujian otomatis membuktikannya per byte.
+Aturan semua transisi: di `p = 0` hasilnya sama persis dengan adegan lama, di `p = 1` sama persis dengan adegan baru. Validator membuktikannya per byte.
 
-Transisi portal memberi adegan lama `shot.portal = { zoom, progress, drawInside(ctx, rect) }`. Adegan lama menggambar dirinya dengan zoom lalu memanggil `drawInside` di posisi lubangnya. Dengan begitu adegan bisa mengatur urutan lapisan sendiri, misalnya tetesan air di kaca tetap di depan pemandangan. Parameter portal: `zoom` (zoom akhir), `easing`, dan `mix` (rentang `p` saat isi lubang larut dari gambar lama ke adegan baru).
+## Adegan kustom (kontrak Tahap 2, tetap didukung)
 
-## Zoom yang tetap tajam
+```js
+export function createScene({ film, scene, assets, environment }) {
+  return {
+    supportsPortal: true,          // opsional
+    render(ctx, shot) { ... }      // shot = { frame, time, local, progress, portal? }
+  };
+}
+```
 
-Zoom tidak memperbesar gambar seperti foto. `pixel.js` punya *view* `{ s, ox, oy }`: setiap kotak, garis, dan lingkaran digambar ulang pada posisi `o + posisi * s` di resolusi asli 480x270, lalu dibulatkan ke piksel. Hasilnya tidak blur dan tanpa anti-aliasing. Detail kecil seperti tetesan air di kaca sengaja tetap 1 piksel walau posisinya ikut zoom.
+Adegan kustom mengambil aset lewat `assets.pick(scene.assets, type)`. Project A (`night-to-dawn`) memakai tiga adegan kustom ini.
 
-## Aset bersama (`src/assets/registry.js`)
+## Pipeline render (`src/render/`)
 
-| Jenis | Fungsi pembuat | Isi |
-|-------|----------------|-----|
-| `steam-train` | `train.js` | satu desain kereta: warna, cerobong, roda, gerbong, jendela, lampu |
-| `countryside` | `countryside.js` | dunia luar: langit, lanskap, hujan, asap, dan kereta |
-| `coach-interior` | `interior.js` | interior gerbong. Warna kain, bingkai, dan kuningan diambil dari desain kereta |
-| `character` | `characters/traveler.js` | karakter penumpang: siluet untuk tampak luar dan pose duduk untuk interior |
+| File | Tugas |
+|------|-------|
+| `cli.cjs` | argumen bersama: `--project`, `--scene`, `--frame`, `--frames a-b`, `--no-encode`, `--encode-only` |
+| `render.cjs` | satu pipeline untuk semua proyek: film penuh, satu adegan, frame terpilih, rentang frame |
+| `pipeline.cjs` | render frame lewat Playwright, encode H.264 (atomik: file `.partial` lalu ganti nama) |
+| `manifest.cjs` | "struk" render: status `rendering` / `complete` / `failed` / `frames-only`, sidik jari konfigurasi, mesin, pustaka aset, frame, dan MP4 |
+| `validate.cjs`, `checks.cjs`, `browser-checks.cjs` | validasi generik + laporan + lembar kontak |
+| `negative-tests.cjs` | pengujian negatif per proyek |
+| `regression.cjs`, `fingerprint.cjs` | uji regresi terhadap baseline resmi `tests/baselines/` |
+| `project-tests.cjs`, `sandbox.cjs` | uji antar-proyek (mesin bersama, isolasi di salinan repository) |
+| `smoke.cjs`, `lint.cjs` | pemeriksaan ringan untuk CI |
+| `build.cjs`, `test-all.cjs` | rangkaian render + validasi, dan seluruh pengujian |
 
-Aset dibuat sekali lalu dibagikan ke semua adegan. Kereta di Adegan 1 dan Adegan 3 adalah objek yang sama.
+Setiap frame dihitung dari waktu global `time = frame / fps` dan `seed` proyek. Karena tidak ada keadaan antar frame, render bisa dipecah per rentang (`--frames 0-119`, `--frames 120-239`, ...) dan hasilnya identik dengan render penuh. Ini dasar untuk render bersegmen/paralel di masa depan.
 
-## Palet dan lingkungan
+### MP4 lama tidak bisa "menolong" render yang gagal
 
-`palette.js` berisi palet `NIGHT` (malam, sama persis dengan Tahap 1), `DAWN` (warna tujuan saat fajar), dan `INTERIOR`. Perubahan malam ke fajar dibagi menjadi 32 anak tangga (*palette ramp*). Setiap frame tetap memakai sekumpulan kecil warna, mirip efek *palette fade* di konsol 16-bit. Warna identitas kereta tidak ikut berubah.
-
-Intensitas hujan diperiksa pada saat sebuah tetes mulai jatuh dari atas layar, sehingga saat hujan mereda tidak ada tetes yang hilang di tengah udara.
-
-## Kamera
-
-- `follow`: `keys` menentukan posisi layar ujung depan lokomotif, artinya kamera ikut kereta
-- `speed`: `speedKeys` menentukan kecepatan kamera dibanding kereta (1 = sama cepat, 0 = diam). Posisinya dihitung sekali dengan menjumlahkan gerak per frame
-- `liftKeys`: posisi vertikal kamera. Setiap lapisan bergeser sesuai faktor kedalamannya (parallax vertikal)
-
-Adegan 2 memakai `panKeys` untuk geser kamera di dalam gerbong, dan `windowView.track` untuk pemandangan di luar jendela. Track `dawn-run` dipakai bersama oleh pemandangan jendela Adegan 2 dan kamera Adegan 3, sehingga transisi menembus kaca menyambung dengan sempurna.
+`render.cjs` menulis manifest berstatus `rendering` sebelum mulai, `complete` setelah frame dan MP4 selesai, atau `failed` bila ada error. Validator hanya menerima MP4 bila manifest `complete` dan sidik jarinya masih cocok dengan konfigurasi proyek, mesin inti, pustaka aset, frame PNG, dan file MP4 saat ini. Pengujian negatif membuktikannya dengan sengaja menggagalkan render di salinan repository.
 
 ## Pengujian
 
-`npm run validate` menjalankan 28 pemeriksaan. Pemeriksaan itu dikelompokkan menjadi 14 kebutuhan: jumlah frame, durasi, resolusi, FPS, interval adegan, frame hilang, frame kosong, error JavaScript, transisi tanpa artefak, konsistensi kereta, determinisme, decoding FFmpeg, kemampuan diputar, dan konsistensi render ulang.
+| Perintah | Isi | Butuh render? |
+|----------|-----|---------------|
+| `npm run lint` | sintaks JS, JSON, determinisme, kemurnian mesin inti | tidak |
+| `npm run test:engine` | unit test `tests/engine/*.test.js`: track, easing, PRNG, jadwal setengah terbuka, entitas (urutan bebas), kamera, registry, palet, loader dan skema | tidak |
+| `npm run test:smoke` | render beberapa frame per proyek, cocokkan dengan baseline | tidak (render kecil) |
+| `npm run validate -- --project <id>` | validasi lengkap satu proyek (video, frame, transisi, adegan terpisah, konsistensi aset, modul terisolasi, determinisme, manifest) | ya |
+| `npm run test:negative -- --project <id>` | kesalahan yang disengaja harus ditolak | ya |
+| `npm run test:regression` | Project A dan prototipe identik dengan baseline `main` | ya |
+| `npm run test:projects` | mesin bersama, file konfigurasi terpisah, isolasi dua arah | ya |
+| `npm test` | semua di atas | ya |
 
-Beberapa teknik yang dipakai:
+Teknik penting:
 
-- **Kilatan dan potongan kasar**: statistik kecerahan tiap frame dari filter `signalstats` FFmpeg. Lompatan kecerahan rata-rata di atas 8 dianggap kilatan. Lonjakan beda frame yang berdiri sendiri (lebih dari 3 kali tetangganya) dianggap potongan kasar.
-- **Kesinambungan transisi**: frame awal dan akhir transisi dibandingkan per byte dengan render adegan tunggal, dan portal harus sudah menutup layar sebelum frame terakhir transisi.
-- **Determinisme**: seluruh frame dirender ulang di browser baru dengan urutan terbalik lalu dibandingkan per byte. MP4 juga di-encode ulang dan dibandingkan SHA-256-nya.
-- **Konsistensi kereta**: gambar acuan kereta dari setiap aset kereta yang dipakai adegan harus identik, dan warna identitas kereta harus muncul persis di frame adegan luar.
-
-`npm run test:negative` sengaja membuat 16 kesalahan, misalnya celah timeline, video kurang 1 frame, FPS salah, frame hitam, hard cut, portal terlalu kecil, kereta berbeda, `Math.random()`, dan error JavaScript. Semua kesalahan itu harus ditolak validator.
-
-## Menambah sesuatu
-
-- **Adegan baru**: buat `src/scenes/<nama>.js` dengan kontrak di atas, lalu tambahkan entri di `timeline.scenes`.
-- **Transisi baru**: tambahkan objek ke `TRANSITIONS` di `transitions.js` yang mematuhi aturan `p = 0` dan `p = 1`, lalu daftarkan namanya di `TRANSITION_TYPES` (`timeline.cjs`).
-- **Aset baru**: tambahkan fungsi pembuat di `FACTORIES` (`registry.js`) dan namanya di `ASSET_TYPES` (`timeline.cjs`).
-- **Karakter baru**: buat definisi seperti `TRAVELER` dan daftarkan di `CHARACTERS` (`registry.js`).
+- **Kilatan dan potongan kasar**: statistik kecerahan (`signalstats`) tiap frame. Batasnya di `config/engine.json`.
+- **Kesinambungan transisi**: frame pertama dan terakhir transisi dibandingkan per byte dengan render adegan tunggal.
+- **Adegan terpisah**: frame di luar transisi dirender sebagai film utuh dan sebagai adegan tunggal, hasilnya harus identik.
+- **Konsistensi aset**: aturan `validation.consistency` di proyek. `assetType` = semua adegan memakai satu aset berjenis itu; `asset` = warna identitas aset muncul di frame contoh.
+- **Isolasi modul**: daftar file JS yang benar-benar diunduh browser. Project B tidak memuat satu pun modul kereta.
+- **Determinisme**: seluruh frame dirender ulang di browser baru dengan urutan terbalik lalu dibandingkan per byte. MP4 di-encode ulang dan dibandingkan SHA-256-nya.

@@ -20,10 +20,12 @@ export function createCountryside({ width, height, seed, railY, rain, smoke, tra
     railY,
     train,
 
-    // Lengkapi data lingkungan dengan palet aktif sesuai tingkat fajar.
+    // Lengkapi data lingkungan dengan palet aktif sesuai tingkat fajar, dan fungsi intensitas hujan
+    // pada waktu tertentu (track "rain" proyek; bila tidak ada, hujan dianggap penuh).
     resolveEnv(env) {
       const palIndex = ramp.index(env.dawn);
-      return { ...env, palIndex, pal: ramp.at(palIndex) };
+      const rainAt = env.rainAt || ((t) => (env.trackAt ? env.trackAt('rain', t, 1) : 1));
+      return { ...env, rainAt, palIndex, pal: ramp.at(palIndex) };
     },
 
     // options:

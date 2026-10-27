@@ -16,18 +16,19 @@ function run(cmd, args) {
 
 // Render frame [first, first + count) ke folder PNG bernomor 0000, 0001, ...
 // sceneId (opsional) = render satu adegan saja, tanpa transisi dengan adegan lain.
-async function renderFrames(config, { first = 0, count = config.totalFrames, framesDir, onProgress, sceneId = null }) {
+// globalNames = nama file memakai nomor frame global (frame_0120.png), bukan nomor urut dari 0.
+async function renderFrames(config, { first = 0, count = config.totalFrames, framesDir, onProgress, sceneId = null, globalNames = false }) {
   fs.mkdirSync(framesDir, { recursive: true });
   const studio = await openStudio(config);
   const segments = [];
   try {
     for (let i = 0; i < count; i++) {
       const { png, info } = await studio.renderFrame(first + i, sceneId);
-      fs.writeFileSync(frameFile(framesDir, i), png);
+      fs.writeFileSync(frameFile(framesDir, globalNames ? first + i : i), png);
       segments.push({ frame: first + i, ...info });
       if (onProgress) onProgress(i + 1, count);
     }
-    return { chromiumVersion: studio.browserVersion, jsErrors: studio.errors.length, segments };
+    return { chromiumVersion: studio.browserVersion, jsErrors: studio.errors.length, segments, loadedModules: studio.loadedModules, frameSize: studio.frameSize };
   } finally {
     await studio.close();
   }
@@ -60,16 +61,24 @@ function ffmpegArgs(config, { framesDir, count, video, overrides = {} }) {
     '-colorspace', 'bt709', '-color_primaries', 'bt709', '-color_trc', 'bt709', '-color_range', 'tv',
     '-r', String(fps),
     '-movflags', '+faststart',
+    '-f', 'mp4',
     video
   ];
 }
 
+// MP4 ditulis ke file sementara dulu, lalu diganti namanya setelah FFmpeg sukses.
+// Dengan begitu MP4 lama tidak pernah tertimpa setengah jadi bila encoding gagal.
 function encodeVideo(config, job) {
   fs.mkdirSync(path.dirname(job.video), { recursive: true });
-  const args = ffmpegArgs(config, job);
+  const partial = path.join(path.dirname(job.video), `.${path.basename(job.video)}.partial`);
+  const args = ffmpegArgs(config, { ...job, video: partial });
   const result = run(FFMPEG, args);
-  if (result.status !== 0) throw new Error(`FFmpeg gagal:\n${result.stderr}`);
-  return [FFMPEG, ...args].join(' ');
+  if (result.status !== 0) {
+    if (fs.existsSync(partial)) fs.rmSync(partial);
+    throw new Error(`FFmpeg gagal:\n${result.stderr}`);
+  }
+  fs.renameSync(partial, job.video);
+  return [FFMPEG, ...ffmpegArgs(config, job)].join(' ');
 }
 
 module.exports = { FFMPEG, FFPROBE, run, renderFrames, encodeVideo };

@@ -1,0 +1,16 @@
+{
+  "id": "s01-old-town-morning",
+  "name": "Pagi di kota tua",
+  "module": "compose",
+  "stage": "old-town-street",
+  "start": 0,
+  "end": 4,
+  "cast": ["pak-tua", "penyapu", "bu-sari"],
+  "camera": {
+    "type": "keys",
+    "x": [[0, 0], [119, 130, "inOutSine"]],
+    "y": [[0, 0], [84, 0], [119, 18, "inOutSine"]],
+    "zoom": [[0, 1], [84, 1], [119, 1.25, "inOutSine"]]
+  },
+  "transitionOut": { "type": "dissolve", "start": 3.6, "duration": 0.8, "params": { "easing": "linear" } }
+}

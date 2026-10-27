@@ -2,8 +2,6 @@
 // NIGHT adalah palet Tahap 1 (malam hujan). DAWN berisi warna tujuan saat fajar.
 // Perubahan malam ke fajar dibagi menjadi beberapa anak tangga (ramp), mirip "palette fade"
 // di game 16-bit: tiap frame tetap memakai sekumpulan kecil warna, bukan gradasi halus.
-import { clamp } from '../engine/math.js';
-import { mixHex } from '../engine/pixel.js';
 
 export const NIGHT = {
   // langit dari atas ke cakrawala
@@ -118,27 +116,5 @@ export const INTERIOR = {
   shadow: '#0c0605'
 };
 
-function mixValue(a, b, t) {
-  if (Array.isArray(a)) return a.map((v, i) => (typeof v === 'number' ? Math.round(v + (b[i] - v) * t) : mixHex(v, b[i], t)));
-  return mixHex(a, b, t);
-}
-
-// Tangga palet dari `from` ke `to`. Anak tangga dibuat sekali lalu disimpan (deterministik).
-export function createPaletteRamp(from, to, steps = 32) {
-  const cache = [from];
-  return {
-    steps,
-    index(amount) {
-      return Math.round(clamp(amount, 0, 1) * (steps - 1));
-    },
-    at(index) {
-      if (!cache[index]) {
-        const t = index / (steps - 1);
-        const palette = { ...from };
-        for (const key of Object.keys(to)) palette[key] = mixValue(from[key], to[key], t);
-        cache[index] = palette;
-      }
-      return cache[index];
-    }
-  };
-}
+// Tangga palet sekarang bagian dari mesin inti (generik), diekspor ulang di sini untuk kode lama.
+export { createPaletteRamp } from '../engine/palette.js';

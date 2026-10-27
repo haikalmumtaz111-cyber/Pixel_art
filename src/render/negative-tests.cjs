@@ -1,39 +1,66 @@
-// Pengujian negatif: sengaja membuat hasil yang SALAH, lalu memastikan validator menolaknya.
-// Kalau validator meloloskan hasil yang salah, pengujian ini gagal.
-// Semua file uji dibuat di folder sementara sistem dan dibersihkan setelah selesai.
-// Pemakaian (setelah npm run render): node src/render/negative-tests.cjs config/film-night-to-dawn.json
+// Pengujian negatif: sengaja membuat hasil atau konfigurasi yang SALAH, lalu memastikan validator menolaknya.
+// Kalau validator meloloskan kesalahan, pengujian ini gagal.
+// Semua file uji dibuat di folder sementara sistem (atau salinan repository) dan dibersihkan setelah selesai.
+// Pemakaian (setelah render): node src/render/negative-tests.cjs --project <id>
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const { spawnSync } = require('child_process');
 const { readConfig, buildConfig, frameFile } = require('./config.cjs');
+const { describeProjects } = require('./projects.cjs');
+const { parseArgs } = require('./cli.cjs');
 const { openStudio } = require('./browser.cjs');
 const { FFMPEG, run, renderFrames, encodeVideo } = require('./pipeline.cjs');
+const { makeSandbox } = require('./sandbox.cjs');
 const C = require('./checks.cjs');
 const B = require('./browser-checks.cjs');
+const M = require('./manifest.cjs');
 
 const clone = (v) => JSON.parse(JSON.stringify(v));
+const NODE = process.execPath;
 
 async function main() {
-  const { file, raw } = readConfig(process.argv[2]);
-  const config = buildConfig(raw, file);
+  const args = parseArgs(process.argv.slice(2));
+  if (!args.project) {
+    console.log(`Pilih proyek dengan --project <id>.\nProyek yang tersedia:\n${describeProjects()}`);
+    process.exitCode = 1;
+    return;
+  }
+  const { file, raw, includes } = readConfig(args.project);
+  const config = buildConfig(raw, file, { includes });
   if (!fs.existsSync(config.paths.video) || !fs.existsSync(frameFile(config.paths.frames, config.totalFrames - 1))) {
-    throw new Error('Video dan frame belum ada. Jalankan "npm run render" dulu.');
+    throw new Error(`Video dan frame belum ada. Jalankan "npm run render -- --project ${config.id}" dulu.`);
   }
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'pixel-negative-'));
   const expect = { width: config.outputWidth, height: config.outputHeight, fps: config.fps, frames: config.totalFrames, pixelFormat: config.encoding.pixelFormat };
+  const limits = config.validationLimits;
   const fast = { preset: 'ultrafast' };
+  const frame1 = 1 / config.fps;
+  const scenes = config.timeline.scenes;
+  const transitions = config.timeline.transitions;
+  const composed = scenes.some((s) => config.engine.builtinScenes.includes(s.module));
   const results = [];
 
-  // Pengujian lulus bila SEMUA pemeriksaan bernomor `ids` gagal (artinya kesalahan terdeteksi).
+  // Pengujian lulus bila SEMUA pemeriksaan `ids` gagal (artinya kesalahan terdeteksi).
   const expectFail = (checks, ids) => {
     const hit = ids.map((id) => checks.find((c) => c.id === id || c.id.startsWith(`${id}:`)));
     const detected = hit.every((c) => c && !c.pass);
     return { detected, detail: hit.map((c, i) => (c ? `${c.name}: ${c.pass ? 'LOLOS (tidak terdeteksi)' : 'GAGAL'}, ${c.detail}` : `${ids[i]}: tidak dijalankan`)).join(' | ') };
   };
+  // Kesalahan konfigurasi harus ditolak DENGAN pesan yang tepat, bukan sekadar gagal karena hal lain.
+  const expectIssue = (cfg, pattern) => {
+    const ok = C.timelineChecks(cfg)[0].pass;
+    const hit = cfg.timelineIssues.find((i) => pattern.test(i));
+    return { detected: !ok && Boolean(hit), detail: hit || `tidak ada pesan yang cocok dengan ${pattern}; masalah: ${cfg.timelineIssues.slice(0, 3).join(' | ') || '-'}` };
+  };
   const test = async (name, fn) => {
     process.stdout.write(`- ${name} ... `);
     try {
       const r = await fn();
+      if (r.skipped) {
+        console.log(`DILEWATI (${r.skipped})`);
+        return;
+      }
       results.push({ name, ...r });
       console.log(r.detected ? 'TERDETEKSI' : 'TIDAK TERDETEKSI');
     } catch (error) {
@@ -44,40 +71,159 @@ async function main() {
   const variant = (mutate) => {
     const r = clone(raw);
     mutate(r);
-    return buildConfig(r, file, { strict: false });
+    return buildConfig(r, file, { strict: false, includes });
   };
   const copyFrames = (dir, skip = []) => {
     fs.mkdirSync(dir, { recursive: true });
     for (let i = 0; i < config.totalFrames; i++) if (!skip.includes(i)) fs.copyFileSync(frameFile(config.paths.frames, i), frameFile(dir, i));
   };
+  const cli = (...argv) => spawnSync(NODE, [path.join(config.paths.root, 'src', 'render', 'render.cjs'), ...argv], { encoding: 'utf8' });
 
   try {
-    console.log('Pengujian negatif (hasil salah harus ditolak validator):\n');
+    console.log(`Pengujian negatif proyek "${config.title}" (${config.id}), hasil salah harus ditolak validator:\n`);
 
-    await test('Timeline berlubang: adegan 2 mulai 1 frame terlambat', () => expectFail(C.timelineChecks(variant((r) => {
-      r.timeline.scenes[1].startFrame += 1;
-      r.timeline.scenes[1].durationFrames -= 1;
-    })), ['timeline']));
+    // ---------- konfigurasi dan timeline ----------
+    await test('Celah di timeline: adegan 2 mulai 1 frame terlambat', () => expectIssue(variant((r) => {
+      r.timeline.scenes[1].start += frame1;
+    }), /celah/));
 
-    await test('Timeline tumpang tindih: adegan 3 mulai di frame 290', () => expectFail(C.timelineChecks(variant((r) => {
-      r.timeline.scenes[2].startFrame = 290;
-      r.timeline.scenes[2].durationFrames = 160;
-    })), ['timeline']));
+    await test('Tumpang tindih: adegan 2 mulai 1 frame lebih awal', () => expectIssue(variant((r) => {
+      r.timeline.scenes[1].start -= frame1;
+    }), /tumpang tindih/));
 
-    await test('Durasi adegan tidak cocok dengan rentang frame', () => expectFail(C.timelineChecks(variant((r) => {
-      r.timeline.scenes[0].durationFrames = 151;
-    })), ['timeline']));
+    await test('Durasi adegan tidak valid (akhir = awal)', () => expectIssue(variant((r) => {
+      r.timeline.scenes[0].end = r.timeline.scenes[0].start;
+    }), /durasi tidak valid/));
 
-    await test('Transisi tidak melewati batas adegan', () => expectFail(C.timelineChecks(variant((r) => {
-      r.timeline.scenes[0].transitionOut.startFrame = 100;
-      r.timeline.scenes[0].transitionOut.endFrame = 140;
-    })), ['timeline']));
+    await test('Durasi yang tidak menjadi frame bulat (0,01 detik)', () => expectIssue(variant((r) => {
+      r.timeline.scenes[0].end += 0.01;
+    }), /tidak menjadi frame bulat/));
 
-    await test('Nama efek salah ketik di timeline', () => expectFail(C.timelineChecks(variant((r) => {
-      r.timeline.scenes[1].environment.effects.push('hujan-deras-salah-ketik');
-    })), ['timeline']));
+    await test('ID adegan ganda', () => expectIssue(variant((r) => {
+      r.timeline.scenes[1].id = r.timeline.scenes[0].id;
+    }), /id adegan ganda/));
 
-    await test('Video kurang 1 frame (449 frame)', () => {
+    await test('Adegan terakhir tidak menutup akhir film', () => expectIssue(variant((r) => {
+      r.timeline.scenes[r.timeline.scenes.length - 1].end -= frame1;
+    }), /berakhir tepat di akhir film/));
+
+    await test('Transisi tidak melewati batas adegan', () => {
+      const i = scenes.findIndex((s) => s.transitionOut);
+      if (i < 0) return { skipped: 'proyek tanpa transisi' };
+      return expectIssue(variant((r) => {
+        r.timeline.scenes[i].transitionOut.start = scenes[i].startFrame / config.fps;
+      }), /harus melewati batas adegan/);
+    });
+
+    await test('Jenis transisi tidak dikenal', () => {
+      if (scenes.length < 2) return { skipped: 'proyek satu adegan' };
+      return expectIssue(variant((r) => {
+        r.timeline.scenes[0].transitionOut = { type: 'wipe-hantu', start: (scenes[1].startFrame - 4) / config.fps, duration: 8 / config.fps };
+      }), /jenis "wipe-hantu" tidak dikenal/);
+    });
+
+    await test('ID aset tidak dikenal', () => {
+      if (!raw.timeline) return { skipped: 'konfigurasi lama tanpa timeline' };
+      return expectIssue(variant((r) => {
+        const s = r.timeline.scenes[0];
+        if (composed) s.entities = [...(s.entities || []), { id: 'hantu', asset: 'aset-hantu', layer: r.stages[s.stage].layers[0].id }];
+        else s.assets.push('aset-hantu');
+      }), /aset "aset-hantu" tidak/);
+    });
+
+    await test('Track kamera tidak dikenal', () => {
+      if (!raw.timeline) return { skipped: 'konfigurasi lama tanpa timeline' };
+      return expectIssue(variant((r) => {
+        r.timeline.scenes[0].camera = { ...(r.timeline.scenes[0].camera || {}), track: 'track-hantu' };
+      }), /track kamera "track-hantu" tidak ditemukan/);
+    });
+
+    await test('Keyframe tidak valid (frame mundur)', () => {
+      if (!raw.timeline) return { skipped: 'konfigurasi lama tanpa timeline' };
+      return expectIssue(variant((r) => {
+        r.environment = { ...(r.environment || {}), uji: [[20, 0], [10, 1]] };
+      }), /frame harus berurutan naik/);
+    });
+
+    await test('Keyframe dengan easing tidak dikenal', () => {
+      if (!raw.timeline) return { skipped: 'konfigurasi lama tanpa timeline' };
+      return expectIssue(variant((r) => {
+        r.environment = { ...(r.environment || {}), uji: [[0, 0], [10, 1, 'memantul-hantu']] };
+      }), /easing "memantul-hantu" tidak dikenal/);
+    });
+
+    await test('Parameter entitas/aset tidak valid', () => {
+      if (!raw.timeline) return { skipped: 'konfigurasi lama tanpa timeline' };
+      if (composed) {
+        const id = Object.keys(raw.cast || {})[0];
+        if (!id) return { skipped: 'tidak ada pemeran' };
+        return expectIssue(variant((r) => {
+          r.cast[id].params = { ...(r.cast[id].params || {}), parameterHantu: 1 };
+        }), /parameter "parameterHantu" tidak dikenal/);
+      }
+      const key = Object.keys(raw.assets || {})[0];
+      return expectIssue(variant((r) => {
+        r.assets[key].warnaHantu = '#123456';
+      }), /parameter "warnaHantu" tidak dikenal/);
+    });
+
+    await test('Nilai parameter di luar batas', () => {
+      if (composed) {
+        const id = Object.keys(raw.cast || {}).find((k) => raw.assets[raw.cast[k].asset]?.type === 'rig-character');
+        if (!id) return { skipped: 'tidak ada karakter rig' };
+        return expectIssue(variant((r) => {
+          r.cast[id].paramTracks = { ...(r.cast[id].paramTracks || {}), headTurn: [[0, 0], [10, 5]] };
+        }), /nilai 5 di luar batas/);
+      }
+      const key = Object.keys(raw.assets || {}).find((k) => raw.assets[k].type === 'steam-train');
+      if (!key) return { skipped: 'tidak ada aset dengan parameter berbatas' };
+      return expectIssue(variant((r) => {
+        r.assets[key].railY = -5;
+      }), /lebih kecil dari batas 0/);
+    });
+
+    await test('Skala entitas bukan bilangan bulat (grid piksel rusak)', () => {
+      if (!composed) return { skipped: 'proyek tanpa adegan tersusun' };
+      const id = Object.keys(raw.cast || {})[0];
+      return expectIssue(variant((r) => {
+        r.cast[id].scale = 1.5;
+      }), /scale harus bilangan bulat/);
+    });
+
+    await test('Zoom kamera tanpa mode upscale "browser" (piksel jadi tidak tajam)', () => {
+      if (!raw.timeline) return { skipped: 'konfigurasi lama tanpa timeline' };
+      return expectIssue(variant((r) => {
+        if (r.rendering?.upscale === 'browser') r.rendering.upscale = 'ffmpeg';
+        else {
+          const key = Object.keys(r.cameraTracks || {})[0];
+          if (key) r.cameraTracks[key].zoom = [[0, 1], [10, 2]];
+          else r.timeline.scenes[0].camera = { type: 'keys', zoom: [[0, 1], [10, 2]] };
+        }
+      }), /zoom kamera hanya didukung/);
+    });
+
+    await test('Nama efek salah ketik', () => {
+      if (!raw.timeline) return { skipped: 'konfigurasi lama tanpa timeline' };
+      return expectIssue(variant((r) => {
+        const s = r.timeline.scenes[r.timeline.scenes.length > 1 ? 1 : 0];
+        s.environment = { ...(s.environment || {}), effects: [...(s.environment?.effects || []), 'hujan-deras-salah-ketik'] };
+      }), /efek "hujan-deras-salah-ketik" tidak dikenal/);
+    });
+
+    await test('Proyek yang tidak ada', () => {
+      const r = cli('--project', 'proyek-hantu');
+      const detected = r.status !== 0 && /tidak ditemukan/.test(r.stderr) && r.stderr.includes(config.id);
+      return { detected, detail: `exit ${r.status}: ${r.stderr.trim().split('\n').slice(0, 2).join(' / ')}` };
+    });
+
+    await test('Adegan yang tidak ada', () => {
+      const r = cli('--project', config.id, '--scene', 'adegan-hantu');
+      const detected = r.status !== 0 && /tidak ada di proyek/.test(r.stderr) && r.stderr.includes(scenes[0].id);
+      return { detected, detail: `exit ${r.status}: ${r.stderr.trim().split('\n').slice(0, 2).join(' / ')}` };
+    });
+
+    // ---------- video ----------
+    await test(`Video kurang 1 frame (${config.totalFrames - 1} frame)`, () => {
       const video = path.join(temp, 'kurang-frame.mp4');
       encodeVideo(config, { framesDir: config.paths.frames, count: config.totalFrames - 1, video, overrides: fast });
       return expectFail(C.videoChecks(video, expect), ['frame-count', 'duration']);
@@ -101,44 +247,100 @@ async function main() {
       return expectFail(C.videoChecks(video, expect), ['playable', 'pixel-format']);
     });
 
-    await test('Frame hitam disisipkan di frame 200', () => {
+    const middle = Math.floor(config.totalFrames * 0.45);
+    await test(`Frame hitam disisipkan di frame ${middle}`, () => {
       const dir = path.join(temp, 'frame-hitam');
       copyFrames(dir);
-      run(FFMPEG, ['-v', 'error', '-y', '-f', 'lavfi', '-i', `color=c=black:s=${config.width}x${config.height}`, '-frames:v', '1', frameFile(dir, 200)]);
+      run(FFMPEG, ['-v', 'error', '-y', '-f', 'lavfi', '-i', `color=c=black:s=${config.frameSize.width}x${config.frameSize.height}`, '-frames:v', '1', frameFile(dir, middle)]);
       const video = path.join(temp, 'frame-hitam.mp4');
       encodeVideo(config, { framesDir: dir, count: config.totalFrames, video, overrides: fast });
       const stats = C.lumaStats(video);
-      return expectFail([...C.frameChecks(stats, C.frameHashes(video), config.totalFrames), ...C.transitionLumaChecks(stats, config.timeline.transitions)], ['blank', 'no-flash']);
+      return expectFail([...C.frameChecks(stats, C.frameHashes(video), config.totalFrames, limits), ...C.transitionLumaChecks(stats, transitions, 0, limits)], ['blank', 'no-flash']);
     });
 
-    await test('Frame 123 hilang dari folder frame', () => {
+    await test('Film berakhir di layar hitam', () => {
+      const dir = path.join(temp, 'akhir-hitam');
+      copyFrames(dir);
+      run(FFMPEG, ['-v', 'error', '-y', '-f', 'lavfi', '-i', `color=c=black:s=${config.frameSize.width}x${config.frameSize.height}`, '-frames:v', '1', frameFile(dir, config.totalFrames - 1)]);
+      const video = path.join(temp, 'akhir-hitam.mp4');
+      encodeVideo(config, { framesDir: dir, count: config.totalFrames, video, overrides: fast });
+      return expectFail(C.frameChecks(C.lumaStats(video), C.frameHashes(video), config.totalFrames, limits), ['end-frame']);
+    });
+
+    await test(`Frame ${middle} hilang dari folder frame`, () => {
       const dir = path.join(temp, 'frame-hilang');
-      copyFrames(dir, [123]);
-      return expectFail(C.pngChecks(dir, config.totalFrames, config.width, config.height).checks, ['png-frames']);
+      copyFrames(dir, [middle]);
+      return expectFail(C.pngChecks(dir, config.totalFrames, config.frameSize.width, config.frameSize.height).checks, ['png-frames']);
     });
 
+    // ---------- hasil render lama ----------
+    await test('Render gagal, tetapi MP4 lama masih ada', async () => {
+      const sandbox = makeSandbox('pixel-render-gagal-');
+      try {
+        sandbox.copyOutputs(config, M.manifestFile(config));
+        // rusak mesin di salinan: frame 5 melempar error
+        const runtime = path.join(sandbox.dir, 'src', 'engine', 'runtime.js');
+        const code = fs.readFileSync(runtime, 'utf8').replace('function renderFrame(frame) {', "function renderFrame(frame) {\n  if (frame === 5) throw new Error('Render sengaja digagalkan (uji negatif)');");
+        fs.writeFileSync(runtime, code);
+        const r = spawnSync(NODE, [path.join(sandbox.dir, 'src', 'render', 'render.cjs'), '--project', config.id], { encoding: 'utf8' });
+        const SC = sandbox.require('src/render/checks.cjs');
+        const SM = sandbox.require('src/render/manifest.cjs');
+        const sconfig = sandbox.require('src/render/projects.cjs').loadProject(config.id);
+        const oldVideoLooksFine = SC.videoChecks(sconfig.paths.video, expect).every((c) => c.pass);
+        const checks = SC.manifestChecks(sconfig, SM.readManifest(SM.manifestFile(sconfig)));
+        const verdict = expectFail(checks, ['manifest:status']);
+        return {
+          detected: r.status !== 0 && oldVideoLooksFine && verdict.detected,
+          detail: `render exit ${r.status}, MP4 lama ${oldVideoLooksFine ? 'masih ada dan terlihat sah' : 'tidak ada'}, ${verdict.detail}`
+        };
+      } finally {
+        sandbox.cleanup();
+      }
+    });
+
+    await test('MP4 diganti tanpa render ulang', () => {
+      const video = path.join(temp, 'kurang-frame.mp4');
+      const manifest = M.readManifest(M.manifestFile(config));
+      return expectFail(C.manifestChecks(config, manifest, { video }), ['manifest:fresh']);
+    });
+
+    await test('Konfigurasi diubah setelah render (MP4 kedaluwarsa)', () => {
+      const manifest = { ...M.readManifest(M.manifestFile(config)), inputsHash: 'konfigurasi-lama' };
+      return expectFail(C.manifestChecks(config, manifest), ['manifest:fresh']);
+    });
+
+    // ---------- transisi dan aset ----------
     await test('Pergantian adegan dengan potongan kasar (hard cut)', async () => {
+      const t = transitions.find((x) => x.type !== 'cut');
+      if (!t) return { skipped: 'proyek tanpa transisi bertahap' };
       const cut = variant((r) => {
         for (const s of r.timeline.scenes) if (s.transitionOut) s.transitionOut = { ...s.transitionOut, type: 'cut', params: {} };
+        // Adegan tersusun bisa saja berakhir dengan framing yang sama persis dengan adegan berikutnya
+        // (seperti push-in Project B), sehingga potongan langsung nyaris tidak terlihat. Supaya ujinya berupa
+        // potongan kasar sungguhan, adegan tujuan dibuka dengan framing yang jauh berbeda.
+        const next = r.timeline.scenes.find((s) => s.id === t.to);
+        if (config.engine.builtinScenes.includes(next.module)) next.camera = { type: 'keys', x: [[0, 640]] };
       });
-      const first = 135;
-      const count = 31;
+      const first = t.startFrame - 3;
+      const count = t.durationFrames + 6;
       const dir = path.join(temp, 'hard-cut');
       await renderFrames(cut, { first, count, framesDir: dir });
       const video = path.join(temp, 'hard-cut.mp4');
       encodeVideo(cut, { framesDir: dir, count, video, overrides: fast });
-      const bad = expectFail(C.transitionLumaChecks(C.lumaStats(video), cut.timeline.transitions, first), ['no-hard-cut']);
-      // kontrol: frame yang sama dengan transisi portal asli harus lolos
-      const control = C.transitionLumaChecks(C.lumaStats(config.paths.video).slice(first, first + count), config.timeline.transitions, first);
+      const bad = expectFail(C.transitionLumaChecks(C.lumaStats(video), cut.timeline.transitions, first, limits), ['no-hard-cut']);
+      // kontrol: frame yang sama dengan transisi asli harus lolos
+      const control = C.transitionLumaChecks(C.lumaStats(config.paths.video).slice(first, first + count), transitions, first, limits);
       const controlPass = control.every((c) => c.pass);
-      return { detected: bad.detected && controlPass, detail: `${bad.detail} | kontrol transisi portal: ${controlPass ? 'lolos' : 'gagal'}` };
+      return { detected: bad.detected && controlPass, detail: `${bad.detail} | kontrol transisi ${t.type}: ${controlPass ? 'lolos' : 'gagal'}` };
     });
 
     await test('Portal terlalu kecil sehingga gambar melompat di akhir transisi', async () => {
-      const small = variant((r) => { r.timeline.scenes[0].transitionOut.params.zoom = 3; });
-      const t = small.timeline.transitions[0];
+      const i = scenes.findIndex((s) => s.transitionOut?.type === 'portal');
+      if (i < 0) return { skipped: 'proyek tanpa transisi portal' };
+      const small = variant((r) => { r.timeline.scenes[i].transitionOut.params.zoom = 3; });
+      const t = small.timeline.transitions.find((x) => x.from === scenes[i].id);
       const dir = path.join(temp, 'portal-kecil');
-      const info = await renderFrames(small, { first: t.startFrame, count: t.endFrame - t.startFrame + 1, framesDir: dir });
+      const info = await renderFrames(small, { first: t.startFrame, count: t.durationFrames, framesDir: dir });
       const studio = await openStudio(small);
       try {
         return expectFail(await B.transitionBoundaryChecks(studio, { ...small, timeline: { ...small.timeline, transitions: [t] } }, info), ['portal']);
@@ -147,30 +349,54 @@ async function main() {
       }
     });
 
-    await test('Kereta dengan desain berbeda dipakai di adegan 3', async () => {
-      const other = variant((r) => {
-        r.assets['train-b'] = { ...clone(r.assets.train), colors: { coach: '#1f5a3a', locoShine: '#7a5a3a' } };
-        r.assets['countryside-b'] = { ...clone(r.assets.countryside), train: 'train-b' };
-        r.timeline.scenes[2].assets = ['countryside-b', 'train-b'];
+    for (const rule of config.validation?.consistency || []) {
+      const label = rule.asset || rule.assetType;
+      await test(`Aset ${label} tampil berbeda di adegan terakhir`, async () => {
+        const last = scenes[scenes.length - 1];
+        let other;
+        if (rule.assetType) {
+          // aset kereta kedua dengan warna lain, dipakai lewat set pemandangan di adegan terakhir
+          const key = Object.keys(raw.assets).find((k) => raw.assets[k].type === rule.assetType);
+          const holder = Object.keys(raw.assets).find((k) => raw.assets[k].train === key);
+          if (!key || !holder) return { skipped: 'struktur aset tidak dikenali' };
+          other = variant((r) => {
+            r.assets[`${key}-b`] = { ...clone(r.assets[key]), colors: { coach: '#1f5a3a', locoShine: '#7a5a3a' } };
+            r.assets[`${holder}-b`] = { ...clone(r.assets[holder]), train: `${key}-b` };
+            const s = r.timeline.scenes[r.timeline.scenes.length - 1];
+            s.assets = s.assets.map((a) => (a === key ? `${key}-b` : a === holder ? `${holder}-b` : a));
+          });
+        } else {
+          // pemeran diganti "kembaran" berbaju lain di adegan terakhir
+          const castId = Object.keys(raw.cast || {}).find((k) => raw.cast[k].asset === rule.asset);
+          if (!castId || !last.cast?.includes(castId)) return { skipped: 'aset tidak dipakai pemeran di adegan terakhir' };
+          other = variant((r) => {
+            r.assets[`${rule.asset}-b`] = { ...clone(r.assets[rule.asset]), shirt: '#3a6a9a', shirtShade: '#2a4a7a', pants: '#8a8a8a', hatColor: '#c03a3a', hair: '#c03a3a' };
+            const s = r.timeline.scenes[r.timeline.scenes.length - 1];
+            s.cast = s.cast.filter((c) => c !== castId);
+            s.entities = [...(s.entities || []), { ...clone(r.cast[castId]), id: `${castId}-kembar`, asset: `${rule.asset}-b` }];
+          });
+        }
+        const studio = await openStudio(other);
+        try {
+          return expectFail(await B.consistencyChecks(studio, other), [`consistency:${label}-colors`]);
+        } finally {
+          await studio.close();
+        }
       });
-      const studio = await openStudio(other);
-      try {
-        return expectFail(await B.trainConsistencyChecks(studio, other, other.validation.trainVisibleFrames), ['train-asset', 'train-colors']);
-      } finally {
-        await studio.close();
-      }
-    });
+    }
 
+    // ---------- kode adegan yang melanggar aturan ----------
     const fixture = (module) => buildConfig({
-      ...clone(raw), name: 'uji', durationSeconds: 1, environment: {}, cameraTracks: {}, assets: {},
-      timeline: { scenes: [{ id: 'uji', name: 'Uji', module, startFrame: 0, endFrame: 29, durationFrames: 30, assets: [], characters: {}, camera: {}, environment: {}, transitionOut: null }] }
+      id: 'uji', name: 'uji', title: 'Uji', seed: raw.seed, width: raw.width, height: raw.height, outputWidth: raw.outputWidth, outputHeight: raw.outputHeight,
+      fps: raw.fps, durationSeconds: 1, assets: {},
+      timeline: { scenes: [{ id: 'uji', name: 'Uji', module, start: 0, end: 1, assets: [], characters: {}, camera: {}, environment: {}, transitionOut: null }] }
     }, file);
 
     await test('Adegan memakai Math.random() (tidak deterministik)', async () => {
       const cfg = fixture('/tests/fixtures/scenes/random-noise');
       const dir = path.join(temp, 'acak');
       await renderFrames(cfg, { framesDir: dir });
-      const hashes = C.pngChecks(dir, cfg.totalFrames, cfg.width, cfg.height).hashes;
+      const hashes = C.pngChecks(dir, cfg.totalFrames, cfg.frameSize.width, cfg.frameSize.height).hashes;
       const studio = await openStudio(cfg);
       try {
         return expectFail(await B.determinismChecks(studio, hashes, {}), ['determinism']);
@@ -197,12 +423,12 @@ async function main() {
   const allDetected = detected === results.length;
   const testedAt = new Date().toISOString();
   fs.mkdirSync(config.paths.reports, { recursive: true });
-  fs.writeFileSync(path.join(config.paths.reports, `${config.name}-negative-tests.json`), JSON.stringify({ testedAt, allDetected, detected, total: results.length, results }, null, 2) + '\n');
+  fs.writeFileSync(path.join(config.paths.reports, `${config.name}-negative-tests.json`), JSON.stringify({ testedAt, project: config.id, allDetected, detected, total: results.length, results }, null, 2) + '\n');
   const rows = results.map((r, i) => `| ${i + 1} | ${r.name} | ${r.detected ? 'TERDETEKSI' : 'TIDAK TERDETEKSI'} | ${r.detail.replace(/\|/g, '/')} |`).join('\n');
   fs.writeFileSync(path.join(config.paths.reports, `${config.name}-negative-tests.md`), `# Pengujian Negatif: ${config.title}
 
 Setiap baris adalah hasil yang SENGAJA dibuat salah. Pengujian lulus bila validator menolaknya (TERDETEKSI).
-Dibuat otomatis oleh \`npm run test:negative\` pada ${testedAt}.
+Dibuat otomatis oleh \`npm run test:negative -- --project ${config.id}\` pada ${testedAt}.
 
 | No | Kesalahan yang disengaja | Hasil | Detail |
 |----|--------------------------|-------|--------|

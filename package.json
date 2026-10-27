@@ -1,21 +1,30 @@
 {
   "name": "pixel-history-studio",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
+  "type": "module",
   "description": "Studio animasi pixel art berbasis kode untuk film sejarah bergaya retro.",
   "scripts": {
     "check": "node src/render/check-env.cjs",
-    "render": "node src/render/render.cjs config/film-night-to-dawn.json",
-    "render:scene": "node src/render/render.cjs config/film-night-to-dawn.json --scene",
-    "validate": "node src/render/validate.cjs config/film-night-to-dawn.json",
-    "test:negative": "node src/render/negative-tests.cjs config/film-night-to-dawn.json",
-    "build": "npm run render && npm run validate",
-    "test": "npm run validate && npm run test:negative",
-    "build:prototype": "node src/render/render.cjs config/train-night-rain.json && node src/render/validate.cjs config/train-night-rain.json",
-    "preview": "node src/render/preview.cjs"
+    "projects": "node src/render/list-projects.cjs",
+    "render": "node src/render/render.cjs",
+    "render:scene": "node src/render/render.cjs",
+    "validate": "node src/render/validate.cjs",
+    "preview": "node src/render/preview.cjs",
+    "build": "node src/render/build.cjs",
+    "build:all": "node src/render/build.cjs --all",
+    "build:prototype": "node src/render/build.cjs --project train-night-rain && node src/render/regression.cjs --project train-night-rain",
+    "lint": "node src/render/lint.cjs",
+    "test": "node src/render/test-all.cjs",
+    "test:engine": "node --test tests/engine/*.test.js",
+    "test:smoke": "node src/render/smoke.cjs",
+    "test:negative": "node src/render/negative-tests.cjs",
+    "test:regression": "node src/render/regression.cjs",
+    "test:projects": "node src/render/project-tests.cjs",
+    "test:ci": "npm run lint && npm run test:engine && npm run test:smoke"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "dependencies": {
     "playwright": "1.63.0"

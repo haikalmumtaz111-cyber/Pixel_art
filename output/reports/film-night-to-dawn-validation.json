@@ -1,9 +1,11 @@
 {
-  "testedAt": "2026-10-27T08:22:51.762Z",
+  "testedAt": "2026-10-27T10:05:38.362Z",
+  "project": "night-to-dawn",
   "config": "config/film-night-to-dawn.json",
+  "includes": [],
   "allPass": true,
-  "passed": 28,
-  "total": 28,
+  "passed": 36,
+  "total": 36,
   "groups": [
     {
       "title": "Jumlah frame tepat",
@@ -34,6 +36,10 @@
       "pass": true
     },
     {
+      "title": "Frame terakhir valid",
+      "pass": true
+    },
+    {
       "title": "Tidak ada error JavaScript",
       "pass": true
     },
@@ -42,7 +48,19 @@
       "pass": true
     },
     {
-      "title": "Aset kereta konsisten",
+      "title": "Aset konsisten antar adegan",
+      "pass": true
+    },
+    {
+      "title": "Adegan bisa dirender terpisah",
+      "pass": true
+    },
+    {
+      "title": "Mesin bersama, modul proyek terisolasi",
+      "pass": true
+    },
+    {
+      "title": "Video berasal dari render terbaru",
       "pass": true
     },
     {
@@ -67,13 +85,25 @@
       "id": "timeline",
       "name": "Interval adegan valid",
       "pass": true,
-      "detail": "3 adegan menutup 450/450 frame tanpa celah: s01-night-train 0-149, s02-inside-train 150-299, s03-journey-to-dawn 300-449"
+      "detail": "3 adegan menutup 450/450 frame tanpa celah: s01-night-train [0, 150), s02-inside-train [150, 300), s03-journey-to-dawn [300, 450)"
     },
     {
       "id": "timeline-transitions",
       "name": "Transisi berada di dalam durasi film",
       "pass": true,
       "detail": "portal 132-167, portal 282-317"
+    },
+    {
+      "id": "manifest:status",
+      "name": "Render terakhir selesai dengan sukses",
+      "pass": true,
+      "detail": "status complete, selesai 2026-10-27T10:00:45.322Z"
+    },
+    {
+      "id": "manifest:fresh",
+      "name": "Video berasal dari render terbaru (bukan sisa render lama)",
+      "pass": true,
+      "detail": "konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest"
     },
     {
       "id": "file",
@@ -160,6 +190,12 @@
       "detail": "450 frame unik, 0 pasang frame berurutan identik"
     },
     {
+      "id": "end-frame",
+      "name": "Frame terakhir valid",
+      "pass": true,
+      "detail": "frame 449: kecerahan rata-rata 71.8, rentang 203"
+    },
+    {
       "id": "no-flash",
       "name": "Tidak ada kilatan cahaya mendadak",
       "pass": true,
@@ -176,6 +212,18 @@
       "name": "Frame PNG lengkap dan berurutan",
       "pass": true,
       "detail": "450/450 file PNG 480x270"
+    },
+    {
+      "id": "engine-modules",
+      "name": "Hanya modul milik proyek ini yang dimuat",
+      "pass": true,
+      "detail": "4 modul: /src/assets/registry.js, /src/scenes/night-train.js, /src/scenes/inside-train.js, /src/scenes/journey-to-dawn.js"
+    },
+    {
+      "id": "engine-isolation",
+      "name": "Tidak ada modul proyek lain yang ikut terunduh",
+      "pass": true,
+      "detail": "28 file JS terunduh (/src/engine/: 15, /src/assets/: 10, /src/scenes/: 3)"
     },
     {
       "id": "boundary:s01-night-train->s02-inside-train",
@@ -202,14 +250,32 @@
       "detail": "layar tertutup penuh mulai frame 307 (transisi berakhir di 317)"
     },
     {
-      "id": "train-asset",
-      "name": "Aset kereta konsisten di semua adegan",
+      "id": "scene:s01-night-train",
+      "name": "Adegan s01-night-train bisa dirender terpisah",
       "pass": true,
-      "detail": "3 adegan memakai 1 definisi kereta (train), 1 bentuk berbeda"
+      "detail": "frame 0, 66, 131 identik dengan film utuh"
     },
     {
-      "id": "train-colors",
-      "name": "Warna identitas kereta sama di tiap adegan luar",
+      "id": "scene:s02-inside-train",
+      "name": "Adegan s02-inside-train bisa dirender terpisah",
+      "pass": true,
+      "detail": "frame 168, 225, 281 identik dengan film utuh"
+    },
+    {
+      "id": "scene:s03-journey-to-dawn",
+      "name": "Adegan s03-journey-to-dawn bisa dirender terpisah",
+      "pass": true,
+      "detail": "frame 318, 384, 449 identik dengan film utuh"
+    },
+    {
+      "id": "consistency:steam-train-asset",
+      "name": "Aset steam-train sama di semua adegan",
+      "pass": true,
+      "detail": "3 adegan memakai 1 definisi (train), 1 bentuk berbeda"
+    },
+    {
+      "id": "consistency:steam-train-colors",
+      "name": "Warna identitas steam-train konsisten",
       "pass": true,
       "detail": "warna #5c1c27, #c9a14e, #5e181e, #4d5474, #a8833a ditemukan persis di frame 60, 445"
     },
@@ -249,28 +315,28 @@
       "name": "scene-s01-night-train",
       "frames": [
         0,
-        50,
-        99,
-        149
+        44,
+        87,
+        131
       ],
       "file": "output/reports/film-night-to-dawn-scene-s01-night-train.png"
     },
     {
       "name": "scene-s02-inside-train",
       "frames": [
-        150,
-        200,
-        249,
-        299
+        168,
+        206,
+        243,
+        281
       ],
       "file": "output/reports/film-night-to-dawn-scene-s02-inside-train.png"
     },
     {
       "name": "scene-s03-journey-to-dawn",
       "frames": [
-        300,
-        350,
-        399,
+        318,
+        362,
+        405,
         449
       ],
       "file": "output/reports/film-night-to-dawn-scene-s03-journey-to-dawn.png"
@@ -304,6 +370,18 @@
       "file": "output/reports/film-night-to-dawn-transition-s02-inside-train-to-s03-journey-to-dawn.png"
     }
   ],
+  "engine": {
+    "name": "Pixel History Studio",
+    "version": "0.3.0",
+    "engineHash": "bc272267a41d3bc9ad92730f3e7ecf42698c3a33457fadc671fc516a524ebb49",
+    "libraryHash": "4378116df3a09f47bdae19eb571a65cac2816c2c0ff9537a0ab968f110f0690c",
+    "modules": [
+      "/src/assets/registry.js",
+      "/src/scenes/night-train.js",
+      "/src/scenes/inside-train.js",
+      "/src/scenes/journey-to-dawn.js"
+    ]
+  },
   "environment": {
     "os": "Linux 6.18.44-fc-v165 (linux/x64)",
     "node": "v22.22.0",
@@ -312,16 +390,40 @@
     "ffprobe": "ffprobe version 6.1.1-3ubuntu5 Copyright (c) 2007-2023 the FFmpeg developers"
   },
   "render": {
+    "project": "night-to-dawn",
     "name": "film-night-to-dawn",
-    "renderedAt": "2026-10-27T08:22:06.251Z",
-    "firstFrame": 0,
-    "totalFrames": 450,
-    "renderSeconds": 10.923,
-    "encodeSeconds": 18.157,
+    "job": {
+      "kind": "film",
+      "first": 0,
+      "count": 450,
+      "scene": null
+    },
+    "configFile": "config/film-night-to-dawn.json",
+    "inputsHash": "16d3ba84345854e642fccfe4f70c9908f64ce2d1026e23a0623592f0606888ff",
+    "engineHash": "bc272267a41d3bc9ad92730f3e7ecf42698c3a33457fadc671fc516a524ebb49",
+    "libraryHash": "4378116df3a09f47bdae19eb571a65cac2816c2c0ff9537a0ab968f110f0690c",
+    "engineVersion": "0.3.0",
+    "status": "complete",
+    "startedAt": "2026-10-27T10:00:15.678Z",
+    "finishedAt": "2026-10-27T10:00:45.322Z",
+    "renderSeconds": 10.27,
+    "encodeSeconds": 19.374,
     "chromiumVersion": "153.0.8010.12",
     "jsErrors": 0,
+    "loadedModules": [
+      "/src/assets/registry.js",
+      "/src/scenes/night-train.js",
+      "/src/scenes/inside-train.js",
+      "/src/scenes/journey-to-dawn.js"
+    ],
+    "frameSize": {
+      "width": 480,
+      "height": 270
+    },
+    "framesHash": "7c43c0ae3600b87538f12571c2782fe83a9d014b9cd0b4a98806a30dc9d2a2ea",
     "video": "output/video/film-night-to-dawn.mp4",
-    "ffmpegCommand": "ffmpeg -y -v error -framerate 30 -start_number 0 -i output/frames/film-night-to-dawn/frame_%04d.png -frames:v 450 -vf scale=1920:1080:flags=neighbor:out_color_matrix=bt709:out_range=tv,format=yuv420p -c:v libx264 -preset slow -crf 16 -tune animation -profile:v high -level:v 4.1 -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv -r 30 -movflags +faststart output/video/film-night-to-dawn.mp4"
+    "videoSha256": "aa188168ec04b5d70307ce7812396ab920c8f6cebb9edf674f7e7d78ab6945f4",
+    "ffmpegCommand": "ffmpeg -y -v error -framerate 30 -start_number 0 -i output/frames/film-night-to-dawn/frame_%04d.png -frames:v 450 -vf scale=1920:1080:flags=neighbor:out_color_matrix=bt709:out_range=tv,format=yuv420p -c:v libx264 -preset slow -crf 16 -tune animation -profile:v high -level:v 4.1 -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv -r 30 -movflags +faststart -f mp4 output/video/film-night-to-dawn.mp4"
   },
   "lumaSummary": [
     [

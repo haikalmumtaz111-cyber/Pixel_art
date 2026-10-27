@@ -1,37 +1,39 @@
-// Mesin film: membaca timeline, membuat adegan, dan menentukan apa yang digambar di setiap frame.
-// Timeline sudah diperiksa dan dirapikan oleh Node (src/render/config.cjs) sebelum sampai di sini.
+// Mesin film: membaca proyek yang sudah diperiksa Node (src/render/projects.cjs),
+// membuat adegan, dan menentukan apa yang digambar di setiap frame.
+// Mesin ini tidak mengenal cerita apa pun: aset dimuat lewat katalog, lingkungan berupa track bebas,
+// dan adegan berupa modul (atau adegan tersusun bawaan "compose").
 // Setiap frame bisa dirender langsung tanpa frame sebelumnya, jadi urutan render bebas.
 import { createLayer } from './pixel.js';
-import { createTrack } from './tracks.js';
 import { TRANSITIONS } from './transitions.js';
-import { createAssetRegistry } from '../assets/registry.js';
+import { createAssetRegistry } from './registry.js';
+import { createEnvironment } from './environment.js';
+import { createSchedule } from './schedule.js';
+import { createComposedScene } from './composer.js';
+import { createPresenter } from './presenter.js';
 
-// Nilai lingkungan bawaan bila track tidak ditulis di timeline.
-const ENV_DEFAULTS = { dawn: 0, rain: 1, fog: 0, clouds: 0, lights: 1, sun: 0 };
+// Adegan bawaan mesin yang bisa dipakai proyek mana pun tanpa menulis kode.
+const BUILTIN_SCENES = { compose: { createScene: createComposedScene } };
 
-export function createEnvironment(definition = {}, fps = 30) {
-  const tracks = {};
-  for (const [key, fallback] of Object.entries(ENV_DEFAULTS)) tracks[key] = createTrack(definition[key], fallback);
-  const rainAt = (time) => tracks.rain(time * fps);
-  return {
-    at(frame) {
-      const env = { rainAt };
-      for (const key of Object.keys(tracks)) env[key] = tracks[key](frame);
-      return env;
-    }
-  };
-}
-
-const sceneUrl = (module) => (module.startsWith('/') ? `${module}.js` : `../scenes/${module}.js`);
+// Lokasi modul adegan: nama biasa dicari di src/scenes, path diawali "/" dihitung dari akar proyek.
+const sceneUrl = (module) => (module.startsWith('/') ? (module.endsWith('.js') ? module : `${module}.js`) : `/src/scenes/${module}.js`);
 
 export async function createFilm(config) {
-  const { width, height, fps, timeline } = config;
-  const assets = createAssetRegistry(config);
+  const { fps, timeline } = config;
+  const assets = await createAssetRegistry(config);
   const environment = createEnvironment(config.environment, fps);
+  const schedule = createSchedule(timeline);
+  const presenter = createPresenter(config);
+  const width = presenter.frameWidth;
+  const height = presenter.frameHeight;
 
   const scenes = {};
+  const sceneModules = [];
   for (const entry of timeline.scenes) {
-    const module = await import(sceneUrl(entry.module));
+    let module = BUILTIN_SCENES[entry.module];
+    if (!module) {
+      sceneModules.push(sceneUrl(entry.module));
+      module = await import(sceneUrl(entry.module));
+    }
     scenes[entry.id] = { entry, impl: module.createScene({ film: config, scene: entry, assets, environment }) };
   }
   for (const transition of timeline.transitions) {
@@ -58,34 +60,30 @@ export async function createFilm(config) {
     const scene = scenes[id];
     ctx.save();
     try {
-      return scene.impl.render(ctx, shotFor(scene.entry, frame, extra)) || {};
+      return presenter.draw(ctx, (target) => scene.impl.render(target, shotFor(scene.entry, frame, extra)) || {}) || {};
     } finally {
       ctx.restore();
     }
   }
 
-  function segmentAt(frame) {
-    const transition = timeline.transitions.find((t) => frame >= t.startFrame && frame <= t.endFrame);
-    if (transition) return { kind: 'transition', transition, p: (frame - transition.startFrame) / (transition.endFrame - transition.startFrame) };
-    const entry = timeline.scenes.find((s) => frame >= s.startFrame && frame <= s.endFrame);
-    if (!entry) throw new Error(`Frame ${frame} tidak berada di adegan mana pun.`);
-    return { kind: 'scene', id: entry.id };
-  }
-
   function render(ctx, frame) {
-    const segment = segmentAt(frame);
+    const segment = schedule.segmentAt(frame);
     if (segment.kind === 'scene') {
       drawScene(segment.id, ctx, frame);
       return { segment: segment.id };
     }
     const t = segment.transition;
     const result = TRANSITIONS[t.type].render({
-      ctx, frame, p: segment.p, transition: t, params: t.params || {}, buffers, width, height,
+      ctx, frame, p: segment.p, transition: t, params: t.params || {}, buffers, width, height, cell: presenter.cell,
       drawFrom: (target, extra) => drawScene(t.from, target, frame, extra),
       drawTo: (target, extra) => drawScene(t.to, target, frame, extra)
     });
     return { segment: t.id, ...result };
   }
 
-  return { config, scenes, assets, environment, segmentAt, render, drawScene };
+  return {
+    config, scenes, assets, environment, presenter, frameWidth: width, frameHeight: height,
+    segmentAt: schedule.segmentAt, render, drawScene,
+    loadedModules: () => [...assets.loadedModules(), ...sceneModules]
+  };
 }
