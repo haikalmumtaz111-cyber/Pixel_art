@@ -1,7 +1,7 @@
 {
   "kind": "engine",
   "name": "Pixel History Studio",
-  "engineVersion": "0.3.0",
+  "engineVersion": "0.4.0",
   "assetCatalogs": ["src/assets/catalog.json"],
   "projectsDir": "config",
   "builtinScenes": ["compose"],
@@ -11,6 +11,8 @@
   "anchors": ["top-left", "top-center", "top-right", "center-left", "center", "center-right", "bottom-left", "bottom-center", "bottom-right"],
   "rendering": {
     "upscale": "ffmpeg",
+    "zoomModes": ["anchored", "steps", "nearest"],
+    "zoomMode": "anchored",
     "maxZoom": 4,
     "maxEntityScale": 4,
     "encoding": {

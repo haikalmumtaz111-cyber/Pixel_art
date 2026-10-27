@@ -2,13 +2,13 @@
 
 Laporan ini dibuat otomatis oleh `npm run validate`.
 
-- Waktu uji: 2026-10-27T10:49:25.852Z
+- Waktu uji: 2026-10-27T12:23:06.148Z
 - Proyek: `old-town-morning`
 - Konfigurasi: `config/old-town-morning.json` (+ 7 file $include)
-- Mesin: Pixel History Studio 0.3.0, sidik jari mesin `bc272267a41d3bc9`, pustaka aset `4378116df3a09f47`
+- Mesin: Pixel History Studio 0.4.0, sidik jari mesin `7f37881be8af508c`, pustaka aset `2925f4ab08ab5d4f`
 - Video: `output/video/old-town-morning.mp4`
 - Spesifikasi: 480x270 internal, 1920x1080 output (upscale browser), 30 FPS, 12 detik, 360 frame, seed 1958
-- Lama render frame: 15.0 detik, lama encoding: 19.1 detik
+- Lama render frame: 25.0 detik, lama encoding: 18.1 detik
 
 ## Ringkasan kebutuhan
 
@@ -24,16 +24,17 @@ Laporan ini dibuat otomatis oleh `npm run validate`.
 | 8 | Frame terakhir valid | LULUS |
 | 9 | Tidak ada error JavaScript | LULUS |
 | 10 | Transisi tanpa artefak | LULUS |
-| 11 | Aset konsisten antar adegan | LULUS |
-| 12 | Adegan bisa dirender terpisah | LULUS |
-| 13 | Mesin bersama, modul proyek terisolasi | LULUS |
-| 14 | Video berasal dari render terbaru | LULUS |
-| 15 | Rendering deterministik | LULUS |
-| 16 | FFmpeg membaca seluruh video | LULUS |
-| 17 | Video dapat diputar | LULUS |
-| 18 | Render ulang konsisten | LULUS |
+| 11 | Grid piksel kamera stabil (tanpa crawl) | LULUS |
+| 12 | Aset konsisten antar adegan | LULUS |
+| 13 | Adegan bisa dirender terpisah | LULUS |
+| 14 | Mesin bersama, modul proyek terisolasi | LULUS |
+| 15 | Video berasal dari render terbaru | LULUS |
+| 16 | Rendering deterministik | LULUS |
+| 17 | FFmpeg membaca seluruh video | LULUS |
+| 18 | Video dapat diputar | LULUS |
+| 19 | Render ulang konsisten | LULUS |
 
-Status akhir: **SEMUA LULUS** (33/33 pemeriksaan)
+Status akhir: **SEMUA LULUS** (34/34 pemeriksaan)
 
 ## Timeline
 
@@ -53,9 +54,9 @@ Status akhir: **SEMUA LULUS** (33/33 pemeriksaan)
 |----|-------------|-------|--------|
 | 1 | Interval adegan valid | LULUS | 3 adegan menutup 360/360 frame tanpa celah: s01-old-town-morning [0, 120), s02-morning-walk [120, 240), s03-town-awakens [240, 360) |
 | 2 | Transisi berada di dalam durasi film | LULUS | dissolve 108-131 |
-| 3 | Render terakhir selesai dengan sukses | LULUS | status complete, selesai 2026-10-27T10:46:15.603Z |
+| 3 | Render terakhir selesai dengan sukses | LULUS | status complete, selesai 2026-10-27T12:11:15.647Z |
 | 4 | Video berasal dari render terbaru (bukan sisa render lama) | LULUS | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest |
-| 5 | File MP4 ada | LULUS | old-town-morning.mp4 (7.09 MB) |
+| 5 | File MP4 ada | LULUS | old-town-morning.mp4 (6.70 MB) |
 | 6 | Kontainer MP4 | LULUS | mov,mp4,m4a,3gp,3g2,mj2 |
 | 7 | Codec video H.264 | LULUS | h264 (High) |
 | 8 | Resolusi output | LULUS | 1920x1080 |
@@ -69,21 +70,22 @@ Status akhir: **SEMUA LULUS** (33/33 pemeriksaan)
 | 16 | Tidak ada frame yang hilang saat decode | LULUS | 360 frame ter-decode, 360 frame terukur |
 | 17 | Tidak ada frame kosong | LULUS | kecerahan rata-rata terendah 141.2, rentang terendah 188 |
 | 18 | Animasi bergerak (bukan gambar statis) | LULUS | 360 frame unik, 0 pasang frame berurutan identik |
-| 19 | Frame terakhir valid | LULUS | frame 359: kecerahan rata-rata 145.2, rentang 208 |
+| 19 | Frame terakhir valid | LULUS | frame 359: kecerahan rata-rata 145.2, rentang 210 |
 | 20 | Tidak ada kilatan cahaya mendadak | LULUS | perubahan kecerahan terbesar antar frame 0.6 (batas 8) |
 | 21 | Tidak ada potongan kasar (hard cut) | LULUS | semua pergantian gambar berlangsung bertahap |
-| 22 | Frame PNG lengkap dan berurutan | LULUS | 360/360 file PNG 1920x1080 |
-| 23 | Hanya modul milik proyek ini yang dimuat | LULUS | 7 modul: /src/assets/common/environment.js, /src/assets/town/buildings.js, /src/assets/town/vegetation.js, /src/assets/town/props.js, /src/assets/town/street.js, /src/assets/town/vehicles.js, /src/assets/characters/rig.js |
-| 24 | Tidak ada modul proyek lain yang ikut terunduh | LULUS | 24 file JS terunduh (/src/engine/: 15, /src/assets/: 9, /src/scenes/: 0) |
-| 25 | Transisi s01-old-town-morning->s02-morning-walk menyambung tanpa lompatan | LULUS | frame 108 sama dengan s01-old-town-morning, frame 131 sama dengan s02-morning-walk |
-| 26 | Adegan s01-old-town-morning bisa dirender terpisah | LULUS | frame 0, 54, 107 identik dengan film utuh |
-| 27 | Adegan s02-morning-walk bisa dirender terpisah | LULUS | frame 132, 186, 239 identik dengan film utuh |
-| 28 | Adegan s03-town-awakens bisa dirender terpisah | LULUS | frame 240, 300, 359 identik dengan film utuh |
-| 29 | Aset pak-darto dipakai bersama oleh adegan-adegannya | LULUS | satu definisi aset "pak-darto" dipakai adegan s02-morning-walk, s03-town-awakens |
-| 30 | Warna identitas pak-darto konsisten | LULUS | warna #ece6d6, #5a4a3a, #1c1a1e ditemukan persis di frame 160, 330 |
-| 31 | Rendering deterministik (render ulang identik, urutan terbalik) | LULUS | 360/360 frame identik byte demi byte, 3/3 frame identik saat dirender dua kali |
-| 32 | Tidak ada error JavaScript selama rendering | LULUS | 0 error saat render, 0 error saat pengujian |
-| 33 | Encode ulang menghasilkan MP4 identik | LULUS | SHA-256 sama: 761c76b535b5f092... |
+| 22 | Grid piksel stabil saat kamera bergerak dan zoom (tidak merayap) | LULUS | mode zoom "anchored", 123 frame zoom pecahan, 0 perubahan ukuran saat zoom tetap (crawl), 0 bolak-balik dari 1048799 perbandingan kolom/baris dunia |
+| 23 | Frame PNG lengkap dan berurutan | LULUS | 360/360 file PNG 1920x1080 |
+| 24 | Hanya modul milik proyek ini yang dimuat | LULUS | 7 modul: /src/assets/common/environment.js, /src/assets/town/buildings.js, /src/assets/town/vegetation.js, /src/assets/town/props.js, /src/assets/town/street.js, /src/assets/town/vehicles.js, /src/assets/characters/rig.js |
+| 25 | Tidak ada modul proyek lain yang ikut terunduh | LULUS | 25 file JS terunduh (/src/engine/: 16, /src/assets/: 9, /src/scenes/: 0) |
+| 26 | Transisi s01-old-town-morning->s02-morning-walk menyambung tanpa lompatan | LULUS | frame 108 sama dengan s01-old-town-morning, frame 131 sama dengan s02-morning-walk |
+| 27 | Adegan s01-old-town-morning bisa dirender terpisah | LULUS | frame 0, 54, 107 identik dengan film utuh |
+| 28 | Adegan s02-morning-walk bisa dirender terpisah | LULUS | frame 132, 186, 239 identik dengan film utuh |
+| 29 | Adegan s03-town-awakens bisa dirender terpisah | LULUS | frame 240, 300, 359 identik dengan film utuh |
+| 30 | Aset pak-darto dipakai bersama oleh adegan-adegannya | LULUS | satu definisi aset "pak-darto" dipakai adegan s02-morning-walk, s03-town-awakens |
+| 31 | Warna identitas pak-darto konsisten | LULUS | warna #ece6d6, #5a4a3a, #1c1a1e ditemukan persis di frame 160, 330 |
+| 32 | Rendering deterministik (render ulang identik, urutan terbalik) | LULUS | 360/360 frame identik byte demi byte, 3/3 frame identik saat dirender dua kali |
+| 33 | Tidak ada error JavaScript selama rendering | LULUS | 0 error saat render, 0 error saat pengujian |
+| 34 | Encode ulang menghasilkan MP4 identik | LULUS | SHA-256 sama: 756f7d874738ddb1... |
 
 ## Lembar kontak (preview)
 

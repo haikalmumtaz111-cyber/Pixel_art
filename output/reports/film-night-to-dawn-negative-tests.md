@@ -1,7 +1,7 @@
 # Pengujian Negatif: Kereta Malam Menuju Fajar
 
 Setiap baris adalah hasil yang SENGAJA dibuat salah. Pengujian lulus bila validator menolaknya (TERDETEKSI).
-Dibuat otomatis oleh `npm run test:negative -- --project night-to-dawn` pada 2026-10-27T10:50:57.765Z.
+Dibuat otomatis oleh `npm run test:negative -- --project night-to-dawn` pada 2026-10-27T12:24:37.356Z.
 
 | No | Kesalahan yang disengaja | Hasil | Detail |
 |----|--------------------------|-------|--------|
@@ -20,23 +20,25 @@ Dibuat otomatis oleh `npm run test:negative -- --project night-to-dawn` pada 202
 | 13 | Parameter entitas/aset tidak valid | TERDETEKSI | Aset "traveler": parameter "warnaHantu" tidak dikenal |
 | 14 | Nilai parameter di luar batas | TERDETEKSI | Aset "train".railY: nilai -5 lebih kecil dari batas 0 |
 | 15 | Zoom kamera tanpa mode upscale "browser" (piksel jadi tidak tajam) | TERDETEKSI | Track kamera "dawn-run": zoom kamera hanya didukung bila rendering.upscale = "browser" (agar piksel tetap tajam) |
-| 16 | Nama efek salah ketik | TERDETEKSI | Adegan 2 (s02-inside-train): efek "hujan-deras-salah-ketik" tidak dikenal |
-| 17 | Proyek yang tidak ada | TERDETEKSI | exit 1: RENDER GAGAL: Proyek "proyek-hantu" tidak ditemukan. Proyek yang tersedia: /   - night-to-dawn        Kereta Malam Menuju Fajar (15 detik, 30 FPS) |
-| 18 | Adegan yang tidak ada | TERDETEKSI | exit 1: RENDER GAGAL: Adegan "adegan-hantu" tidak ada di proyek night-to-dawn. Pilihan: s01-night-train, s02-inside-train, s03-journey-to-dawn |
-| 19 | Video kurang 1 frame (449 frame) | TERDETEKSI | Jumlah frame: GAGAL, 449 dari 450 frame / Durasi: GAGAL, 14.967 detik (target 15.000) |
-| 20 | Resolusi salah (1280x720) | TERDETEKSI | Resolusi output: GAGAL, 1280x720 |
-| 21 | FPS salah (25 FPS) | TERDETEKSI | Frame rate: GAGAL, 25/1 (rata-rata 25/1) / Durasi: GAGAL, 18.000 detik (target 15.000) |
-| 22 | Format yang sulit diputar perangkat umum (yuv444p) | TERDETEKSI | Video dapat diputar di perangkat umum: GAGAL, profil High 4:4:4 Predictive, level 4.0, yuv444p, piksel 1:1, faststart ya / Format piksel: GAGAL, yuv444p |
-| 23 | Frame hitam disisipkan di frame 202 | TERDETEKSI | Tidak ada frame kosong: GAGAL, frame kosong: 202 / Tidak ada kilatan cahaya mendadak: GAGAL, lompatan kecerahan di frame 202 (-31.9), 203 (31.9) |
-| 24 | Film berakhir di layar hitam | TERDETEKSI | Frame terakhir valid: GAGAL, frame 449: kecerahan rata-rata 16.0, rentang 0 |
-| 25 | Frame 202 hilang dari folder frame | TERDETEKSI | Frame PNG lengkap dan berurutan: GAGAL, frame hilang: 202 |
-| 26 | Render gagal, tetapi MP4 lama masih ada | TERDETEKSI | render exit 1, MP4 lama masih ada dan terlihat sah, Render terakhir selesai dengan sukses: GAGAL, status "failed": Error JavaScript di dalam adegan (frame 5): Error: Render sengaja digagalkan (uji negatif) |
-| 27 | MP4 diganti tanpa render ulang | TERDETEKSI | Video berasal dari render terbaru (bukan sisa render lama): GAGAL, berubah sejak render terakhir: file MP4 |
-| 28 | Konfigurasi diubah setelah render (MP4 kedaluwarsa) | TERDETEKSI | Video berasal dari render terbaru (bukan sisa render lama): GAGAL, berubah sejak render terakhir: konfigurasi proyek |
-| 29 | Pergantian adegan dengan potongan kasar (hard cut) | TERDETEKSI | Tidak ada potongan kasar (hard cut): GAGAL, lonjakan di frame 150 (beda 15.0, di transisi cut) / kontrol transisi portal: lolos |
-| 30 | Portal terlalu kecil sehingga gambar melompat di akhir transisi | TERDETEKSI | Portal s01-night-train->s02-inside-train menutup layar sebelum transisi selesai: GAGAL, layar tertutup penuh mulai frame 167 (transisi berakhir di 167) |
-| 31 | Aset steam-train tampil berbeda di adegan terakhir | TERDETEKSI | Warna identitas steam-train konsisten: GAGAL, frame 60: #1f5a3a #7a5a3a / frame 445: #5c1c27 #4d5474 |
-| 32 | Adegan memakai Math.random() (tidak deterministik) | TERDETEKSI | Rendering deterministik (render ulang identik, urutan terbalik): GAGAL, 30 frame berbeda, contoh: 29, 28, 27, 26, 25, 24 |
-| 33 | Error JavaScript di tengah render | TERDETEKSI | render dihentikan: Error JavaScript di dalam adegan (frame 5): Error: kesalahan uji di frame 5 |
+| 16 | Mode zoom salah ketik | TERDETEKSI | Proyek: rendering.zoomMode "zoom-hantu" tidak dikenal (pilihan: anchored, steps, nearest) |
+| 17 | Lensa zoom di mode upscale ffmpeg | TERDETEKSI | Adegan 1 (s01-night-train) lens: zoom kamera hanya didukung bila rendering.upscale = "browser" (agar piksel tetap tajam) |
+| 18 | Nama efek salah ketik | TERDETEKSI | Adegan 2 (s02-inside-train): efek "hujan-deras-salah-ketik" tidak dikenal |
+| 19 | Proyek yang tidak ada | TERDETEKSI | exit 1: RENDER GAGAL: Proyek "proyek-hantu" tidak ditemukan. Proyek yang tersedia: /   - night-to-dawn        Kereta Malam Menuju Fajar (15 detik, 30 FPS) |
+| 20 | Adegan yang tidak ada | TERDETEKSI | exit 1: RENDER GAGAL: Adegan "adegan-hantu" tidak ada di proyek night-to-dawn. Pilihan: s01-night-train, s02-inside-train, s03-journey-to-dawn |
+| 21 | Video kurang 1 frame (449 frame) | TERDETEKSI | Jumlah frame: GAGAL, 449 dari 450 frame / Durasi: GAGAL, 14.967 detik (target 15.000) |
+| 22 | Resolusi salah (1280x720) | TERDETEKSI | Resolusi output: GAGAL, 1280x720 |
+| 23 | FPS salah (25 FPS) | TERDETEKSI | Frame rate: GAGAL, 25/1 (rata-rata 25/1) / Durasi: GAGAL, 18.000 detik (target 15.000) |
+| 24 | Format yang sulit diputar perangkat umum (yuv444p) | TERDETEKSI | Video dapat diputar di perangkat umum: GAGAL, profil High 4:4:4 Predictive, level 4.0, yuv444p, piksel 1:1, faststart ya / Format piksel: GAGAL, yuv444p |
+| 25 | Frame hitam disisipkan di frame 202 | TERDETEKSI | Tidak ada frame kosong: GAGAL, frame kosong: 202 / Tidak ada kilatan cahaya mendadak: GAGAL, lompatan kecerahan di frame 202 (-31.9), 203 (31.9) |
+| 26 | Film berakhir di layar hitam | TERDETEKSI | Frame terakhir valid: GAGAL, frame 449: kecerahan rata-rata 16.0, rentang 0 |
+| 27 | Frame 202 hilang dari folder frame | TERDETEKSI | Frame PNG lengkap dan berurutan: GAGAL, frame hilang: 202 |
+| 28 | Render gagal, tetapi MP4 lama masih ada | TERDETEKSI | render exit 1, MP4 lama masih ada dan terlihat sah, Render terakhir selesai dengan sukses: GAGAL, status "failed": Error JavaScript di dalam adegan (frame 5): Error: Render sengaja digagalkan (uji negatif) |
+| 29 | MP4 diganti tanpa render ulang | TERDETEKSI | Video berasal dari render terbaru (bukan sisa render lama): GAGAL, berubah sejak render terakhir: file MP4 |
+| 30 | Konfigurasi diubah setelah render (MP4 kedaluwarsa) | TERDETEKSI | Video berasal dari render terbaru (bukan sisa render lama): GAGAL, berubah sejak render terakhir: konfigurasi proyek |
+| 31 | Pergantian adegan dengan potongan kasar (hard cut) | TERDETEKSI | Tidak ada potongan kasar (hard cut): GAGAL, lonjakan di frame 150 (beda 15.0, di transisi cut) / kontrol transisi portal: lolos |
+| 32 | Portal terlalu kecil sehingga gambar melompat di akhir transisi | TERDETEKSI | Portal s01-night-train->s02-inside-train menutup layar sebelum transisi selesai: GAGAL, layar tertutup penuh mulai frame 167 (transisi berakhir di 167) |
+| 33 | Aset steam-train tampil berbeda di adegan terakhir | TERDETEKSI | Warna identitas steam-train konsisten: GAGAL, frame 60: #1f5a3a #7a5a3a / frame 445: #5c1c27 #4d5474 |
+| 34 | Adegan memakai Math.random() (tidak deterministik) | TERDETEKSI | Rendering deterministik (render ulang identik, urutan terbalik): GAGAL, 30 frame berbeda, contoh: 29, 28, 27, 26, 25, 24 |
+| 35 | Error JavaScript di tengah render | TERDETEKSI | render dihentikan: Error JavaScript di dalam adegan (frame 5): Error: kesalahan uji di frame 5 |
 
-Status akhir: **SEMUA KESALAHAN TERDETEKSI** (33/33)
+Status akhir: **SEMUA KESALAHAN TERDETEKSI** (35/35)

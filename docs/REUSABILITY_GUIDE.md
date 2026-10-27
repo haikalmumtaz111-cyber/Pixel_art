@@ -1,6 +1,6 @@
 # Panduan Reusability
 
-Berlaku untuk mesin versi 0.3.0 (Tahap 3, sudah di `main`). Kontrak teknis lengkapnya ada di [`ARCHITECTURE.md`](ARCHITECTURE.md).
+Berlaku untuk mesin versi 0.4.0 (Tahap 4: kamera pixel-perfect, di `main` lewat PR #4). Kontrak teknis lengkapnya ada di [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
 ## Bagaimana cara membuat proyek animasi baru menggunakan engine ini?
 
@@ -137,11 +137,24 @@ Yang bisa diatur tanpa kode:
 | menoleh, melambai | `paramTracks: { "headTurn": [[...]], "gesture": [[...]] }` (-1 menoleh ke belakang, 1 ke kamera) |
 | benda ikut benda lain (pengendara di sepeda) | `"parent": "sepeda"` + `position` relatif |
 | toko buka, lampu padam | `state: [[0, "closed"], [96, "open"]]`, `color: [[0, "on"], [70, "off"]]` |
-| kamera pan, push-in, pullback | `camera: { "type": "keys", "x": [...], "y": [...], "zoom": [...] }` (zoom butuh `rendering.upscale: "browser"`) |
+| kamera pan, push-in, pullback | `camera: { "type": "keys", "x": [...], "y": [...], "zoom": [...] }` (zoom butuh `rendering.upscale: "browser"`, lihat bagian zoom di bawah) |
+| zoom untuk adegan kustom | `"lens": { "zoom": [[frame, zoom], ...] }` di entri adegan |
 | kamera mengikuti tokoh | `camera: { "type": "follow-entity", "entity": "...", "screenX": ..., "smoothing": 15 }` |
 | pagi menjadi siang | dua palet + `lighting: { "from": "pagi", "to": "siang", "track": "terang" }` + track `environment.terang` |
 | palet turunan | `"siang": { "extends": "pagi", "sky": [...] }` (hanya tulis warna yang berubah) |
 | kedalaman | `stages.<id>.layers[].parallax` (0 = diam di langit, 1 = jalan, di atas 1 = latar depan) |
+
+### Zoom kamera yang tetap tajam
+
+Pixel art dibesarkan tanpa blur, jadi satu piksel art selalu berukuran bulat di layar (4 x zoom piksel). Aturan praktisnya:
+
+- **Tahan zoom di kelipatan 0,25** (1; 1,25; 1,5; 1,75; 2; ...) untuk shot yang diam atau lama. Di nilai itu semua piksel berukuran sama persis.
+- **Zoom yang bergerak boleh pecahan.** Mode bawaan `rendering.zoomMode: "anchored"` membuat ukuran piksel menempel pada gambar: tidak merayap saat kamera geser, dan setiap piksel tumbuh tepat sekali saat zoom naik. Selama zoom berjalan, satu frame berisi dua ukuran berdampingan (misalnya 4 dan 5 piksel). Itu batas tanpa blur, tetapi polanya stabil.
+- Tidak perlu menulis apa pun untuk memakainya. Proyek lama dengan `upscale: "browser"` otomatis memakai `anchored`.
+- `"zoomMode": "steps"` membulatkan zoom ke kelipatan 0,25 (grid selalu seragam, tetapi zoom melompat). `"zoomMode": "nearest"` mengembalikan cara Tahap 3 persis (pola merayap), hanya untuk kompatibilitas.
+- Adegan kustom yang ingin bebas crawl saat zoom menggambar setiap lapisan parallax lewat `shot.surface.layer(geseranX, geseranY)` (contoh: `src/scenes/night-train.js` dan aset `countryside`).
+- **Hati-hati dengan lapisan semi-transparan dan parallax berbeda di zoom pecahan.** Setiap lapisan punya grid sendiri. Cahaya atau bayangan semi-transparan bisa menghasilkan sedikit warna baru (V24). Tepi objek di atas lapisan dengan parallax berbeda bisa menyisakan potongan piksel selebar 1-3 piksel layar (V25). Untuk shot penting, taruh cahaya di parallax yang sama dengan subjeknya, atau tahan zoom di kelipatan 0,25.
+- Validator memeriksa otomatis bahwa grid piksel tidak merayap (pemeriksaan "Grid piksel kamera stabil"). `npm run test:zoom` mengukur semua mode dengan pola kalibrasi `calibration-grid`.
 
 ### Langkah 4: jaga kualitas
 

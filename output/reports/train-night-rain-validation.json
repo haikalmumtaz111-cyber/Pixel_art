@@ -1,11 +1,11 @@
 {
-  "testedAt": "2026-10-27T10:52:57.431Z",
+  "testedAt": "2026-10-27T12:28:37.199Z",
   "project": "train-night-rain",
   "config": "config/train-night-rain.json",
   "includes": [],
   "allPass": true,
-  "passed": 29,
-  "total": 29,
+  "passed": 30,
+  "total": 30,
   "groups": [
     {
       "title": "Jumlah frame tepat",
@@ -45,6 +45,10 @@
     },
     {
       "title": "Transisi tanpa artefak",
+      "pass": true
+    },
+    {
+      "title": "Grid piksel kamera stabil (tanpa crawl)",
       "pass": true
     },
     {
@@ -97,7 +101,7 @@
       "id": "manifest:status",
       "name": "Render terakhir selesai dengan sukses",
       "pass": true,
-      "detail": "status complete, selesai 2026-10-27T10:52:37.536Z"
+      "detail": "status complete, selesai 2026-10-27T12:28:17.235Z"
     },
     {
       "id": "manifest:fresh",
@@ -208,6 +212,12 @@
       "detail": "semua pergantian gambar berlangsung bertahap"
     },
     {
+      "id": "grid-stability",
+      "name": "Grid piksel stabil saat kamera bergerak dan zoom (tidak merayap)",
+      "pass": true,
+      "detail": "proyek memakai upscale ffmpeg tanpa zoom kamera"
+    },
+    {
       "id": "png-frames",
       "name": "Frame PNG lengkap dan berurutan",
       "pass": true,
@@ -223,7 +233,7 @@
       "id": "engine-isolation",
       "name": "Tidak ada modul proyek lain yang ikut terunduh",
       "pass": true,
-      "detail": "23 file JS terunduh (/src/engine/: 15, /src/assets/: 7, /src/scenes/: 1)"
+      "detail": "24 file JS terunduh (/src/engine/: 16, /src/assets/: 7, /src/scenes/: 1)"
     },
     {
       "id": "boundary",
@@ -272,9 +282,9 @@
   ],
   "engine": {
     "name": "Pixel History Studio",
-    "version": "0.3.0",
-    "engineHash": "bc272267a41d3bc9ad92730f3e7ecf42698c3a33457fadc671fc516a524ebb49",
-    "libraryHash": "4378116df3a09f47bdae19eb571a65cac2816c2c0ff9537a0ab968f110f0690c",
+    "version": "0.4.0",
+    "engineHash": "7f37881be8af508cc4165fcd196fd2cb8395b25373d9e2132e79594d747ea4aa",
+    "libraryHash": "2925f4ab08ab5d4f5875307cdff1c7d6f8bede58e456f3ad8c6395ea994da16d",
     "modules": [
       "/src/scenes/train-night-rain.js"
     ]
@@ -296,15 +306,15 @@
       "scene": null
     },
     "configFile": "config/train-night-rain.json",
-    "inputsHash": "8903d62b1f4bb6b60f7c3a34835c339ac1c482efad5b281c874bfeaa363096e6",
-    "engineHash": "bc272267a41d3bc9ad92730f3e7ecf42698c3a33457fadc671fc516a524ebb49",
-    "libraryHash": "4378116df3a09f47bdae19eb571a65cac2816c2c0ff9537a0ab968f110f0690c",
-    "engineVersion": "0.3.0",
+    "inputsHash": "60a204f31eff0f9c66badc9c4b1665d8ede42bca0d0ef37d7d43f191a109de91",
+    "engineHash": "7f37881be8af508cc4165fcd196fd2cb8395b25373d9e2132e79594d747ea4aa",
+    "libraryHash": "2925f4ab08ab5d4f5875307cdff1c7d6f8bede58e456f3ad8c6395ea994da16d",
+    "engineVersion": "0.4.0",
     "status": "complete",
-    "startedAt": "2026-10-27T10:52:24.593Z",
-    "finishedAt": "2026-10-27T10:52:37.536Z",
-    "renderSeconds": 3.714,
-    "encodeSeconds": 9.229,
+    "startedAt": "2026-10-27T12:28:04.511Z",
+    "finishedAt": "2026-10-27T12:28:17.235Z",
+    "renderSeconds": 3.891,
+    "encodeSeconds": 8.832,
     "chromiumVersion": "153.0.8010.12",
     "jsErrors": 0,
     "loadedModules": [

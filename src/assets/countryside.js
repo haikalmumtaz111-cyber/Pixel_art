@@ -35,39 +35,47 @@ export function createCountryside({ width, height, seed, railY, rain, smoke, tra
     // - foregroundZoom: view zoom untuk semak di depan kamera (opsional)
     // - portal: jendela kereta yang isinya diganti adegan lain (opsional)
     // - effects: daftar efek yang aktif (bawaan semua): rain, smoke, headlight, light-spill
-    render(ctx, { time, camera, env: rawEnv, zoom = null, foregroundZoom = null, portal = null, effects = EFFECTS }) {
+    // - layer: (faktorX, faktorY) -> kanvas, untuk zoom pecahan per lapisan (opsional, lihat presenter.js)
+    render(ctx, { time, camera, env: rawEnv, zoom = null, foregroundZoom = null, portal = null, effects = EFFECTS, layer = null }) {
       const env = this.resolveEnv(rawEnv);
       const on = (name) => effects.includes(name);
       const head = train.headAt(time);
       const headX = Math.round(head - camera.x);
       const lit = on('headlight') ? train.isLit(headX, env, zoom) : () => false;
+      const at = (factor, liftFactor) => (layer ? layer(factor, liftFactor) : ctx);
 
-      sky.draw(ctx, camera, time, env);
-      land.drawBackground(ctx, camera, time, env);
-      if (on('rain')) weather.drawFar(ctx, camera, time, lit, env);
-      land.withLift(ctx, camera, 1, () => withView(ctx, zoom, () => {
-        land.drawTrack(ctx, camera, time, env);
-        if (on('light-spill')) train.drawLightSpill(ctx, headX, time, env);
-        if (on('rain')) weather.drawGroundSplashes(ctx, camera, time, railY, env);
-        train.draw(ctx, headX, head, time, env, portal);
-        if (on('smoke')) steam.draw(ctx, camera, time, emitter, env);
-        if (on('rain')) weather.drawRoofSplashes(ctx, time, train.roofSurfaces(headX), env);
-        if (on('headlight')) train.drawHeadlight(ctx, headX, env);
+      sky.draw(at(0.04, 0.08), camera, time, env);
+      land.drawBackground(ctx, camera, time, env, layer);
+      if (on('rain')) weather.drawFar(at(0, 0), camera, time, lit, env);
+      const t = at(1, 1);
+      land.withLift(t, camera, 1, () => withView(t, zoom, () => {
+        land.drawTrack(t, camera, time, env);
+        if (on('light-spill')) train.drawLightSpill(t, headX, time, env);
+        if (on('rain')) weather.drawGroundSplashes(t, camera, time, railY, env);
+        train.draw(t, headX, head, time, env, portal);
+        if (on('smoke')) steam.draw(t, camera, time, emitter, env);
+        if (on('rain')) weather.drawRoofSplashes(t, time, train.roofSurfaces(headX), env);
+        if (on('headlight')) train.drawHeadlight(t, headX, env);
       }));
       // Lapisan paling dekat kamera tidak digambar di dalam lubang portal,
       // supaya saat lubang memenuhi layar hasilnya sama persis dengan adegan berikutnya.
       const hole = portal && portal.rect;
-      ctx.save();
-      if (hole) {
-        ctx.beginPath();
-        ctx.rect(0, 0, width, height);
-        ctx.rect(hole.x, hole.y, hole.w, hole.h);
-        ctx.clip('evenodd');
+      const front = at(1.35, 1.3);
+      const screen = at(0, 0);
+      const clipped = [...new Set([front, screen])];
+      for (const c of clipped) {
+        c.save();
+        if (hole) {
+          c.beginPath();
+          c.rect(0, 0, width, height);
+          c.rect(hole.x, hole.y, hole.w, hole.h);
+          c.clip('evenodd');
+        }
       }
-      land.withLift(ctx, camera, 1.3, () => withView(ctx, foregroundZoom, () => land.drawForeground(ctx, camera, env)));
-      if (on('rain')) weather.drawNear(ctx, camera, time, lit, env);
-      sky.drawVignette(ctx, env);
-      ctx.restore();
+      land.withLift(front, camera, 1.3, () => withView(front, foregroundZoom, () => land.drawForeground(front, camera, env)));
+      if (on('rain')) weather.drawNear(screen, camera, time, lit, env);
+      sky.drawVignette(screen, env);
+      for (const c of clipped) c.restore();
       return { headX, portalRect: portal ? portal.rect || null : null };
     }
   };

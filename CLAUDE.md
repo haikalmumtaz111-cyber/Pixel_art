@@ -15,6 +15,7 @@ Pemilik proyek adalah sutradara kreatif yang masih awam pemrograman. Semua kode 
 - Minta persetujuan sebelum instalasi sistem, perubahan di luar folder proyek, atau menghapus file.
 - Jangan mengklaim berhasil sebelum `npm run build:all` dan `npm test` lulus, dan hasilnya sudah dilihat secara visual (lembar cuplikan di `output/reports/`).
 - Jangan mengorbankan kemampuan tahap sebelumnya. `npm run test:regression` harus lulus: Project A (`night-to-dawn`) dan prototipe Tahap 1 identik piksel dan byte dengan baseline di `tests/baselines/`. `npm run build:prototype` harus tetap lulus.
+- Baseline tidak boleh diubah untuk menyembunyikan perubahan. Perubahan hasil render yang disengaja dicatat di `tests/baselines/pending-changes.json` (rentang frame + alasan, status "menunggu persetujuan pemilik"); frame di luar rentang tetap wajib identik. Hapus entri hanya setelah pemilik menyetujui.
 
 ## Konvensi kode
 
@@ -26,7 +27,8 @@ Pemilik proyek adalah sutradara kreatif yang masih awam pemrograman. Semua kode 
 - Jenis aset baru didaftarkan di `src/assets/catalog.json` (modul, skema parameter, status, kunci palet). Daftar transisi, easing, dan kamera ada di `config/engine.json`.
 - Proyek baru cukup berupa file `config/<proyek>.json` (boleh `$include`). Lihat `docs/REUSABILITY_GUIDE.md`.
 - Adegan kustom mengambil aset lewat `assets.pick(scene.assets, type)`. Adegan tersusun (`"module": "compose"`) memakai stage, cast, dan entitas. Jangan membuat ulang kereta atau karakter di dalam adegan.
-- Kontrak entitas, aset, adegan, dan transisi dijelaskan di `docs/ARCHITECTURE.md`.
+- Zoom kamera hanya di `rendering.upscale: "browser"`. Mode bawaan `rendering.zoomMode: "anchored"` (grid piksel menempel pada gambar per lapisan, tidak merayap). Adegan kustom yang punya banyak lapisan parallax menggambar setiap lapisan lewat `shot.surface.layer(geseranX, geseranY)` saat `shot.surface.wantsLayers(zoom)`. `nearest` = cara Tahap 3 (untuk kompatibilitas), `steps` = zoom dibulatkan.
+- Kontrak entitas, aset, adegan, transisi, dan penyaji frame dijelaskan di `docs/ARCHITECTURE.md`.
 - Komentar kode dalam bahasa Indonesia.
 
 ## Perintah
@@ -39,7 +41,9 @@ Semua perintah proyek memakai `--project <id>` (`old-town-morning`, `night-to-da
 - `npm run render -- --project <id> [--scene <adegan> | --frame <n> | --frames a-b] [--no-encode]`
 - `npm run preview -- --project <id> [--scene <adegan>]`: pratinjau di browser
 - `npm test`: lint, unit test, validasi semua proyek, uji negatif, regresi, uji antar-proyek (setelah `build:all`)
-- `npm run test:ci`: lint + unit test + uji asap (yang dijalankan GitHub Actions)
+- `npm run test:ci`: lint + unit test + uji asap (yang dijalankan GitHub Actions, bersama `test:zoom`)
+- `npm run test:zoom`: lab zoom, mengukur grid piksel kamera semua mode zoom (laporan `output/reports/zoom-lab.md`)
+- `npm run demo:zoom`: buat ulang bahan pembanding zoom di `output/comparisons/`
 - `npm run build:prototype`: render, uji, dan cek regresi prototipe Tahap 1
 
 ## Progres
@@ -47,8 +51,9 @@ Semua perintah proyek memakai `--project <id>` (`old-town-morning`, `night-to-da
 - Tahap 1 (selesai, sudah di-merge): fondasi mesin + prototipe `train-night-rain` (5 detik, 150 frame).
 - Tahap 2 (selesai, disetujui pemilik, di-merge ke `main` lewat PR #2): film 15 detik `film-night-to-dawn` (450 frame, 3 adegan, 2 transisi portal).
 - Tahap 3 (selesai, disetujui pemilik sebagai milestone, di-merge ke `main` lewat PR #3): mesin reusable multi-proyek (versi 0.3.0), project loader + validasi skema, sistem entitas, karakter rig, aset kota tua, Project B `old-town-morning` (12 detik, 360 frame). Validasi A 36/36, B 33/33, prototipe 29/29; uji negatif A dan B masing-masing 33/33; regresi 14/14 (identik dengan `main@cfed35a`); uji antar-proyek 18/18; unit test 44/44; CI GitHub hijau.
-- Bahan peningkatan berikutnya tercatat di `docs/BACKLOG.md` (V1-V22, T1-T13, dengan prioritas dan ringkasan kandidat).
-- Tahap 4: belum dimulai, menunggu keputusan pemilik. Jangan memulainya tanpa perintah.
+- Tahap 4 (selesai, disetujui pemilik, di-merge ke `main` lewat PR #4): kamera pixel-perfect untuk V14. Mesin 0.4.0: mode zoom `anchored`/`steps`/`nearest` (`src/engine/pixel-grid.js`, `presenter.js`), surface per lapisan, lensa `scene.lens`, dither dissolve selaras grid, lab zoom + pola kalibrasi, pemeriksaan validator grid, perubahan terdeklarasi. Project B berubah di 124 frame zoom/dissolve, disetujui pemilik pada 27 Oktober 2026; Project A dan prototipe identik dengan baseline. Audit final PR #4 dari clean clone lulus semua pemeriksaan wajib. Temuannya (warna baru dari lapisan semi-transparan dan potongan piksel di batas lapisan saat zoom pecahan) dicatat sebagai V24 dan V25, perbaikannya hanya di dokumentasi. Entri Project B di `tests/baselines/pending-changes.json` dan baseline `tests/baselines/old-town-morning.json` (referensi Tahap 3) sengaja belum diubah. Laporan regresi masih menulis "menunggu persetujuan" untuk B. Memperbarui baseline B ke hasil Tahap 4 dan menghapus entri itu baru dilakukan bila pemilik memerintahkannya.
+- Bahan peningkatan berikutnya tercatat di `docs/BACKLOG.md` (V1-V25, T1-T16, dengan prioritas dan ringkasan kandidat).
+- Tahap 5: belum dimulai, menunggu keputusan pemilik. Jangan memulainya tanpa perintah.
 
 ## Cara melanjutkan di sesi baru
 

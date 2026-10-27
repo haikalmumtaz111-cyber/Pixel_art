@@ -180,24 +180,33 @@ export function createLandscape({ width, height, seed, railY, ramp }) {
     withLift,
 
     // Semua lapisan di belakang kereta.
-    drawBackground(ctx, camera, time, env) {
+    // layer (opsional) = (faktorX, faktorY) -> kanvas: dipakai saat zoom pecahan agar setiap lapisan parallax
+    // digambar ke kanvas sendiri (lihat presenter.js). Tanpa layer, semua digambar ke ctx seperti sebelumnya.
+    drawBackground(ctx, camera, time, env, layer = null) {
       const pal = env.pal;
       const v = variant(env.palIndex);
-      withLift(ctx, camera, ridges.mountains.lift, () => drawRidge(ctx, ridges.mountains, camera, pal));
-      withLift(ctx, camera, ridges.hillsFar.lift, () => {
-        const farOff = drawRidge(ctx, ridges.hillsFar, camera, pal);
-        drawHouses(ctx, farOff, time, pal);
+      const at = (factor, liftFactor) => (layer ? layer(factor, liftFactor) : ctx);
+      let c = at(ridges.mountains.factor, ridges.mountains.lift);
+      withLift(c, camera, ridges.mountains.lift, () => drawRidge(c, ridges.mountains, camera, pal));
+      c = at(ridges.hillsFar.factor, ridges.hillsFar.lift);
+      withLift(c, camera, ridges.hillsFar.lift, () => {
+        const farOff = drawRidge(c, ridges.hillsFar, camera, pal);
+        drawHouses(c, farOff, time, pal);
       });
-      withLift(ctx, camera, 0.6, () => drawFog(ctx, camera, time, env.fog, { top: 172, bottom: 196, factor: 0.42, drift: 7, salt: 610 }, pal));
-      withLift(ctx, camera, ridges.hillsNear.lift, () => {
-        const nearOff = drawRidge(ctx, ridges.hillsNear, camera, pal);
-        drawFarTrees(ctx, nearOff, v.farTrees);
+      c = at(0.42, 0.6);
+      withLift(c, camera, 0.6, () => drawFog(c, camera, time, env.fog, { top: 172, bottom: 196, factor: 0.42, drift: 7, salt: 610 }, pal));
+      c = at(ridges.hillsNear.factor, ridges.hillsNear.lift);
+      withLift(c, camera, ridges.hillsNear.lift, () => {
+        const nearOff = drawRidge(c, ridges.hillsNear, camera, pal);
+        drawFarTrees(c, nearOff, v.farTrees);
       });
-      withLift(ctx, camera, 0.85, () => {
-        drawNearTrees(ctx, camera, v.nearTrees);
-        drawFog(ctx, camera, time, env.fog * 0.5, { top: 196, bottom: 212, factor: 0.8, drift: 12, salt: 620 }, pal);
+      c = at(0.8, 0.85);
+      withLift(c, camera, 0.85, () => {
+        drawNearTrees(c, camera, v.nearTrees);
+        drawFog(c, camera, time, env.fog * 0.5, { top: 196, bottom: 212, factor: 0.8, drift: 12, salt: 620 }, pal);
       });
-      withLift(ctx, camera, 0.92, () => drawPoles(ctx, camera, pal));
+      c = at(0.92, 0.92);
+      withLift(c, camera, 0.92, () => drawPoles(c, camera, pal));
     },
 
     // Rel, kerikil, dan tanah. Bergerak sejajar kereta (faktor 1). Mendukung zoom (view).

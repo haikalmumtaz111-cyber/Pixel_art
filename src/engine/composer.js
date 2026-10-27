@@ -73,11 +73,16 @@ export function createComposedScene({ film, scene, assets, environment }) {
       const { frame, time } = shot;
       const env = environment.at(frame);
       const cam = camera(frame);
+      const zoom = (cam.zoom ?? 1) * (shot.lens ?? 1);
       const fc = { frame, time, fps, env, pal: palette(env), camera: cam, width, height, seed: film.seed, scene: scene.id };
+      // zoom pecahan pada mode "anchored": setiap lapisan digambar ke kanvas sendiri bersama geserannya,
+      // supaya penyaji bisa menempelkan ukuran piksel pada gambar lapisan itu (lihat presenter.js)
+      const layered = Boolean(shot.surface && shot.surface.wantsLayers(zoom));
 
       for (const layer of layers) {
         const ox = Math.round(cam.x * layer.px);
         const oy = Math.round(cam.y * layer.py);
+        if (layered) ctx = shot.surface.layer(ox, oy);
         const items = byLayer.get(layer.id)
           .map(({ entity, order }) => ({ entity, order, st: entity.stateAt(frame, time) }))
           .filter((item) => item.st.visible)
@@ -97,7 +102,7 @@ export function createComposedScene({ film, scene, assets, environment }) {
           withView(ctx, view, () => entity.asset.draw(ctx, { ...st, size, local, layer: { id: layer.id, ox, oy } }, fc));
         }
       }
-      return { zoom: cam.zoom ?? 1 };
+      return { zoom, lensApplied: true };
     }
   };
 }

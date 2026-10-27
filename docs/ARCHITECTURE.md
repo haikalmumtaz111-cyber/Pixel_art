@@ -6,13 +6,14 @@ Dokumen ini menjelaskan cara mesin animasi bekerja sejak Tahap 3 (mesin reusable
 
 | Hal | Kondisi |
 |-----|---------|
-| Versi mesin | 0.3.0 (`config/engine.json`), di-merge ke `main` lewat PR #3 |
+| Versi mesin | 0.4.0 (`config/engine.json`), di `main` lewat PR #4 (Tahap 4, kamera pixel-perfect). Tahap 3 (0.3.0) masuk lewat PR #3 |
 | Proyek | `night-to-dawn` (Project A, adegan kustom), `old-town-morning` (Project B, adegan tersusun), `train-night-rain` (prototipe Tahap 1, format satu adegan) |
-| Katalog aset | 19 jenis di `src/assets/catalog.json` (4 aset gaya Tahap 2 + 15 aset entitas) |
-| Jenis kamera | `keys`, `follow-entity`, `follow`, `speed` |
+| Katalog aset | 20 jenis di `src/assets/catalog.json` (4 aset gaya Tahap 2 + 16 aset entitas, termasuk pola kalibrasi `calibration-grid`) |
+| Jenis kamera | `keys`, `follow-entity`, `follow`, `speed`, ditambah lensa `scene.lens` untuk adegan jenis apa pun |
+| Mode zoom (`rendering.zoomMode`) | `anchored` (bawaan), `steps`, `nearest` (cara Tahap 3) |
 | Transisi | `cut`, `dissolve`, `portal` |
-| Baseline regresi | `tests/baselines/` dari `main@cfed35a` (Project A dan prototipe). Tidak boleh diubah tanpa persetujuan pemilik |
-| Keterbatasan yang diketahui | [`BACKLOG.md`](BACKLOG.md), termasuk V14 (zoom tidak bulat) dan T13 (deteksi tokoh "pop") |
+| Baseline regresi | `tests/baselines/`: Project A dan prototipe dari `main@cfed35a`, Project B dari `main@9d7a144` (referensi Tahap 3). Baseline tidak boleh diubah tanpa persetujuan pemilik; perubahan yang disengaja dicatat di `tests/baselines/pending-changes.json`. Perubahan 124 frame Project B di Tahap 4 sudah disetujui pemilik; entrinya dipertahankan sampai baseline B diperbarui atas instruksi pemilik |
+| Keterbatasan yang diketahui | [`BACKLOG.md`](BACKLOG.md), termasuk V23 (dua ukuran piksel di zoom pecahan), V24 (warna baru dari lapisan semi-transparan), V25 (batas antar lapisan memotong piksel art), dan T13 (deteksi tokoh "pop") |
 
 ## Gambaran besar
 
@@ -151,16 +152,78 @@ Lapisan digambar dari jauh ke dekat. Setiap lapisan bergeser `kamera x parallax`
 
 Semua jenis adalah fungsi murni dari nomor frame. `smoothing` dihitung dari posisi entitas di frame-frame sebelumnya, bukan dari keadaan yang disimpan.
 
-## Penyaji frame dan zoom tajam (`src/engine/presenter.js`)
+## Penyaji frame dan zoom tajam (`src/engine/presenter.js`, `src/engine/pixel-grid.js`)
 
 | Mode `rendering.upscale` | Cara kerja | Dipakai |
 |--------------------------|-----------|---------|
 | `ffmpeg` (bawaan) | browser menyimpan PNG 480x270, FFmpeg memperbesar 4x nearest neighbor | Project A, prototipe |
-| `browser` | dunia tetap digambar di 480x270, lalu browser memotong bagian tengah sesuai zoom dan memperbesarnya nearest neighbor ke 1920x1080 | Project B (kamera zoom) |
+| `browser` | dunia tetap digambar di 480x270, lalu browser memperbesarnya ke 1920x1080 sesuai zoom kamera dan `rendering.zoomMode` | Project B (kamera zoom) |
 
-Di mode `browser`, zoom 1, 1,25, 1,5, dan 2 menghasilkan piksel art berukuran persis sama (4, 5, 6, 8 piksel layar). Di antara nilai itu selisihnya paling banyak 1 piksel layar, tanpa blur dan tanpa anti-aliasing. Skema menolak zoom di mode `ffmpeg` karena di mode itu zoom tidak bisa tajam.
+### Masalahnya (V14)
 
-Untuk adegan kustom, `pixel.js` tetap menyediakan *view* `{ s, ox, oy, flip }`: setiap bentuk digambar ulang pada posisi `o + posisi x s`, dibulatkan ke piksel (dipakai transisi portal Tahap 2).
+Satu piksel art = 4 x zoom piksel layar. Kalau 4 x zoom bukan bilangan bulat (misalnya zoom 1,1 = 4,4 piksel), mustahil semua piksel art berukuran sama tanpa blur: sebagian harus 4 piksel, sebagian 5. Cara Tahap 3 (`drawImage` nearest biasa) menentukan kolom mana yang 5 piksel dari posisinya di **layar**. Setiap kali kamera bergeser 1 piksel art atau zoom berubah, pola 4/5 ikut bergeser di atas gambar, sehingga garis tampak "merayap". Lab zoom mengukur 43,9% kolom berganti ukuran setiap frame saat kamera geser di zoom 1,1.
+
+### Mode zoom
+
+| Mode | Cara kerja | Hasil ukur lab zoom |
+|------|-----------|---------------------|
+| `nearest` | cara Tahap 3, dipertahankan untuk kompatibilitas | crawl 43,9%, 18.902 piksel bolak-balik ukuran saat zoom |
+| `steps` | zoom dibulatkan ke ukuran piksel bulat terdekat (kelipatan 0,25) | grid selalu seragam, tetapi zoom melompat (lompatan skala 0,97 px per piksel art, galat 0,5) |
+| `anchored` (bawaan) | ukuran piksel menempel pada gambar setiap lapisan, bukan pada layar | crawl 0%, 0 bolak-balik, gerak kaku, lompatan 0,007 |
+
+Varian `anchored` dengan satu kanvas (`rendering.zoomLayers: false`, hanya untuk diagnosis) masih merayap 42,8%, karena lapisan parallax bergeser dengan kecepatan berbeda. Itulah alasan pemetaan dilakukan per lapisan.
+
+### Cara kerja `anchored`
+
+Untuk setiap sumbu (`pixel-grid.js`, fungsi murni yang diuji langsung di Node):
+
+1. Ukuran sel rata-rata `4 x zoom` dipecah menjadi bagian bulat `c` dan pecahan `f` (zoom 1,1: c = 4, f = 0,4).
+2. Setiap kolom **dunia** `j` (kolom kanvas + geseran lapisan) punya peringkat tetap `frac(j x 0,618...)` (urutan golden ratio, tersebar merata). Kolom dengan peringkat < `f` mendapat `c + 1` piksel, sisanya `c`. Untuk sumbu y dipakai pengali lain (0,414...).
+3. Posisi di layar dihitung bertumpuk dari pusat layar ke kiri dan ke kanan, jadi kolom bersambung tanpa celah dan pusat zoom tetap.
+
+Akibatnya:
+
+- **Kamera geser**: kolom dunia membawa ukurannya, jadi semua piksel satu lapisan bergeser sama jauh (gerak kaku, tidak merayap).
+- **Zoom naik**: kolom tumbuh dari `c` ke `c + 1` satu per satu menurut peringkatnya, masing-masing tepat sekali per level, tanpa bolak-balik. Karena sebarannya merata, skala yang tampak mengikuti zoom yang diminta dengan galat di bawah 0,01 piksel per piksel art.
+- **Zoom kelipatan 0,25** (1; 1,25; 1,5; 1,75; 2; ...): `f = 0`, semua piksel berukuran sama persis, dan penyaji memakai satu `drawImage` yang identik dengan cara Tahap 3.
+- **Zoom pecahan**: satu frame tetap berisi dua ukuran berdampingan (`c` dan `c + 1`). Ini batas matematis tanpa blur, tetapi polanya stabil.
+
+Penggambaran: setiap lapisan diperbesar dalam dua tahap (kolom lalu baris) dengan potongan berfaktor bulat. Setiap piksel layar diambil dari tepat satu piksel art per lapisan, tanpa interpolasi, jadi tidak ada blur atau anti-aliasing. Pada pola kalibrasi lab zoom yang seluruhnya opak, hasilnya 0 piksel asing. Untuk lapisan semi-transparan, lihat batas di bawah.
+
+### Batas yang diketahui (audit final PR #4)
+
+Dua batas ini ditemukan saat audit final, dengan membandingkan render Project B mode `anchored` dan render Tahap 3 frame demi frame. Keduanya hanya muncul di zoom pecahan mode `anchored` per lapisan. Zoom kelipatan 0,25, mode `nearest`, dan upscale `ffmpeg` tidak terdampak.
+
+**Warna baru dari lapisan semi-transparan (V24).** Di zoom pecahan, setiap lapisan digambar ke kanvas transparan sendiri, lalu diperbesar dan digabung di resolusi layar. Di Tahap 3, semua lapisan digabung lebih dulu di resolusi art. Bentuk semi-transparan (`globalAlpha`, misalnya berkas cahaya pagi dengan alpha 0,16) yang jatuh di bagian kosong kanvas lapisan disimpan sebagai warna semi-transparan 8-bit, lalu baru dicampur dengan lapisan di bawahnya. Pembulatannya berbeda dengan cara Tahap 3. Selain itu, lapisan cahaya punya grid sendiri, sehingga piksel cahaya bisa menimpa piksel lapisan bawah yang berbeda dengan di Tahap 3. Hasil ukur di Project B:
+
+- 23 warna yang tidak pernah muncul di film Tahap 3, totalnya 139.375 piksel atau 0,0187% dari seluruh piksel film (360 frame).
+- 21 warna hanya selisih 1 nilai per kanal dari warna Tahap 3 (efek pembulatan, tidak terlihat).
+- 2 warna selisih 4-5 nilai, totalnya 11 piksel di frame 274 dan 285, di tempat tepi berkas cahaya memotong piksel karakter.
+- Muncul di frame 85-118, 274, 285, dan 330-337.
+
+Ini bukan blur atau anti-aliasing, karena tidak ada piksel yang dicampur dengan tetangganya. Yang berubah hanya pembulatan dan pasangan piksel saat warna semi-transparan bertumpuk. Lab zoom tidak menangkapnya karena pola kalibrasinya opak.
+
+**Batas antar lapisan bisa memotong piksel art (V25).** Setiap lapisan dipetakan dengan grid miliknya sendiri, berdasarkan geseran parallax masing-masing. Lapisan dengan geseran sama (di Project B: `buildings`, `street`, `sidewalk`, `road`, semuanya parallax 1) memakai grid yang sama, jadi batasnya selalu sejajar. Lapisan dengan geseran berbeda punya batas piksel di posisi layar yang berbeda. Akibatnya, tepi objek di lapisan atas bisa jatuh di tengah piksel art lapisan bawah, dan sisa piksel art itu tampil sebagai potongan selebar 1-3 piksel layar. Di Tahap 3, tepi seperti itu selalu jatuh di batas piksel art karena penggabungan terjadi sebelum diperbesar, tetapi seluruh gridnya merayap. Paling terlihat saat lapisan `light` (parallax 0) di atas karakter (parallax 1), misalnya tepi berkas cahaya yang melintasi wajah karakter di frame 284-286. Ini bukan crawl. Di dalam satu lapisan semua piksel tetap bergerak kaku, dan gerak relatif antar lapisan memang gerak parallax-nya.
+
+### Surface: lapisan untuk penyaji
+
+Adegan menerima `shot.surface`. Bila `shot.surface.wantsLayers(zoom)` bernilai `true` (mode `anchored` dan zoom pecahan), adegan menggambar setiap lapisan ke kanvas transparan sendiri lewat `shot.surface.layer(geseranX, geseranY)`. Geseran itu sama dengan geseran parallax lapisan (`round(kamera x faktor)`).
+
+- Adegan tersusun (`compose`) melakukannya otomatis untuk semua lapisan stage.
+- Adegan kustom bisa ikut: Project A meneruskan fungsi `layer(faktorX, faktorY)` ke aset `countryside`, yang menggambar langit, gunung, bukit, kabut, pohon, tiang, rel/kereta, semak depan, dan hujan dekat ke lapisan masing-masing. Adegan kustom yang tidak memakai surface tetap jalan dengan satu kanvas (pola menempel layar), dan boleh mengembalikan `anchor: [x, y]`.
+- Di zoom bulat atau mode lain, semua digambar ke satu kanvas seperti sebelumnya, jadi hasilnya tidak berubah.
+
+### Lensa (`scene.lens`)
+
+`"lens": { "zoom": [[frame, zoom, easing?], ...] }` di entri timeline memberi zoom tambahan pada adegan jenis apa pun, termasuk adegan kustom yang tidak punya kamera zoom sendiri. Butuh `rendering.upscale: "browser"`.
+
+### Dither transisi selaras grid
+
+Transisi `dissolve` dulu memakai pola dither bersel 4 piksel layar. Di zoom 1,25 (sel 5 piksel), satu piksel art terbelah 4+1. Sekarang pola dither mengikuti grid art adegan tujuan (`presenter.ditherGrid()`), jadi setiap piksel art tampil utuh dari salah satu adegan. Mode `nearest` tetap memakai pola lama.
+
+### Kontrak `pixel.js`
+
+Untuk adegan kustom, `pixel.js` tetap menyediakan *view* `{ s, ox, oy, flip }`: setiap bentuk digambar ulang pada posisi `o + posisi x s`, dibulatkan ke piksel (dipakai transisi portal Tahap 2). Zoom portal Project A memakai jalur ini dan tidak diubah di Tahap 4 (lihat V1 di backlog).
 
 ## Transisi (`src/engine/transitions.js`)
 
@@ -178,12 +241,12 @@ Aturan semua transisi: di `p = 0` hasilnya sama persis dengan adegan lama, di `p
 export function createScene({ film, scene, assets, environment }) {
   return {
     supportsPortal: true,          // opsional
-    render(ctx, shot) { ... }      // shot = { frame, time, local, progress, portal? }
-  };
+    render(ctx, shot) { ... }      // shot = { frame, time, local, progress, portal?, surface?, lens }
+  };                               // boleh mengembalikan { zoom, anchor: [x, y] }
 }
 ```
 
-Adegan kustom mengambil aset lewat `assets.pick(scene.assets, type)`. Project A (`night-to-dawn`) memakai tiga adegan kustom ini.
+Adegan kustom mengambil aset lewat `assets.pick(scene.assets, type)`. Project A (`night-to-dawn`) memakai tiga adegan kustom ini. `shot.surface` dan `shot.lens` dijelaskan di bagian penyaji frame.
 
 ## Pipeline render (`src/render/`)
 
@@ -198,6 +261,8 @@ Adegan kustom mengambil aset lewat `assets.pick(scene.assets, type)`. Project A 
 | `regression.cjs`, `fingerprint.cjs` | uji regresi terhadap baseline resmi `tests/baselines/` |
 | `project-tests.cjs`, `sandbox.cjs` | uji antar-proyek (mesin bersama, isolasi di salinan repository) |
 | `smoke.cjs`, `lint.cjs` | pemeriksaan ringan untuk CI |
+| `zoom-tests.cjs` | lab zoom: mengukur semua mode zoom dengan pola kalibrasi, plus penerapan pada Project A |
+| `zoom-demo.cjs` | bahan pembanding V14 (video dan gambar sebelum/sesudah) di `output/comparisons/` |
 | `build.cjs`, `test-all.cjs` | rangkaian render + validasi, dan seluruh pengujian |
 
 Setiap frame dihitung dari waktu global `time = frame / fps` dan `seed` proyek. Karena tidak ada keadaan antar frame, render bisa dipecah per rentang (`--frames 0-119`, `--frames 120-239`, ...) dan hasilnya identik dengan render penuh. Ini dasar untuk render bersegmen/paralel di masa depan.
@@ -217,6 +282,7 @@ Setiap frame dihitung dari waktu global `time = frame / fps` dan `seed` proyek. 
 | `npm run test:negative -- --project <id>` | kesalahan yang disengaja harus ditolak | ya |
 | `npm run test:regression` | Project A dan prototipe identik dengan baseline `main` | ya |
 | `npm run test:projects` | mesin bersama, file konfigurasi terpisah, isolasi dua arah | ya |
+| `npm run test:zoom` | lab zoom: 10 skenario (zoom bulat dan pecahan, geser horizontal/vertikal/diagonal, zoom masuk/keluar) x 4 pendekatan, plus Project A dengan lensa zoom | tidak (render kecil) |
 | `npm test` | semua di atas | ya |
 
 Teknik penting:
@@ -227,3 +293,6 @@ Teknik penting:
 - **Konsistensi aset**: aturan `validation.consistency` di proyek. `assetType` = semua adegan memakai satu aset berjenis itu; `asset` = warna identitas aset muncul di frame contoh.
 - **Isolasi modul**: daftar file JS yang benar-benar diunduh browser. Project B tidak memuat satu pun modul kereta.
 - **Determinisme**: seluruh frame dirender ulang di browser baru dengan urutan terbalik lalu dibandingkan per byte. MP4 di-encode ulang dan dibandingkan SHA-256-nya.
+- **Grid piksel kamera**: setiap frame mencatat mode zoom, nilai zoom, dan geseran lapisannya di manifest render. Validator menghitung ulang ukuran setiap kolom/baris dunia dan menolak crawl (ukuran berubah padahal zoom tetap) serta piksel bolak-balik.
+- **Lab zoom**: pola kalibrasi `calibration-grid` gaya `identity` memberi setiap piksel art warna unik (kolom, baris, lapisan), jadi ukuran, posisi, dan warna campuran bisa dibaca langsung dari gambar 1920x1080. Polanya opak, jadi efek lapisan semi-transparan (V24) dan potongan di batas lapisan yang tumpang tindih (V25) belum diukur di lab.
+- **Perubahan terdeklarasi**: regresi membandingkan setiap proyek yang punya baseline. Frame di dalam rentang `tests/baselines/pending-changes.json` boleh berbeda tetapi dilaporkan "menunggu persetujuan"; frame di luar rentang wajib identik.

@@ -202,6 +202,33 @@ async function main() {
       }), /zoom kamera hanya didukung/);
     });
 
+    await test('Mode zoom salah ketik', () => expectIssue(variant((r) => {
+      r.rendering = { ...(r.rendering || {}), upscale: 'browser', zoomMode: 'zoom-hantu' };
+    }), /zoomMode "zoom-hantu" tidak dikenal/));
+
+    await test('Lensa zoom di mode upscale ffmpeg', () => {
+      if (!raw.timeline) return { skipped: 'konfigurasi lama tanpa timeline' };
+      return expectIssue(variant((r) => {
+        r.rendering = { ...(r.rendering || {}), upscale: 'ffmpeg' };
+        delete r.rendering.zoomMode;
+        r.timeline.scenes[0].lens = { zoom: [[0, 1], [10, 1.3]] };
+      }), /zoom kamera hanya didukung/);
+    });
+
+    await test('Zoom pecahan dengan cara lama (nearest): grid piksel merayap', async () => {
+      const manifest = M.readManifest(M.manifestFile(config));
+      const frac = (manifest?.segments || []).filter((sg) => sg.grid?.length === 1 && Math.abs(sg.grid[0].zoom * 4 - Math.round(sg.grid[0].zoom * 4)) > 1e-6);
+      if (config.rendering.upscale !== 'browser' || frac.length < 2) return { skipped: 'proyek tanpa zoom kamera pecahan' };
+      const old = variant((r) => { r.rendering = { ...r.rendering, zoomMode: 'nearest' }; });
+      const first = frac[0].frame;
+      const count = Math.min(30, frac.length);
+      const info = await renderFrames(old, { first, count, framesDir: path.join(temp, 'zoom-nearest'), globalNames: true });
+      const bad = expectFail(await C.gridChecks(old, info), ['grid-stability']);
+      // kontrol: rentang yang sama dengan mode bawaan harus lolos
+      const good = await C.gridChecks(config, { segments: manifest.segments.filter((sg) => sg.frame >= first && sg.frame < first + count) });
+      return { detected: bad.detected && good[0].pass, detail: `${bad.detail} | kontrol anchored: ${good[0].pass ? 'lolos' : 'gagal'}` };
+    });
+
     await test('Nama efek salah ketik', () => {
       if (!raw.timeline) return { skipped: 'konfigurasi lama tanpa timeline' };
       return expectIssue(variant((r) => {

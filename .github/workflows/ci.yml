@@ -25,10 +25,10 @@ jobs:
       - run: npm run projects
 
   smoke:
-    name: Uji asap render (beberapa frame per proyek)
+    name: Uji asap render dan lab zoom
     needs: checks
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -42,3 +42,5 @@ jobs:
         run: npx playwright install --with-deps chromium
       - run: npm run check
       - run: npm run test:smoke
+      - name: Lab zoom (grid piksel kamera)
+        run: npm run test:zoom

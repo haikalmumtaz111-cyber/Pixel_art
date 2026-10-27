@@ -17,6 +17,7 @@ for (const p of projects) steps.push([`Validasi ${p.id}`, () => script('validate
 for (const p of projects) if (loadProject(p.id).timeline.scenes.length > 1) steps.push([`Uji negatif ${p.id}`, () => script('negative-tests.cjs', '--project', p.id)]);
 steps.push(['Uji regresi terhadap baseline main', () => script('regression.cjs')]);
 steps.push(['Uji antar-proyek (mesin bersama, isolasi)', () => script('project-tests.cjs')]);
+steps.push(['Lab zoom: grid piksel kamera (semua pendekatan)', () => script('zoom-tests.cjs')]);
 
 const results = [];
 for (const [name, run] of steps) {

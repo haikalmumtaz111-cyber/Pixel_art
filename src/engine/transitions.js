@@ -10,7 +10,8 @@ const LEVELS = 16;
 
 // Tempel `source` ke ctx di dalam kotak rect, dengan campuran dither level 0..16.
 // cell = ukuran satu piksel art di kanvas frame (1 untuk kanvas internal, 4 untuk kanvas 1920x1080).
-function drawDithered(ctx, source, level, rect, temp, width, height, cell = 1) {
+// gridMask (opsional) = topeng yang sudah selaras dengan grid art adegan tujuan (lihat film.js / presenter.js).
+function drawDithered(ctx, source, level, rect, temp, width, height, cell = 1, gridMask = null) {
   const x0 = clamp(Math.floor(rect.x), 0, width);
   const y0 = clamp(Math.floor(rect.y), 0, height);
   const x1 = clamp(Math.ceil(rect.x + rect.w), 0, width);
@@ -29,7 +30,7 @@ function drawDithered(ctx, source, level, rect, temp, width, height, cell = 1) {
     t.globalCompositeOperation = 'source-over';
     t.drawImage(source, x0, y0, w, h, x0, y0, w, h);
     t.globalCompositeOperation = 'destination-in';
-    t.drawImage(ditherMask(width, height, level, cell).canvas, x0, y0, w, h, x0, y0, w, h);
+    t.drawImage((gridMask || ditherMask(width, height, level, cell)).canvas, x0, y0, w, h, x0, y0, w, h);
     t.globalCompositeOperation = 'source-over';
     ctx.drawImage(temp.canvas, x0, y0, w, h, x0, y0, w, h);
   }
@@ -50,13 +51,15 @@ export const TRANSITIONS = {
 
   // Larut berdither: piksel adegan baru muncul bertahap mengikuti pola Bayer.
   dissolve: {
-    render({ ctx, p, params, drawFrom, drawTo, buffers, width, height, cell }) {
+    render({ ctx, p, params, drawFrom, drawTo, buffers, width, height, cell, ditherMask }) {
       const level = Math.round(ease(params.easing || 'linear', p) * LEVELS);
       if (level <= 0) { drawFrom(ctx); return { mix: 0 }; }
       if (level >= LEVELS) { drawTo(ctx); return { mix: 1 }; }
       drawFrom(ctx);
       drawTo(buffers.next.ctx);
-      drawDithered(ctx, buffers.next.canvas, level, FULL(width, height), buffers.temp, width, height, cell);
+      // pola dither mengikuti grid art adegan tujuan, jadi satu piksel art tidak terbelah dua
+      const gridMask = ditherMask ? ditherMask(level) : null;
+      drawDithered(ctx, buffers.next.canvas, level, FULL(width, height), buffers.temp, width, height, cell, gridMask);
       return { mix: level / LEVELS };
     }
   },

@@ -9,9 +9,9 @@ Studio animasi pixel art berbasis kode. Tujuan jangka panjangnya adalah membuat 
 | 1 | Fondasi mesin + prototipe 5 detik *Kereta Malam di Tengah Hujan* | Selesai |
 | 2 | Sistem multi-adegan + film 15 detik *Kereta Malam Menuju Fajar* | Selesai, di-merge ke `main` (PR #2) |
 | 3 | Mesin reusable untuk banyak proyek + film 12 detik *Pagi di Kota Tua* | Selesai, disetujui, di-merge ke `main` (PR #3) |
-| 4 | Belum ditentukan | Belum dimulai, menunggu keputusan pemilik |
+| 4 | Kamera pixel-perfect: zoom tanpa piksel merayap (V14) | Selesai, disetujui, di-merge ke `main` (PR #4) |
 
-Versi mesin saat ini: **0.3.0** (`config/engine.json`). Branch `main` adalah kondisi resmi terbaru.
+Versi mesin: **0.4.0** (`config/engine.json`), kondisi resmi di `main` sejak Tahap 4 di-merge.
 
 ## Proyek yang tersedia
 
@@ -24,6 +24,34 @@ Semua proyek memakai mesin yang sama (`src/engine/`). Yang membedakan hanya file
 | `train-night-rain` | *Kereta Malam di Tengah Hujan* (prototipe Tahap 1) | 5 detik, 150 frame | [`output/video/train-night-rain.mp4`](output/video/train-night-rain.mp4) | [`output/reports/train-night-rain-validation.md`](output/reports/train-night-rain-validation.md) |
 
 Semua video: 1920 x 1080, 30 FPS, H.264 High level 4.1, yuv420p, faststart, tanpa audio. Dunia digambar di 480 x 270 lalu diperbesar nearest neighbor, jadi pikselnya tetap tajam.
+
+## Hasil Tahap 4: kamera pixel-perfect
+
+Masalah V14: saat kamera zoom dengan nilai tidak bulat, ukuran piksel art campur 4 dan 5 piksel layar dan polanya ikut layar, sehingga garis tampak merayap. Sekarang ukuran piksel **menempel pada gambar setiap lapisan** (mode zoom `anchored`): tidak merayap saat kamera geser, setiap piksel tumbuh tepat sekali saat zoom, tetap tanpa blur.
+
+| Ukuran (lab zoom) | Cara lama (Tahap 3) | Tahap 4 |
+|-------------------|---------------------|---------|
+| Kolom berganti ukuran tiap frame saat geser di zoom pecahan | 43,9% | 0% |
+| Piksel bolak-balik ukuran selama zoom | 18.902 | 0 |
+| Piksel blur/warna campuran (pola uji opak) | 0 | 0 |
+| Lompatan skala (pop) | 0,005 | 0,007 |
+
+Catatan audit final: di film sungguhan yang punya lapisan semi-transparan, zoom pecahan masih menghasilkan sedikit warna baru. Di Project B ada 23 warna (0,0187% piksel), hampir semuanya hanya selisih 1 nilai (V24). Selain itu, batas antar lapisan dengan parallax berbeda bisa menyisakan potongan piksel selebar 1-3 piksel layar (V25). Keduanya bukan blur atau crawl. Rinciannya ada di [`docs/BACKLOG.md`](docs/BACKLOG.md) dan [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+
+Bahan pembanding di `output/comparisons/`:
+
+| File | Isi |
+|------|-----|
+| [`v14-old-town-detail.mp4`](output/comparisons/v14-old-town-detail.mp4) | Project B, potongan diperbesar 2x: kiri sebelum (Tahap 3), kanan sesudah (Tahap 4) |
+| [`v14-old-town-full.mp4`](output/comparisons/v14-old-town-full.mp4) | Project B layar penuh: bagian zoom versi Tahap 3, lalu versi Tahap 4 |
+| [`v14-lab-modes.mp4`](output/comparisons/v14-lab-modes.mp4) | Pola uji dengan empat pendekatan zoom berdampingan |
+| [`v14-crawl-map.png`](output/comparisons/v14-crawl-map.png) | Peta ukuran piksel per frame: garis miring = merayap, garis tegak = stabil |
+| [`v14-old-town-sheet.png`](output/comparisons/v14-old-town-sheet.png) | Empat frame berurutan saat pullback, sebelum dan sesudah |
+| [`v14-dissolve-dither.png`](output/comparisons/v14-dissolve-dither.png) | Dither transisi dissolve diperbesar 4x: sebelum terbelah, sesudah selaras grid |
+
+Laporan pengukuran: [`output/reports/zoom-lab.md`](output/reports/zoom-lab.md). Penjelasan teknis: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) bagian penyaji frame.
+
+Perubahan hasil render Project B (124 frame di jendela zoom/dissolve) dicatat di `tests/baselines/pending-changes.json` dan sudah **disetujui pemilik** (27 Oktober 2026). Baseline Project B masih memakai referensi Tahap 3 ditambah entri perubahan terdeklarasi itu, sampai pemilik memberi instruksi untuk memperbarui baseline. Project A dan prototipe Tahap 1 tidak berubah sama sekali.
 
 ## Hasil Tahap 3: *Pagi di Kota Tua*
 
@@ -69,6 +97,8 @@ npm run validate -- --project old-town-morning        # validasi lengkap satu pr
 npm run test:negative -- --project old-town-morning   # kesalahan yang sengaja dibuat harus ditolak
 npm run test:regression                               # Project A dan prototipe identik dengan baseline main
 npm run test:projects                                 # semua proyek memakai mesin yang sama dan saling terisolasi
+npm run test:zoom                                     # lab zoom: ukur grid piksel kamera di semua mode zoom
+npm run demo:zoom                                     # buat ulang video/gambar pembanding zoom di output/comparisons/
 npm run test:engine                                   # unit test mesin (tanpa browser)
 npm run lint                                          # cek sintaks, JSON, determinisme, kemurnian mesin
 npm test                                              # semua pengujian di atas (setelah build:all)
@@ -138,7 +168,8 @@ src/
     composer.js, entities.js    adegan tersusun dari data, sistem entitas
     tracks.js, camera.js        keyframe, easing, kamera (keys, follow-entity, follow, speed)
     environment.js, palette.js  track lingkungan bebas, ramp palet pencahayaan
-    presenter.js, transitions.js  penyaji frame (zoom tajam), transisi cut/dissolve/portal
+    presenter.js, pixel-grid.js   penyaji frame dan pemetaan grid piksel zoom (anchored/steps/nearest)
+    transitions.js              transisi cut/dissolve/portal
     pixel.js, random.js, math.js  alat gambar pixel art, acak deterministik, fungsi bantu
     runtime.js, page.html       halaman browser tempat film digambar
   assets/
@@ -151,17 +182,17 @@ src/
   render/                       program Node.js: loader proyek, render, validasi, pengujian
 tests/
   engine/                       unit test mesin (node --test)
-  baselines/                    baseline resmi dari main untuk uji regresi
-  fixtures/                     adegan dan aset uji yang sengaja salah atau palsu
-.github/workflows/ci.yml        pemeriksaan otomatis di GitHub (lint, unit test, uji asap)
+  baselines/                    baseline resmi dari main untuk uji regresi + perubahan terdeklarasi (pending-changes.json)
+  fixtures/                     adegan dan aset uji yang sengaja salah atau palsu, penganalisis lab zoom
+.github/workflows/ci.yml        pemeriksaan otomatis di GitHub (lint, unit test, uji asap, lab zoom)
 docs/                           arsitektur, panduan reusability, riwayat, catatan peningkatan
-output/                         video, laporan, cuplikan (frame PNG tidak masuk Git)
+output/                         video, laporan, cuplikan, bahan pembanding (comparisons/); frame PNG tidak masuk Git
 ```
 
 ## Keterbatasan yang masih ada
 
 - Belum ada audio atau musik (di luar cakupan sampai sekarang).
-- Saat kamera zoom dengan nilai tidak bulat (misalnya 1,1), lebar piksel art bergantian 4 dan 5 piksel layar. Tidak ada blur, tetapi tepi garis bisa tampak sedikit merayap selama zoom berjalan.
+- Saat kamera zoom dengan nilai tidak bulat (misalnya 1,1), satu frame berisi dua ukuran piksel berdampingan (4 dan 5 piksel layar). Sejak Tahap 4 polanya menempel pada gambar sehingga tidak merayap; keseragaman penuh hanya di zoom kelipatan 0,25 (V23).
 - Warna karakter belum ikut berubah bersama palet pencahayaan pagi.
 - Determinisme dijamin di lingkungan yang sama (versi Chromium dan FFmpeg yang sama).
 - CI di GitHub hanya menjalankan pemeriksaan ringan. Render penuh dan pengujian lengkap dijalankan lokal atau di sesi Claude Code.
