@@ -18,7 +18,9 @@
     "codec": "libx264",
     "preset": "slow",
     "crf": 16,
-    "pixelFormat": "yuv420p"
+    "pixelFormat": "yuv420p",
+    "profile": "high",
+    "level": "4.1"
   },
   "sceneParams": {
     "railY": 212,

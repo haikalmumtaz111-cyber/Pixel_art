@@ -2,12 +2,12 @@
 // di posisi cerobong saat itu, lalu tertiup angin ke belakang, naik, dan membesar.
 import { disc } from '../engine/pixel.js';
 import { hash } from '../engine/random.js';
-import { PALETTE as P } from './palette.js';
 
 export function createSmoke({ seed, interval, life, wind }) {
   return {
     // emitterAt(t) mengembalikan posisi dunia puncak cerobong pada waktu t.
-    draw(ctx, camera, time, emitterAt) {
+    draw(ctx, camera, time, emitterAt, env) {
+      const colors = env.pal.smoke;
       const first = Math.ceil((time - life) / interval);
       const last = Math.floor(time / interval);
       for (let n = first; n <= last; n++) {
@@ -24,10 +24,10 @@ export function createSmoke({ seed, interval, life, wind }) {
         const sx = Math.round(x - camera.x);
         const sy = Math.round(y);
         ctx.globalAlpha = k < 0.4 ? 0.95 : k < 0.7 ? 0.7 : 0.4;
-        disc(ctx, sx - 1, sy + 1, r, P.smoke[0]);
-        disc(ctx, sx, sy, r, P.smoke[1]);
-        disc(ctx, sx + 1, sy - 1, Math.max(1, r - 2), P.smoke[2]);
-        if (r > 4) disc(ctx, sx + 2, sy - 2, r - 4, P.smoke[3]);
+        disc(ctx, sx - 1, sy + 1, r, colors[0]);
+        disc(ctx, sx, sy, r, colors[1]);
+        disc(ctx, sx + 1, sy - 1, Math.max(1, r - 2), colors[2]);
+        if (r > 4) disc(ctx, sx + 2, sy - 2, r - 4, colors[3]);
       }
       ctx.globalAlpha = 1;
     }

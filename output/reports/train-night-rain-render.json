@@ -1,9 +1,614 @@
 {
   "name": "train-night-rain",
-  "renderedAt": "2026-10-27T06:57:06.605Z",
+  "renderedAt": "2026-10-27T08:17:11.241Z",
+  "firstFrame": 0,
   "totalFrames": 150,
-  "renderSeconds": 3.142,
-  "encodeSeconds": 10.338,
+  "renderSeconds": 3.752,
+  "encodeSeconds": 8.682,
   "chromiumVersion": "153.0.8010.12",
-  "ffmpegCommand": "ffmpeg -y -v error -framerate 30 -start_number 0 -i output/frames/train-night-rain/frame_%04d.png -frames:v 150 -vf scale=1920:1080:flags=neighbor:out_color_matrix=bt709:out_range=tv,format=yuv420p -c:v libx264 -preset slow -crf 16 -tune animation -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv -r 30 -movflags +faststart output/video/train-night-rain.mp4"
+  "jsErrors": 0,
+  "video": "output/video/train-night-rain.mp4",
+  "ffmpegCommand": "ffmpeg -y -v error -framerate 30 -start_number 0 -i output/frames/train-night-rain/frame_%04d.png -frames:v 150 -vf scale=1920:1080:flags=neighbor:out_color_matrix=bt709:out_range=tv,format=yuv420p -c:v libx264 -preset slow -crf 16 -tune animation -profile:v high -level:v 4.1 -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv -r 30 -movflags +faststart output/video/train-night-rain.mp4",
+  "segments": [
+    {
+      "frame": 0,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 1,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 2,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 3,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 4,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 5,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 6,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 7,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 8,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 9,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 10,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 11,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 12,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 13,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 14,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 15,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 16,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 17,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 18,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 19,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 20,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 21,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 22,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 23,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 24,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 25,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 26,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 27,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 28,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 29,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 30,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 31,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 32,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 33,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 34,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 35,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 36,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 37,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 38,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 39,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 40,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 41,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 42,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 43,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 44,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 45,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 46,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 47,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 48,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 49,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 50,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 51,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 52,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 53,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 54,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 55,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 56,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 57,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 58,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 59,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 60,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 61,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 62,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 63,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 64,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 65,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 66,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 67,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 68,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 69,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 70,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 71,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 72,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 73,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 74,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 75,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 76,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 77,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 78,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 79,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 80,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 81,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 82,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 83,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 84,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 85,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 86,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 87,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 88,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 89,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 90,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 91,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 92,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 93,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 94,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 95,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 96,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 97,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 98,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 99,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 100,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 101,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 102,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 103,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 104,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 105,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 106,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 107,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 108,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 109,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 110,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 111,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 112,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 113,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 114,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 115,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 116,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 117,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 118,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 119,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 120,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 121,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 122,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 123,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 124,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 125,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 126,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 127,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 128,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 129,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 130,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 131,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 132,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 133,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 134,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 135,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 136,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 137,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 138,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 139,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 140,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 141,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 142,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 143,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 144,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 145,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 146,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 147,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 148,
+      "segment": "train-night-rain"
+    },
+    {
+      "frame": 149,
+      "segment": "train-night-rain"
+    }
+  ]
 }

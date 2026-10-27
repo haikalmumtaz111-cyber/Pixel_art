@@ -1,13 +1,17 @@
 {
   "name": "pixel-history-studio",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "Studio animasi pixel art berbasis kode untuk film sejarah bergaya retro.",
   "scripts": {
     "check": "node src/render/check-env.cjs",
-    "render": "node src/render/render.cjs config/train-night-rain.json",
-    "validate": "node src/render/validate.cjs config/train-night-rain.json",
+    "render": "node src/render/render.cjs config/film-night-to-dawn.json",
+    "render:scene": "node src/render/render.cjs config/film-night-to-dawn.json --scene",
+    "validate": "node src/render/validate.cjs config/film-night-to-dawn.json",
+    "test:negative": "node src/render/negative-tests.cjs config/film-night-to-dawn.json",
     "build": "npm run render && npm run validate",
+    "test": "npm run validate && npm run test:negative",
+    "build:prototype": "node src/render/render.cjs config/train-night-rain.json && node src/render/validate.cjs config/train-night-rain.json",
     "preview": "node src/render/preview.cjs"
   },
   "engines": {

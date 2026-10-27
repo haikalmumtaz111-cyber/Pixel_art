@@ -1,9 +1,10 @@
 // Aset prosedural hujan: dua lapis tetesan diagonal (jauh dan dekat) serta cipratan.
 // Posisi setiap tetes dihitung langsung dari waktu, bukan disimpan dari frame sebelumnya.
+// Intensitas hujan (env.rainAt) diperiksa pada saat tetes mulai jatuh dari atas,
+// sehingga saat hujan mereda tidak ada tetes yang tiba-tiba hilang di tengah udara.
 import { pixel } from '../engine/pixel.js';
 import { hash } from '../engine/random.js';
 import { mod } from '../engine/math.js';
-import { PALETTE as P } from './palette.js';
 
 const MARGIN = 40;
 
@@ -12,11 +13,13 @@ export function createRain({ width, height, seed, slant, far, near, splashes }) 
   const spanY = height + MARGIN;
 
   // Kemiringan negatif = tetes bergerak ke kiri sambil turun, berlawanan arah kereta.
-  function drawLayer(ctx, camera, time, layer, id, colors, isLit) {
+  function drawLayer(ctx, camera, time, layer, id, colors, isLit, rainAt) {
     for (let i = 0; i < layer.count; i++) {
       const speed = layer.speed * (0.85 + 0.3 * hash(seed, i, id + 1));
-      const travel = hash(seed, i, id + 2) * spanY + speed * time;
+      const offset = hash(seed, i, id + 2) * spanY;
+      const travel = offset + speed * time;
       const cycle = Math.floor(travel / spanY);
+      if (hash(seed, i * 977 + cycle, id + 9) >= rainAt((cycle * spanY - offset) / speed)) continue;
       const yLocal = travel - cycle * spanY;
       const y = Math.round(yLocal - MARGIN / 2);
       const xBase = hash(seed, i * 131 + cycle, id + 3) * spanX;
@@ -31,8 +34,7 @@ export function createRain({ width, height, seed, slant, far, near, splashes }) 
   }
 
   // Cipratan 4 frame: titik, mahkota kecil, mahkota lebar, sisa air.
-  function drawSplash(ctx, x, y, step) {
-    const c = P.splash;
+  function drawSplash(ctx, x, y, step, c) {
     if (step === 0) pixel(ctx, x, y, c);
     else if (step === 1) { pixel(ctx, x - 1, y - 1, c); pixel(ctx, x + 1, y - 1, c); pixel(ctx, x, y, c); }
     else if (step === 2) { pixel(ctx, x - 2, y - 1, c); pixel(ctx, x + 2, y - 1, c); pixel(ctx, x - 1, y - 2, c); pixel(ctx, x + 1, y - 2, c); }
@@ -40,39 +42,43 @@ export function createRain({ width, height, seed, slant, far, near, splashes }) 
   }
 
   // surfaces: daftar area {x0, x1, y0, y1, scroll}. scroll = geseran mengikuti kamera.
-  function drawSplashes(ctx, time, surfaces, count, salt) {
+  function drawSplashes(ctx, time, surfaces, count, salt, env) {
     for (let s = 0; s < count; s++) {
       const period = 0.45 + 0.3 * hash(seed, s, salt + 1);
-      const local = time + hash(seed, s, salt + 2) * period;
+      const phase = hash(seed, s, salt + 2) * period;
+      const local = time + phase;
       const cycle = Math.floor(local / period);
       const step = Math.floor((local - cycle * period) * 30);
       if (step > 3) continue;
+      if (hash(seed, s * 61 + cycle, salt + 9) >= env.rainAt(cycle * period - phase)) continue;
       const surface = surfaces[Math.floor(hash(seed, s * 97 + cycle, salt + 3) * surfaces.length)];
       const w = surface.x1 - surface.x0;
       const x = surface.x0 + mod(hash(seed, s * 89 + cycle, salt + 4) * w - (surface.scroll || 0), w);
       const y = surface.y0 + Math.floor(hash(seed, s * 83 + cycle, salt + 5) * (surface.y1 - surface.y0 + 1));
-      drawSplash(ctx, Math.round(x), y, step);
+      drawSplash(ctx, Math.round(x), y, step, env.pal.splash);
     }
   }
 
   return {
-    drawFar(ctx, camera, time, isLit = () => false) {
-      drawLayer(ctx, camera, time, far, 10, { head: P.rainFar, body: P.rainFar, lit: P.rainFarLit }, isLit);
+    drawFar(ctx, camera, time, isLit, env) {
+      const pal = env.pal;
+      drawLayer(ctx, camera, time, far, 10, { head: pal.rainFar, body: pal.rainFar, lit: pal.rainFarLit }, isLit, env.rainAt);
     },
-    drawNear(ctx, camera, time, isLit = () => false) {
-      drawLayer(ctx, camera, time, near, 20, { head: P.rainNearHi, body: P.rainNear, lit: P.rainLit }, isLit);
+    drawNear(ctx, camera, time, isLit, env) {
+      const pal = env.pal;
+      drawLayer(ctx, camera, time, near, 20, { head: pal.rainNearHi, body: pal.rainNear, lit: pal.rainLit }, isLit, env.rainAt);
     },
-    drawGroundSplashes(ctx, camera, time, railY) {
+    drawGroundSplashes(ctx, camera, time, railY, env) {
       const scroll = camera.x;
       drawSplashes(ctx, time, [
         { x0: -10, x1: width + 10, y0: railY - 1, y1: railY - 1, scroll },
         { x0: -10, x1: width + 10, y0: railY + 4, y1: railY + 12, scroll },
         { x0: -10, x1: width + 10, y0: railY + 18, y1: height - 18, scroll },
         { x0: -10, x1: width + 10, y0: railY + 18, y1: height - 18, scroll }
-      ], splashes, 40);
+      ], splashes, 40, env);
     },
-    drawRoofSplashes(ctx, time, roofs) {
-      drawSplashes(ctx, time, roofs, Math.round(splashes / 3), 60);
+    drawRoofSplashes(ctx, time, roofs, env) {
+      drawSplashes(ctx, time, roofs, Math.round(splashes / 3), 60, env);
     }
   };
 }

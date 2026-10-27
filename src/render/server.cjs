@@ -12,10 +12,23 @@ const MIME = {
   '.css': 'text/css; charset=utf-8'
 };
 
-function startServer(rootDir, port = 0) {
+// routes (opsional): { '/awalan/': (sisaPath) => objek JSON } untuk data yang dibuat Node, misalnya konfigurasi film.
+function startServer(rootDir, port = 0, routes = {}) {
   return new Promise((resolve, reject) => {
     const server = http.createServer((req, res) => {
       const urlPath = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);
+      const route = Object.keys(routes).find((prefix) => urlPath.startsWith(prefix));
+      if (route) {
+        try {
+          const body = JSON.stringify(routes[route](urlPath.slice(route.length)));
+          res.writeHead(200, { 'Content-Type': MIME['.json'], 'Cache-Control': 'no-store' });
+          res.end(body);
+        } catch (error) {
+          res.writeHead(400, { 'Content-Type': 'text/plain; charset=utf-8' });
+          res.end(error.message);
+        }
+        return;
+      }
       const filePath = path.normalize(path.join(rootDir, urlPath));
       if (!filePath.startsWith(rootDir + path.sep)) {
         res.writeHead(403);
