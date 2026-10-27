@@ -1,0 +1,16 @@
+{
+  "id": "s03-town-awakens",
+  "name": "Kota mulai bangun",
+  "module": "compose",
+  "stage": "old-town-street",
+  "start": 8,
+  "end": 12,
+  "cast": ["pak-darto", "sepeda", "pengayuh", "pak-tua", "penyapu", "bu-sari", "mbok-sumi", "anak-sekolah"],
+  "entities": [
+    { "id": "flock-2", "asset": "flock", "layer": "clouds", "position": [-260, 44] },
+    { "id": "morning-rays", "asset": "rays", "layer": "light", "position": [-60, -20],
+      "paramTracks": { "intensity": [[240, 0], [300, 0.9, "inOutSine"], [359, 1]] } }
+  ],
+  "camera": { "track": "walk-follow" },
+  "transitionOut": null
+}

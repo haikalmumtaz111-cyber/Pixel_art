@@ -326,6 +326,10 @@ export function createTrain({ seed, railY, motion = { startX: 0, speed: 0 }, col
       ];
     },
 
+    // Warna identitas kereta (badan gerbong, garis emas, roda merah, kilap lokomotif, kuningan).
+    // Dipakai pengujian konsistensi aset: warna ini harus muncul persis di setiap adegan yang menampilkan kereta.
+    identityColors: () => [D.coach, D.coachStripe, D.wheelRed, D.locoShine, D.brass],
+
     // Gambar kereta dengan parameter tetap. Dipakai pengujian konsistensi aset antar adegan.
     drawSnapshot(ctx, width) {
       rect(ctx, 0, 0, width, railY + 4, '#000000');

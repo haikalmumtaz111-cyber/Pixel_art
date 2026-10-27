@@ -1,0 +1,44 @@
+# Pemeriksaan otomatis untuk setiap pull request dan push ke main.
+# Ringan: lint, unit test mesin, validasi konfigurasi semua proyek, dan uji asap beberapa frame per proyek.
+# Render video penuh tidak dijalankan di sini (dikerjakan lokal dengan "npm run build -- --all").
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  checks:
+    name: Lint, unit test, validasi konfigurasi
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run test:engine
+      - run: npm run projects
+
+  smoke:
+    name: Uji asap render (beberapa frame per proyek)
+    needs: checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Pasang FFmpeg
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
+      - run: npm ci
+      - name: Pasang Chromium untuk Playwright
+        run: npx playwright install --with-deps chromium
+      - run: npm run check
+      - run: npm run test:smoke

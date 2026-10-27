@@ -1,0 +1,862 @@
+{
+  "kind": "asset-catalog",
+  "name": "Pustaka aset Pixel History Studio",
+  "types": {
+    "steam-train": {
+      "category": "vehicles",
+      "module": "/src/assets/registry.js",
+      "description": "Kereta uap: lokomotif, tender, dan dua gerbong penumpang",
+      "params": {
+        "railY": {
+          "type": "integer",
+          "min": 0,
+          "required": true
+        },
+        "motion": {
+          "type": "object",
+          "required": true
+        },
+        "colors": {
+          "type": "object"
+        },
+        "traveler": {
+          "type": "object"
+        }
+      }
+    },
+    "countryside": {
+      "category": "terrain",
+      "module": "/src/assets/registry.js",
+      "description": "Set pedesaan malam-fajar: langit, lanskap, hujan, asap, dan kereta",
+      "effects": [
+        "rain",
+        "smoke",
+        "headlight",
+        "light-spill",
+        "dawn-sky",
+        "sunrise",
+        "clouds-opening",
+        "valley-fog"
+      ],
+      "params": {
+        "train": {
+          "type": "asset",
+          "assetType": "steam-train",
+          "required": true
+        },
+        "railY": {
+          "type": "integer",
+          "min": 0,
+          "required": true
+        },
+        "rain": {
+          "type": "object",
+          "required": true
+        },
+        "smoke": {
+          "type": "object",
+          "required": true
+        }
+      }
+    },
+    "coach-interior": {
+      "category": "furniture",
+      "module": "/src/assets/registry.js",
+      "description": "Interior gerbong penumpang",
+      "effects": [
+        "rain-on-glass",
+        "lamp-flicker",
+        "vibration"
+      ],
+      "params": {
+        "train": {
+          "type": "asset",
+          "assetType": "steam-train",
+          "required": true
+        }
+      }
+    },
+    "character": {
+      "category": "characters",
+      "module": "/src/assets/registry.js",
+      "description": "Karakter penumpang Tahap 2 (siluet dan pose duduk)",
+      "params": {
+        "character": {
+          "type": "string",
+          "enum": [
+            "traveler"
+          ],
+          "required": true
+        },
+        "palette": {
+          "type": "object"
+        },
+        "motion": {
+          "type": "object"
+        },
+        "seed": {
+          "type": "integer"
+        }
+      }
+    },
+    "gradient-sky": {
+      "category": "background",
+      "module": "/src/assets/common/environment.js",
+      "entity": true,
+      "description": "Langit gradasi berdither dengan matahari",
+      "params": {
+        "horizon": {
+          "type": "integer",
+          "min": 1
+        },
+        "sunX": {
+          "type": "number"
+        },
+        "sunY": {
+          "type": "number"
+        },
+        "sunRadius": {
+          "type": "integer",
+          "min": 1,
+          "max": 40
+        },
+        "sunGlow": {
+          "type": "integer",
+          "min": 0,
+          "max": 60
+        },
+        "colors": {
+          "type": "paletteKey",
+          "array": true
+        }
+      },
+      "entityParams": {
+        "sunX": {
+          "type": "number",
+          "animatable": true
+        },
+        "sunY": {
+          "type": "number",
+          "animatable": true
+        }
+      },
+      "paletteKeys": [
+        "sunCore",
+        "sun",
+        "sunGlow",
+        "sunGlowFar"
+      ],
+      "arrayPaletteKeys": [
+        "sky"
+      ]
+    },
+    "ridge": {
+      "category": "terrain",
+      "module": "/src/assets/common/environment.js",
+      "entity": true,
+      "description": "Punggung bukit atau gunung (termasuk gunung berapi)",
+      "params": {
+        "base": {
+          "type": "integer"
+        },
+        "amp": {
+          "type": "number",
+          "min": 0
+        },
+        "freq": {
+          "type": "number",
+          "min": 0
+        },
+        "shape": {
+          "type": "string",
+          "enum": [
+            "hills",
+            "ridged",
+            "volcano"
+          ]
+        },
+        "peakX": {
+          "type": "number"
+        },
+        "peakY": {
+          "type": "number"
+        },
+        "crater": {
+          "type": "number",
+          "min": 0
+        },
+        "slope": {
+          "type": "number",
+          "min": 0
+        },
+        "color": {
+          "type": "paletteKey"
+        },
+        "rim": {
+          "type": "paletteKey"
+        },
+        "bottom": {
+          "type": "integer"
+        },
+        "seedOffset": {
+          "type": "integer"
+        }
+      }
+    },
+    "cloud-field": {
+      "category": "weather",
+      "module": "/src/assets/common/environment.js",
+      "entity": true,
+      "description": "Awan bergerak pelan",
+      "params": {
+        "count": {
+          "type": "integer",
+          "min": 1,
+          "max": 30
+        },
+        "span": {
+          "type": "integer",
+          "min": 100
+        },
+        "yMin": {
+          "type": "integer"
+        },
+        "yMax": {
+          "type": "integer"
+        },
+        "speed": {
+          "type": "number"
+        },
+        "seedOffset": {
+          "type": "integer"
+        }
+      },
+      "paletteKeys": [
+        "cloud",
+        "cloudLight",
+        "cloudShade"
+      ]
+    },
+    "birds": {
+      "category": "particles",
+      "module": "/src/assets/common/environment.js",
+      "entity": true,
+      "description": "Kawanan burung terbang atau merpati di jalan",
+      "params": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "fly",
+            "ground"
+          ]
+        },
+        "count": {
+          "type": "integer",
+          "min": 1,
+          "max": 40
+        },
+        "speed": {
+          "type": "number"
+        },
+        "spread": {
+          "type": "number",
+          "min": 0
+        },
+        "flapFps": {
+          "type": "number",
+          "min": 0
+        },
+        "color": {
+          "type": "paletteKey"
+        },
+        "bodyColor": {
+          "type": "paletteKey"
+        },
+        "seedOffset": {
+          "type": "integer"
+        }
+      },
+      "paletteKeys": [
+        "bird",
+        "pigeon"
+      ]
+    },
+    "particles": {
+      "category": "particles",
+      "module": "/src/assets/common/environment.js",
+      "entity": true,
+      "description": "Partikel uap atau asap",
+      "params": {
+        "rate": {
+          "type": "number",
+          "min": 0.1
+        },
+        "life": {
+          "type": "number",
+          "min": 0.1
+        },
+        "vx": {
+          "type": "number"
+        },
+        "vy": {
+          "type": "number"
+        },
+        "spread": {
+          "type": "number",
+          "min": 0
+        },
+        "size0": {
+          "type": "number",
+          "min": 0
+        },
+        "size1": {
+          "type": "number",
+          "min": 0
+        },
+        "colors": {
+          "type": "array",
+          "items": {
+            "type": "paletteKey"
+          }
+        },
+        "alpha": {
+          "type": "number",
+          "min": 0,
+          "max": 1
+        },
+        "seedOffset": {
+          "type": "integer"
+        }
+      },
+      "entityParams": {
+        "sinceFrame": {
+          "type": "integer",
+          "min": 0
+        }
+      }
+    },
+    "light-rays": {
+      "category": "weather",
+      "module": "/src/assets/common/environment.js",
+      "entity": true,
+      "description": "Berkas cahaya matahari berdither",
+      "params": {
+        "count": {
+          "type": "integer",
+          "min": 1,
+          "max": 20
+        },
+        "width": {
+          "type": "integer",
+          "min": 1
+        },
+        "spacing": {
+          "type": "integer",
+          "min": 1
+        },
+        "slope": {
+          "type": "number"
+        },
+        "length": {
+          "type": "integer",
+          "min": 1
+        },
+        "color": {
+          "type": "paletteKey"
+        },
+        "alpha": {
+          "type": "number",
+          "min": 0,
+          "max": 1
+        },
+        "track": {
+          "type": "string"
+        }
+      },
+      "entityParams": {
+        "intensity": {
+          "type": "number",
+          "animatable": true,
+          "min": 0,
+          "max": 1
+        }
+      }
+    },
+    "shophouse": {
+      "category": "buildings",
+      "module": "/src/assets/town/buildings.js",
+      "entity": true,
+      "description": "Ruko bergaya Indies 1-2 lantai",
+      "states": [
+        "closed",
+        "open"
+      ],
+      "colorStates": [
+        "on",
+        "off"
+      ],
+      "params": {
+        "width": {
+          "type": "integer",
+          "min": 40,
+          "max": 160
+        },
+        "floors": {
+          "type": "integer",
+          "min": 1,
+          "max": 2
+        },
+        "roof": {
+          "type": "string",
+          "enum": [
+            "tile",
+            "stepped",
+            "peak"
+          ]
+        },
+        "wall": {
+          "type": "paletteKey",
+          "suffixes": [
+            "",
+            "Shade"
+          ]
+        },
+        "trim": {
+          "type": "paletteKey"
+        },
+        "shutter": {
+          "type": "paletteKey",
+          "suffixes": [
+            "",
+            "Light"
+          ]
+        },
+        "awning": {
+          "type": "string",
+          "enum": [
+            "red",
+            "green",
+            "blue",
+            "none"
+          ]
+        },
+        "windows": {
+          "type": "integer",
+          "min": 1,
+          "max": 5
+        },
+        "balcony": {
+          "type": "boolean"
+        },
+        "plants": {
+          "type": "boolean"
+        },
+        "sign": {
+          "type": "string"
+        },
+        "signBoard": {
+          "type": "paletteKey"
+        },
+        "signText": {
+          "type": "paletteKey"
+        },
+        "seedOffset": {
+          "type": "integer"
+        }
+      },
+      "paletteKeys": [
+        "roofTile",
+        "roofTileLight",
+        "roofTileDark",
+        "trimShade",
+        "glass",
+        "glassLight",
+        "windowLit",
+        "windowLitHi",
+        "wood",
+        "woodDark",
+        "woodLight",
+        "shopInside",
+        "goodsA",
+        "goodsB",
+        "goodsC",
+        "awningWhite",
+        "awningRed",
+        "awningGreen",
+        "awningBlue",
+        "shadow",
+        "pot",
+        "potLight",
+        "leaf",
+        "leafLight",
+        "signBoard",
+        "signText"
+      ]
+    },
+    "skyline": {
+      "category": "background",
+      "module": "/src/assets/town/buildings.js",
+      "entity": true,
+      "description": "Siluet atap kota, pohon kelapa, dan menara air di kejauhan",
+      "params": {
+        "base": {
+          "type": "integer"
+        },
+        "color": {
+          "type": "paletteKey"
+        },
+        "light": {
+          "type": "paletteKey"
+        },
+        "tree": {
+          "type": "paletteKey"
+        },
+        "seedOffset": {
+          "type": "integer"
+        }
+      }
+    },
+    "street": {
+      "category": "terrain",
+      "module": "/src/assets/town/street.js",
+      "entity": true,
+      "description": "Trotoar, batu tepi, jalan batu, selokan, rumput",
+      "params": {
+        "sidewalkTop": {
+          "type": "integer"
+        },
+        "curbTop": {
+          "type": "integer"
+        },
+        "roadTop": {
+          "type": "integer"
+        },
+        "roadBottom": {
+          "type": "integer"
+        },
+        "bottom": {
+          "type": "integer"
+        },
+        "seedOffset": {
+          "type": "integer"
+        }
+      },
+      "paletteKeys": [
+        "sidewalk",
+        "sidewalkLight",
+        "sidewalkDark",
+        "curb",
+        "curbLight",
+        "curbDark",
+        "road",
+        "roadLight",
+        "roadDark",
+        "roadShade",
+        "gutter",
+        "grass",
+        "grassLight",
+        "grassDark"
+      ]
+    },
+    "street-lamp": {
+      "category": "props",
+      "module": "/src/assets/town/props.js",
+      "entity": true,
+      "description": "Lampu jalan besi",
+      "colorStates": [
+        "on",
+        "off"
+      ],
+      "params": {
+        "height": {
+          "type": "integer",
+          "min": 30,
+          "max": 140
+        }
+      },
+      "paletteKeys": [
+        "iron",
+        "ironLight",
+        "lampLit",
+        "lampGlass",
+        "lampGlow"
+      ]
+    },
+    "kiosk": {
+      "category": "furniture",
+      "module": "/src/assets/town/props.js",
+      "entity": true,
+      "description": "Warung kayu dengan kerai bambu yang bisa dibuka",
+      "params": {
+        "width": {
+          "type": "integer",
+          "min": 30,
+          "max": 80
+        },
+        "sign": {
+          "type": "string"
+        }
+      },
+      "entityParams": {
+        "open": {
+          "type": "number",
+          "animatable": true,
+          "min": 0,
+          "max": 1
+        }
+      },
+      "paletteKeys": [
+        "wood",
+        "woodDark",
+        "woodLight",
+        "zinc",
+        "zincLight",
+        "zincDark",
+        "signBoard",
+        "signText",
+        "shopInside",
+        "glassLight",
+        "goodsA",
+        "goodsB",
+        "goodsC",
+        "bamboo",
+        "bambooDark"
+      ]
+    },
+    "bench": {
+      "category": "furniture",
+      "module": "/src/assets/town/props.js",
+      "entity": true,
+      "description": "Bangku kayu",
+      "params": {
+        "width": {
+          "type": "integer",
+          "min": 12,
+          "max": 80
+        }
+      },
+      "paletteKeys": [
+        "wood",
+        "woodLight",
+        "woodDark"
+      ]
+    },
+    "tree": {
+      "category": "vegetation",
+      "module": "/src/assets/town/vegetation.js",
+      "entity": true,
+      "description": "Pohon rindang atau pohon kelapa yang bergoyang",
+      "params": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "round",
+            "palm"
+          ]
+        },
+        "height": {
+          "type": "integer",
+          "min": 20,
+          "max": 160
+        },
+        "crown": {
+          "type": "integer",
+          "min": 6,
+          "max": 50
+        },
+        "sway": {
+          "type": "number",
+          "min": 0,
+          "max": 4
+        },
+        "seedOffset": {
+          "type": "integer"
+        }
+      },
+      "paletteKeys": [
+        "trunk",
+        "trunkLight",
+        "leaf",
+        "leafDark",
+        "leafLight"
+      ]
+    },
+    "bicycle": {
+      "category": "vehicles",
+      "module": "/src/assets/town/vehicles.js",
+      "entity": true,
+      "description": "Sepeda ontel dengan roda dan pedal berputar",
+      "params": {
+        "wheelRadius": {
+          "type": "integer",
+          "min": 5,
+          "max": 12
+        },
+        "color": {
+          "type": "paletteKey"
+        }
+      },
+      "paletteKeys": [
+        "tire",
+        "spoke",
+        "wheelGap",
+        "saddle",
+        "basket"
+      ]
+    },
+    "rig-character": {
+      "category": "characters",
+      "module": "/src/assets/characters/rig.js",
+      "entity": true,
+      "description": "Karakter rig reusable: idle, jalan, duduk, isyarat, mengayuh",
+      "states": [
+        "idle",
+        "stand",
+        "walk",
+        "seated",
+        "gesture",
+        "cycle",
+        "sweep"
+      ],
+      "params": {
+        "height": {
+          "type": "integer",
+          "min": 28,
+          "max": 60
+        },
+        "build": {
+          "type": "string",
+          "enum": [
+            "slim",
+            "regular",
+            "stout"
+          ]
+        },
+        "sleeves": {
+          "type": "string",
+          "enum": [
+            "long",
+            "short"
+          ]
+        },
+        "hairStyle": {
+          "type": "string",
+          "enum": [
+            "short",
+            "bun",
+            "long"
+          ]
+        },
+        "hat": {
+          "type": "string",
+          "enum": [
+            "none",
+            "peci",
+            "caping",
+            "kerudung"
+          ]
+        },
+        "accessory": {
+          "type": "string",
+          "enum": [
+            "none",
+            "basket",
+            "parcel",
+            "bag",
+            "broom",
+            "newspaper"
+          ]
+        },
+        "skin": {
+          "type": "color"
+        },
+        "skinShade": {
+          "type": "color"
+        },
+        "hair": {
+          "type": "color"
+        },
+        "shirt": {
+          "type": "color"
+        },
+        "shirtShade": {
+          "type": "color"
+        },
+        "collar": {
+          "type": "color"
+        },
+        "pants": {
+          "type": "color"
+        },
+        "pantsShade": {
+          "type": "color"
+        },
+        "sarong": {
+          "type": "color"
+        },
+        "sarongPattern": {
+          "type": "color"
+        },
+        "shoes": {
+          "type": "color"
+        },
+        "hatColor": {
+          "type": "color"
+        },
+        "hatShade": {
+          "type": "color"
+        },
+        "accessoryColor": {
+          "type": "color"
+        },
+        "accessoryShade": {
+          "type": "color"
+        },
+        "strideLength": {
+          "type": "integer",
+          "min": 8,
+          "max": 60
+        },
+        "seed": {
+          "type": "integer"
+        }
+      },
+      "entityParams": {
+        "headTurn": {
+          "type": "number",
+          "animatable": true,
+          "min": -1,
+          "max": 1
+        },
+        "gesture": {
+          "type": "number",
+          "animatable": true,
+          "min": 0,
+          "max": 1
+        },
+        "breathSeconds": {
+          "type": "number",
+          "min": 0.5,
+          "max": 10
+        },
+        "wheelRadius": {
+          "type": "number",
+          "min": 1
+        },
+        "crankX": {
+          "type": "number"
+        },
+        "crankDrop": {
+          "type": "number"
+        },
+        "crankRadius": {
+          "type": "number",
+          "min": 1
+        },
+        "phaseOffset": {
+          "type": "number"
+        }
+      }
+    }
+  }
+}

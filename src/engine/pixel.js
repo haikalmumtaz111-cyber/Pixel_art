@@ -2,9 +2,10 @@
 // Semua koordinat dibulatkan ke bilangan bulat supaya tidak ada anti-aliasing,
 // sehingga gambar selalu tajam dan hasilnya sama persis di setiap render.
 //
-// View (opsional) dipakai untuk zoom kamera: posisi layar = o + posisi * s.
-// Bentuk tidak diperbesar seperti foto, melainkan digambar ulang di resolusi asli,
-// jadi tepinya tetap tajam walau di-zoom.
+// View (opsional): posisi layar = o + posisi * s. Dipakai untuk menempatkan entitas, skala bilangan bulat,
+// dan zoom. Bentuk tidak diperbesar seperti foto, melainkan digambar ulang di resolusi asli,
+// jadi tepinya tetap tajam. view.flip = true mencerminkan gambar secara horizontal terhadap titik o
+// (misalnya karakter yang berjalan ke kiri).
 
 export function createLayer(width, height) {
   const canvas = document.createElement('canvas');
@@ -34,10 +35,19 @@ export function rect(ctx, x, y, w, h, color) {
     ctx.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h));
     return;
   }
+  if (v.flip) {
+    const a = Math.round(v.ox - (x + w) * v.s);
+    const y0 = Math.round(v.oy + y * v.s);
+    ctx.fillRect(a, y0, Math.round(v.ox - x * v.s) - a, Math.round(v.oy + (y + h) * v.s) - y0);
+    return;
+  }
   const x0 = Math.round(v.ox + x * v.s);
   const y0 = Math.round(v.oy + y * v.s);
   ctx.fillRect(x0, y0, Math.round(v.ox + (x + w) * v.s) - x0, Math.round(v.oy + (y + h) * v.s) - y0);
 }
+
+// Tepi kiri sel piksel x di layar (memperhitungkan cermin).
+const cellX = (v, x) => (v.flip ? v.ox - (x + 1) * v.s : v.ox + x * v.s);
 
 export function pixel(ctx, x, y, color) {
   if (ctx.pixelView) {
@@ -52,9 +62,10 @@ export function pixel(ctx, x, y, color) {
 export function screenRect(ctx, x, y, w, h) {
   const v = ctx.pixelView;
   const m = ctx.getTransform();
-  const map = (px, py) => (v ? [v.ox + px * v.s, v.oy + py * v.s] : [px, py]);
-  const [ax, ay] = map(x, y);
-  const [bx, by] = map(x + w, y + h);
+  const map = (px, py) => (v ? [v.flip ? v.ox - px * v.s : v.ox + px * v.s, v.oy + py * v.s] : [px, py]);
+  let [ax, ay] = map(x, y);
+  let [bx, by] = map(x + w, y + h);
+  if (ax > bx) [ax, bx] = [bx, ax];
   const x0 = Math.round(ax) + Math.round(m.e);
   const y0 = Math.round(ay) + Math.round(m.f);
   return { x: x0, y: y0, w: Math.round(bx) + Math.round(m.e) - x0, h: Math.round(by) + Math.round(m.f) - y0 };
@@ -67,7 +78,7 @@ export function line(ctx, x0, y0, x1, y1, color) {
   const v = ctx.pixelView;
   if (v) {
     size = Math.max(1, Math.round(v.s));
-    [x0, y0, x1, y1] = [v.ox + x0 * v.s, v.oy + y0 * v.s, v.ox + x1 * v.s, v.oy + y1 * v.s];
+    [x0, y0, x1, y1] = [cellX(v, x0), v.oy + y0 * v.s, cellX(v, x1), v.oy + y1 * v.s];
   }
   x0 = Math.round(x0); y0 = Math.round(y0);
   x1 = Math.round(x1); y1 = Math.round(y1);
@@ -91,7 +102,8 @@ export function disc(ctx, cx, cy, r, color) {
   const v = ctx.pixelView;
   if (v) {
     // lingkaran digambar ulang pada ukuran besar, bukan diperbesar kotak-kotak
-    const ccx = v.ox + (Math.round(cx) + 0.5) * v.s;
+    // rumus tanpa cermin sengaja sama persis dengan Tahap 2 agar hasil lama tidak bergeser
+    const ccx = v.flip ? v.ox - (Math.round(cx) + 0.5) * v.s : v.ox + (Math.round(cx) + 0.5) * v.s;
     const ccy = v.oy + (Math.round(cy) + 0.5) * v.s;
     const R = (r + 0.5) * v.s;
     for (let y = Math.floor(ccy - R); y < Math.ceil(ccy + R); y++) {
@@ -118,10 +130,20 @@ export function blit(ctx, image, x, y) {
     ctx.drawImage(image, x, y);
     return;
   }
-  const x0 = Math.round(v.ox + x * v.s);
   const y0 = Math.round(v.oy + y * v.s);
-  const x1 = Math.round(v.ox + (x + image.width) * v.s);
   const y1 = Math.round(v.oy + (y + image.height) * v.s);
+  if (v.flip) {
+    const left = Math.round(v.ox - (x + image.width) * v.s);
+    const right = Math.round(v.ox - x * v.s);
+    ctx.save();
+    ctx.translate(right, y0);
+    ctx.scale(-1, 1);
+    ctx.drawImage(image, 0, 0, right - left, y1 - y0);
+    ctx.restore();
+    return;
+  }
+  const x0 = Math.round(v.ox + x * v.s);
+  const x1 = Math.round(v.ox + (x + image.width) * v.s);
   ctx.drawImage(image, x0, y0, x1 - x0, y1 - y0);
 }
 
@@ -135,15 +157,18 @@ export function bayer(x, y) {
 
 // Topeng dither: piksel terlihat jika nilai Bayer-nya di bawah level (0..16).
 // Dipakai transisi agar campuran dua gambar tetap berupa piksel tegas, bukan blur.
+// cell = ukuran satu "piksel art" di kanvas (1 bila kanvas beresolusi internal, 4 bila sudah diperbesar 4x).
 const maskCache = new Map();
-export function ditherMask(width, height, level) {
-  const key = `${width}x${height}:${level}`;
+export function ditherMask(width, height, level, cell = 1) {
+  const key = `${width}x${height}:${level}:${cell}`;
   if (!maskCache.has(key)) {
     const layer = createLayer(width, height);
     const image = layer.ctx.createImageData(width, height);
     for (let y = 0; y < height; y++) {
+      const cy = Math.floor(y / cell);
       for (let x = 0; x < width; x++) {
-        if (BAYER4[(y & 3) * 4 + (x & 3)] < level) image.data[(y * width + x) * 4 + 3] = 255;
+        const cx = Math.floor(x / cell);
+        if (BAYER4[(cy & 3) * 4 + (cx & 3)] < level) image.data[(y * width + x) * 4 + 3] = 255;
       }
     }
     layer.ctx.putImageData(image, 0, 0);

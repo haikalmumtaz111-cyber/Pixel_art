@@ -1,0 +1,32 @@
+{
+  "kind": "engine",
+  "name": "Pixel History Studio",
+  "engineVersion": "0.3.0",
+  "assetCatalogs": ["src/assets/catalog.json"],
+  "projectsDir": "config",
+  "builtinScenes": ["compose"],
+  "transitions": ["cut", "dissolve", "portal"],
+  "easings": ["linear", "inQuad", "outQuad", "inCubic", "outCubic", "inOutCubic", "inOutSine", "smoothstep"],
+  "cameraTypes": ["keys", "follow-entity", "follow", "speed"],
+  "anchors": ["top-left", "top-center", "top-right", "center-left", "center", "center-right", "bottom-left", "bottom-center", "bottom-right"],
+  "rendering": {
+    "upscale": "ffmpeg",
+    "maxZoom": 4,
+    "maxEntityScale": 4,
+    "encoding": {
+      "codec": "libx264",
+      "preset": "slow",
+      "crf": 16,
+      "pixelFormat": "yuv420p",
+      "profile": "high",
+      "level": "4.1"
+    }
+  },
+  "validation": {
+    "maxLumaStep": 8,
+    "cutSpikeRatio": 3,
+    "cutSpikeMin": 10,
+    "blankRange": 16,
+    "blankMean": 6
+  }
+}

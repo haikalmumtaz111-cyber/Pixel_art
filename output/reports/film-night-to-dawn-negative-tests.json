@@ -1,33 +1,99 @@
 {
-  "testedAt": "2026-10-27T08:23:39.647Z",
+  "testedAt": "2026-10-27T10:50:57.765Z",
+  "project": "night-to-dawn",
   "allDetected": true,
-  "detected": 16,
-  "total": 16,
+  "detected": 33,
+  "total": 33,
   "results": [
     {
-      "name": "Timeline berlubang: adegan 2 mulai 1 frame terlambat",
+      "name": "Celah di timeline: adegan 2 mulai 1 frame terlambat",
       "detected": true,
-      "detail": "Interval adegan valid: GAGAL, Adegan 2 (s02-inside-train): harus mulai tepat setelah adegan sebelumnya (frame 150), tidak boleh ada celah atau tumpang tindih"
+      "detail": "Adegan 2 (s02-inside-train): ada celah, adegan seharusnya mulai di frame 150 tetapi mulai di 151"
     },
     {
-      "name": "Timeline tumpang tindih: adegan 3 mulai di frame 290",
+      "name": "Tumpang tindih: adegan 2 mulai 1 frame lebih awal",
       "detected": true,
-      "detail": "Interval adegan valid: GAGAL, Adegan 3 (s03-journey-to-dawn): harus mulai tepat setelah adegan sebelumnya (frame 300), tidak boleh ada celah atau tumpang tindih"
+      "detail": "Adegan 2 (s02-inside-train): tumpang tindih, adegan mulai di frame 149 padahal adegan sebelumnya berakhir di 150"
     },
     {
-      "name": "Durasi adegan tidak cocok dengan rentang frame",
+      "name": "Durasi adegan tidak valid (akhir = awal)",
       "detected": true,
-      "detail": "Interval adegan valid: GAGAL, Adegan 1 (s01-night-train): durationFrames 151 tidak cocok dengan 0..149"
+      "detail": "Adegan 1 (s01-night-train): durasi tidak valid (end harus lebih besar dari start)"
+    },
+    {
+      "name": "Durasi yang tidak menjadi frame bulat (0,01 detik)",
+      "detected": true,
+      "detail": "Adegan 1 (s01-night-train): end 5.01 detik tidak menjadi frame bulat pada 30 FPS"
+    },
+    {
+      "name": "ID adegan ganda",
+      "detected": true,
+      "detail": "Adegan 2 (s01-night-train): id adegan ganda"
+    },
+    {
+      "name": "Adegan terakhir tidak menutup akhir film",
+      "detected": true,
+      "detail": "Adegan terakhir harus berakhir tepat di akhir film (frame 450), bukan 449"
     },
     {
       "name": "Transisi tidak melewati batas adegan",
       "detected": true,
-      "detail": "Interval adegan valid: GAGAL, Transisi dari s01-night-train: rentang 100..140 harus melewati batas adegan di frame 150"
+      "detail": "Transisi dari s01-night-train: rentang frame 0..35 harus melewati batas adegan di frame 150"
     },
     {
-      "name": "Nama efek salah ketik di timeline",
+      "name": "Jenis transisi tidak dikenal",
       "detected": true,
-      "detail": "Interval adegan valid: GAGAL, Adegan 2 (s02-inside-train): efek \"hujan-deras-salah-ketik\" tidak dikenal"
+      "detail": "Transisi dari s01-night-train: jenis \"wipe-hantu\" tidak dikenal (pilihan: cut, dissolve, portal)"
+    },
+    {
+      "name": "ID aset tidak dikenal",
+      "detected": true,
+      "detail": "Adegan 1 (s01-night-train): aset \"aset-hantu\" tidak ada di bagian assets"
+    },
+    {
+      "name": "Track kamera tidak dikenal",
+      "detected": true,
+      "detail": "Adegan 1 (s01-night-train): track kamera \"track-hantu\" tidak ditemukan"
+    },
+    {
+      "name": "Keyframe tidak valid (frame mundur)",
+      "detected": true,
+      "detail": "Lingkungan \"uji\" key 1: frame harus berurutan naik"
+    },
+    {
+      "name": "Keyframe dengan easing tidak dikenal",
+      "detected": true,
+      "detail": "Lingkungan \"uji\" key 1: easing \"memantul-hantu\" tidak dikenal"
+    },
+    {
+      "name": "Parameter entitas/aset tidak valid",
+      "detected": true,
+      "detail": "Aset \"traveler\": parameter \"warnaHantu\" tidak dikenal"
+    },
+    {
+      "name": "Nilai parameter di luar batas",
+      "detected": true,
+      "detail": "Aset \"train\".railY: nilai -5 lebih kecil dari batas 0"
+    },
+    {
+      "name": "Zoom kamera tanpa mode upscale \"browser\" (piksel jadi tidak tajam)",
+      "detected": true,
+      "detail": "Track kamera \"dawn-run\": zoom kamera hanya didukung bila rendering.upscale = \"browser\" (agar piksel tetap tajam)"
+    },
+    {
+      "name": "Nama efek salah ketik",
+      "detected": true,
+      "detail": "Adegan 2 (s02-inside-train): efek \"hujan-deras-salah-ketik\" tidak dikenal"
+    },
+    {
+      "name": "Proyek yang tidak ada",
+      "detected": true,
+      "detail": "exit 1: RENDER GAGAL: Proyek \"proyek-hantu\" tidak ditemukan. Proyek yang tersedia: /   - night-to-dawn        Kereta Malam Menuju Fajar (15 detik, 30 FPS)"
+    },
+    {
+      "name": "Adegan yang tidak ada",
+      "detected": true,
+      "detail": "exit 1: RENDER GAGAL: Adegan \"adegan-hantu\" tidak ada di proyek night-to-dawn. Pilihan: s01-night-train, s02-inside-train, s03-journey-to-dawn"
     },
     {
       "name": "Video kurang 1 frame (449 frame)",
@@ -50,14 +116,34 @@
       "detail": "Video dapat diputar di perangkat umum: GAGAL, profil High 4:4:4 Predictive, level 4.0, yuv444p, piksel 1:1, faststart ya | Format piksel: GAGAL, yuv444p"
     },
     {
-      "name": "Frame hitam disisipkan di frame 200",
+      "name": "Frame hitam disisipkan di frame 202",
       "detected": true,
-      "detail": "Tidak ada frame kosong: GAGAL, frame kosong: 200 | Tidak ada kilatan cahaya mendadak: GAGAL, lompatan kecerahan di frame 200 (-31.9), 201 (31.9)"
+      "detail": "Tidak ada frame kosong: GAGAL, frame kosong: 202 | Tidak ada kilatan cahaya mendadak: GAGAL, lompatan kecerahan di frame 202 (-31.9), 203 (31.9)"
     },
     {
-      "name": "Frame 123 hilang dari folder frame",
+      "name": "Film berakhir di layar hitam",
       "detected": true,
-      "detail": "Frame PNG lengkap dan berurutan: GAGAL, frame hilang: 123"
+      "detail": "Frame terakhir valid: GAGAL, frame 449: kecerahan rata-rata 16.0, rentang 0"
+    },
+    {
+      "name": "Frame 202 hilang dari folder frame",
+      "detected": true,
+      "detail": "Frame PNG lengkap dan berurutan: GAGAL, frame hilang: 202"
+    },
+    {
+      "name": "Render gagal, tetapi MP4 lama masih ada",
+      "detected": true,
+      "detail": "render exit 1, MP4 lama masih ada dan terlihat sah, Render terakhir selesai dengan sukses: GAGAL, status \"failed\": Error JavaScript di dalam adegan (frame 5): Error: Render sengaja digagalkan (uji negatif)"
+    },
+    {
+      "name": "MP4 diganti tanpa render ulang",
+      "detected": true,
+      "detail": "Video berasal dari render terbaru (bukan sisa render lama): GAGAL, berubah sejak render terakhir: file MP4"
+    },
+    {
+      "name": "Konfigurasi diubah setelah render (MP4 kedaluwarsa)",
+      "detected": true,
+      "detail": "Video berasal dari render terbaru (bukan sisa render lama): GAGAL, berubah sejak render terakhir: konfigurasi proyek"
     },
     {
       "name": "Pergantian adegan dengan potongan kasar (hard cut)",
@@ -70,9 +156,9 @@
       "detail": "Portal s01-night-train->s02-inside-train menutup layar sebelum transisi selesai: GAGAL, layar tertutup penuh mulai frame 167 (transisi berakhir di 167)"
     },
     {
-      "name": "Kereta dengan desain berbeda dipakai di adegan 3",
+      "name": "Aset steam-train tampil berbeda di adegan terakhir",
       "detected": true,
-      "detail": "Aset kereta konsisten di semua adegan: GAGAL, 3 adegan memakai 2 definisi kereta (train, train-b), 2 bentuk berbeda | Warna identitas kereta sama di tiap adegan luar: GAGAL, frame 445: #5c1c27 #4d5474"
+      "detail": "Warna identitas steam-train konsisten: GAGAL, frame 60: #1f5a3a #7a5a3a | frame 445: #5c1c27 #4d5474"
     },
     {
       "name": "Adegan memakai Math.random() (tidak deterministik)",

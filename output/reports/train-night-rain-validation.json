@@ -1,9 +1,11 @@
 {
-  "testedAt": "2026-10-27T08:17:56.598Z",
+  "testedAt": "2026-10-27T10:52:57.431Z",
+  "project": "train-night-rain",
   "config": "config/train-night-rain.json",
+  "includes": [],
   "allPass": true,
-  "passed": 23,
-  "total": 23,
+  "passed": 29,
+  "total": 29,
   "groups": [
     {
       "title": "Jumlah frame tepat",
@@ -34,6 +36,10 @@
       "pass": true
     },
     {
+      "title": "Frame terakhir valid",
+      "pass": true
+    },
+    {
       "title": "Tidak ada error JavaScript",
       "pass": true
     },
@@ -42,8 +48,20 @@
       "pass": true
     },
     {
-      "title": "Aset kereta konsisten",
+      "title": "Aset konsisten antar adegan",
       "pass": false
+    },
+    {
+      "title": "Adegan bisa dirender terpisah",
+      "pass": true
+    },
+    {
+      "title": "Mesin bersama, modul proyek terisolasi",
+      "pass": true
+    },
+    {
+      "title": "Video berasal dari render terbaru",
+      "pass": true
     },
     {
       "title": "Rendering deterministik",
@@ -67,13 +85,25 @@
       "id": "timeline",
       "name": "Interval adegan valid",
       "pass": true,
-      "detail": "1 adegan menutup 150/150 frame tanpa celah: train-night-rain 0-149"
+      "detail": "1 adegan menutup 150/150 frame tanpa celah: train-night-rain [0, 150)"
     },
     {
       "id": "timeline-transitions",
       "name": "Transisi berada di dalam durasi film",
       "pass": true,
       "detail": "tidak ada transisi"
+    },
+    {
+      "id": "manifest:status",
+      "name": "Render terakhir selesai dengan sukses",
+      "pass": true,
+      "detail": "status complete, selesai 2026-10-27T10:52:37.536Z"
+    },
+    {
+      "id": "manifest:fresh",
+      "name": "Video berasal dari render terbaru (bukan sisa render lama)",
+      "pass": true,
+      "detail": "konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest"
     },
     {
       "id": "file",
@@ -160,6 +190,12 @@
       "detail": "150 frame unik, 0 pasang frame berurutan identik"
     },
     {
+      "id": "end-frame",
+      "name": "Frame terakhir valid",
+      "pass": true,
+      "detail": "frame 149: kecerahan rata-rata 46.3, rentang 209"
+    },
+    {
       "id": "no-flash",
       "name": "Tidak ada kilatan cahaya mendadak",
       "pass": true,
@@ -178,10 +214,28 @@
       "detail": "150/150 file PNG 480x270"
     },
     {
+      "id": "engine-modules",
+      "name": "Hanya modul milik proyek ini yang dimuat",
+      "pass": true,
+      "detail": "1 modul: /src/scenes/train-night-rain.js"
+    },
+    {
+      "id": "engine-isolation",
+      "name": "Tidak ada modul proyek lain yang ikut terunduh",
+      "pass": true,
+      "detail": "23 file JS terunduh (/src/engine/: 15, /src/assets/: 7, /src/scenes/: 1)"
+    },
+    {
       "id": "boundary",
       "name": "Transisi menyambung tanpa lompatan",
       "pass": true,
       "detail": "tidak ada transisi"
+    },
+    {
+      "id": "scene:train-night-rain",
+      "name": "Adegan train-night-rain bisa dirender terpisah",
+      "pass": true,
+      "detail": "frame 0, 75, 149 identik dengan film utuh"
     },
     {
       "id": "determinism",
@@ -216,6 +270,15 @@
       "file": "output/reports/train-night-rain-contact-sheet.png"
     }
   ],
+  "engine": {
+    "name": "Pixel History Studio",
+    "version": "0.3.0",
+    "engineHash": "bc272267a41d3bc9ad92730f3e7ecf42698c3a33457fadc671fc516a524ebb49",
+    "libraryHash": "4378116df3a09f47bdae19eb571a65cac2816c2c0ff9537a0ab968f110f0690c",
+    "modules": [
+      "/src/scenes/train-night-rain.js"
+    ]
+  },
   "environment": {
     "os": "Linux 6.18.44-fc-v165 (linux/x64)",
     "node": "v22.22.0",
@@ -224,16 +287,37 @@
     "ffprobe": "ffprobe version 6.1.1-3ubuntu5 Copyright (c) 2007-2023 the FFmpeg developers"
   },
   "render": {
+    "project": "train-night-rain",
     "name": "train-night-rain",
-    "renderedAt": "2026-10-27T08:17:11.241Z",
-    "firstFrame": 0,
-    "totalFrames": 150,
-    "renderSeconds": 3.752,
-    "encodeSeconds": 8.682,
+    "job": {
+      "kind": "film",
+      "first": 0,
+      "count": 150,
+      "scene": null
+    },
+    "configFile": "config/train-night-rain.json",
+    "inputsHash": "8903d62b1f4bb6b60f7c3a34835c339ac1c482efad5b281c874bfeaa363096e6",
+    "engineHash": "bc272267a41d3bc9ad92730f3e7ecf42698c3a33457fadc671fc516a524ebb49",
+    "libraryHash": "4378116df3a09f47bdae19eb571a65cac2816c2c0ff9537a0ab968f110f0690c",
+    "engineVersion": "0.3.0",
+    "status": "complete",
+    "startedAt": "2026-10-27T10:52:24.593Z",
+    "finishedAt": "2026-10-27T10:52:37.536Z",
+    "renderSeconds": 3.714,
+    "encodeSeconds": 9.229,
     "chromiumVersion": "153.0.8010.12",
     "jsErrors": 0,
+    "loadedModules": [
+      "/src/scenes/train-night-rain.js"
+    ],
+    "frameSize": {
+      "width": 480,
+      "height": 270
+    },
+    "framesHash": "8417a5f08d04fc194da2d55c26ee99603db8956d73d9796483dfadb638cef68a",
     "video": "output/video/train-night-rain.mp4",
-    "ffmpegCommand": "ffmpeg -y -v error -framerate 30 -start_number 0 -i output/frames/train-night-rain/frame_%04d.png -frames:v 150 -vf scale=1920:1080:flags=neighbor:out_color_matrix=bt709:out_range=tv,format=yuv420p -c:v libx264 -preset slow -crf 16 -tune animation -profile:v high -level:v 4.1 -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv -r 30 -movflags +faststart output/video/train-night-rain.mp4"
+    "videoSha256": "28e9a3a3c503dabd91eefaa77bdf64696375c45d089ee9aa53723914d97443c2",
+    "ffmpegCommand": "ffmpeg -y -v error -framerate 30 -start_number 0 -i output/frames/train-night-rain/frame_%04d.png -frames:v 150 -vf scale=1920:1080:flags=neighbor:out_color_matrix=bt709:out_range=tv,format=yuv420p -c:v libx264 -preset slow -crf 16 -tune animation -profile:v high -level:v 4.1 -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv -r 30 -movflags +faststart -f mp4 output/video/train-night-rain.mp4"
   },
   "lumaSummary": [
     [

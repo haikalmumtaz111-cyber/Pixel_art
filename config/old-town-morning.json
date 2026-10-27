@@ -1,0 +1,55 @@
+{
+  "id": "old-town-morning",
+  "name": "old-town-morning",
+  "title": "Pagi di Kota Tua",
+  "seed": 1958,
+  "width": 480,
+  "height": 270,
+  "outputWidth": 1920,
+  "outputHeight": 1080,
+  "aspectRatio": "16:9",
+  "fps": 30,
+  "durationSeconds": 12,
+  "rendering": { "upscale": "browser" },
+  "output": {
+    "framesDir": "output/frames/old-town-morning",
+    "video": "output/video/old-town-morning.mp4",
+    "reportDir": "output/reports"
+  },
+  "encoding": {
+    "codec": "libx264",
+    "preset": "slow",
+    "crf": 16,
+    "pixelFormat": "yuv420p",
+    "profile": "high",
+    "level": "4.1"
+  },
+  "palettes": { "$include": "old-town-morning/palettes.json" },
+  "assets": { "$include": "old-town-morning/assets.json" },
+  "stages": { "$include": "old-town-morning/stage.json" },
+  "cast": { "$include": "old-town-morning/cast.json" },
+  "lighting": { "from": "early", "to": "bright", "track": "daylight", "steps": 24 },
+  "environment": {
+    "daylight": [[0, 0], [359, 1, "inOutSine"]]
+  },
+  "cameraTracks": {
+    "walk-follow": {
+      "type": "follow-entity",
+      "entity": "pak-darto",
+      "screenX": [[120, 200], [255, 200], [345, 150, "inOutSine"]],
+      "smoothing": 15,
+      "y": [[120, 18], [255, 18], [345, 0, "inOutCubic"]],
+      "zoom": [[120, 1.25], [255, 1.25], [345, 1, "inOutCubic"]]
+    }
+  },
+  "timeline": {
+    "scenes": [
+      { "$include": "old-town-morning/scenes/s01-old-town-morning.json" },
+      { "$include": "old-town-morning/scenes/s02-morning-walk.json" },
+      { "$include": "old-town-morning/scenes/s03-town-awakens.json" }
+    ]
+  },
+  "validation": {
+    "consistency": [{ "asset": "pak-darto", "frames": [160, 330] }]
+  }
+}

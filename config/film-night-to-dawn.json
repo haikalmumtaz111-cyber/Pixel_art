@@ -1,4 +1,5 @@
 {
+  "id": "night-to-dawn",
   "name": "film-night-to-dawn",
   "title": "Kereta Malam Menuju Fajar",
   "seed": 1927,
@@ -21,7 +22,9 @@
     "profile": "high",
     "level": "4.1"
   },
-  "validation": { "trainVisibleFrames": [60, 445] },
+  "validation": {
+    "consistency": [{ "assetType": "steam-train", "frames": [60, 445] }]
+  },
 
   "assets": {
     "traveler": { "type": "character", "character": "traveler" },
@@ -71,9 +74,8 @@
         "id": "s01-night-train",
         "name": "Night Train",
         "module": "night-train",
-        "startFrame": 0,
-        "endFrame": 149,
-        "durationFrames": 150,
+        "start": 0,
+        "end": 5,
         "assets": ["countryside", "train", "traveler"],
         "characters": { "traveler": { "appearance": "silhouette", "coach": 0, "window": 3 } },
         "camera": {
@@ -86,8 +88,8 @@
         "transitionOut": {
           "type": "portal",
           "to": "s02-inside-train",
-          "startFrame": 132,
-          "endFrame": 167,
+          "start": 4.4,
+          "duration": 1.2,
           "params": { "zoom": 72, "easing": "inOutCubic", "mix": [0.2, 0.42] }
         }
       },
@@ -95,9 +97,8 @@
         "id": "s02-inside-train",
         "name": "Inside the Train",
         "module": "inside-train",
-        "startFrame": 150,
-        "endFrame": 299,
-        "durationFrames": 150,
+        "start": 5,
+        "end": 10,
         "assets": ["interior", "countryside", "train", "traveler"],
         "characters": {
           "traveler": {
@@ -118,8 +119,8 @@
         "transitionOut": {
           "type": "portal",
           "to": "s03-journey-to-dawn",
-          "startFrame": 282,
-          "endFrame": 317,
+          "start": 9.4,
+          "duration": 1.2,
           "params": { "zoom": 7.2, "easing": "inOutCubic", "mix": [0, 0] }
         }
       },
@@ -127,9 +128,8 @@
         "id": "s03-journey-to-dawn",
         "name": "Journey to Dawn",
         "module": "journey-to-dawn",
-        "startFrame": 300,
-        "endFrame": 449,
-        "durationFrames": 150,
+        "start": 10,
+        "end": 15,
         "assets": ["countryside", "train"],
         "characters": {},
         "camera": { "track": "dawn-run" },

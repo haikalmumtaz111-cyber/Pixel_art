@@ -9,7 +9,8 @@ import { clamp, ease } from './math.js';
 const LEVELS = 16;
 
 // Tempel `source` ke ctx di dalam kotak rect, dengan campuran dither level 0..16.
-function drawDithered(ctx, source, level, rect, temp, width, height) {
+// cell = ukuran satu piksel art di kanvas frame (1 untuk kanvas internal, 4 untuk kanvas 1920x1080).
+function drawDithered(ctx, source, level, rect, temp, width, height, cell = 1) {
   const x0 = clamp(Math.floor(rect.x), 0, width);
   const y0 = clamp(Math.floor(rect.y), 0, height);
   const x1 = clamp(Math.ceil(rect.x + rect.w), 0, width);
@@ -28,7 +29,7 @@ function drawDithered(ctx, source, level, rect, temp, width, height) {
     t.globalCompositeOperation = 'source-over';
     t.drawImage(source, x0, y0, w, h, x0, y0, w, h);
     t.globalCompositeOperation = 'destination-in';
-    t.drawImage(ditherMask(width, height, level).canvas, x0, y0, w, h, x0, y0, w, h);
+    t.drawImage(ditherMask(width, height, level, cell).canvas, x0, y0, w, h, x0, y0, w, h);
     t.globalCompositeOperation = 'source-over';
     ctx.drawImage(temp.canvas, x0, y0, w, h, x0, y0, w, h);
   }
@@ -49,13 +50,13 @@ export const TRANSITIONS = {
 
   // Larut berdither: piksel adegan baru muncul bertahap mengikuti pola Bayer.
   dissolve: {
-    render({ ctx, p, params, drawFrom, drawTo, buffers, width, height }) {
+    render({ ctx, p, params, drawFrom, drawTo, buffers, width, height, cell }) {
       const level = Math.round(ease(params.easing || 'linear', p) * LEVELS);
       if (level <= 0) { drawFrom(ctx); return { mix: 0 }; }
       if (level >= LEVELS) { drawTo(ctx); return { mix: 1 }; }
       drawFrom(ctx);
       drawTo(buffers.next.ctx);
-      drawDithered(ctx, buffers.next.canvas, level, FULL(width, height), buffers.temp, width, height);
+      drawDithered(ctx, buffers.next.canvas, level, FULL(width, height), buffers.temp, width, height, cell);
       return { mix: level / LEVELS };
     }
   },
@@ -65,7 +66,7 @@ export const TRANSITIONS = {
   // Adegan lama wajib mendukung portal (menggambar lubang lewat drawInside).
   portal: {
     requiresPortal: true,
-    render({ ctx, p, params, drawFrom, drawTo, buffers, width, height }) {
+    render({ ctx, p, params, drawFrom, drawTo, buffers, width, height, cell }) {
       if (p >= 1) { drawTo(ctx); return { zoom: params.zoom, mix: 1, covered: true }; }
       const zoom = Math.exp(Math.log(params.zoom) * ease(params.easing || 'inOutCubic', p));
       const [m0, m1] = params.mix || [0, 0];
@@ -77,7 +78,7 @@ export const TRANSITIONS = {
       let rect = null;
       const drawInside = (target, r) => {
         rect = r;
-        drawDithered(target, buffers.next.canvas, level, r, buffers.temp, width, height);
+        drawDithered(target, buffers.next.canvas, level, r, buffers.temp, width, height, cell);
       };
       drawFrom(ctx, { portal: { zoom, progress: p, drawInside } });
       const covered = Boolean(rect && rect.x <= 0 && rect.y <= 0 && rect.x + rect.w >= width && rect.y + rect.h >= height);

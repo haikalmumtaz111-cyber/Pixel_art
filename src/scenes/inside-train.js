@@ -26,7 +26,7 @@ export function createScene({ film, scene, assets, environment }) {
 
     render(ctx, shot) {
       const { frame, time } = shot;
-      const env = environment.at(frame);
+      const env = countryside.resolveEnv(environment.at(frame));
       const distance = train.headAt(time);
       // getaran 1 piksel saat roda depan dan belakang gerbong melewati sambungan rel
       const shake = effects.includes('vibration') ? Math.max(train.bob(distance, 2), train.bob(distance, 5)) : 0;

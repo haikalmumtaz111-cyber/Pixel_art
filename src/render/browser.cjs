@@ -24,11 +24,12 @@ async function openStudio(config) {
     if (errors.length) throw new Error(`Error JavaScript di dalam adegan: ${errors[0].message}`);
   };
 
+  let started;
   try {
     await page.goto(`${url}/src/engine/page.html`);
     await page.waitForFunction(() => window.studioReady === true, null, { timeout: 15000 });
     fail();
-    await page.evaluate((cfg) => window.studio.init(cfg), config);
+    started = await page.evaluate((cfg) => window.studio.init(cfg), config);
     fail();
   } catch (error) {
     await browser.close();
@@ -41,6 +42,9 @@ async function openStudio(config) {
   return {
     browserVersion: browser.version(),
     errors,
+    frameSize: { width: started.frameWidth, height: started.frameHeight },
+    presenter: started.presenter,
+    loadedModules: await page.evaluate(() => window.studio.inspect.loadedModules()),
     // sceneId (opsional): render adegan itu saja tanpa transisi
     async renderFrame(frame, sceneId = null) {
       let rendered;

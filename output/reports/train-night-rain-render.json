@@ -1,14 +1,35 @@
 {
+  "project": "train-night-rain",
   "name": "train-night-rain",
-  "renderedAt": "2026-10-27T08:17:11.241Z",
-  "firstFrame": 0,
-  "totalFrames": 150,
-  "renderSeconds": 3.752,
-  "encodeSeconds": 8.682,
+  "job": {
+    "kind": "film",
+    "first": 0,
+    "count": 150,
+    "scene": null
+  },
+  "configFile": "config/train-night-rain.json",
+  "inputsHash": "8903d62b1f4bb6b60f7c3a34835c339ac1c482efad5b281c874bfeaa363096e6",
+  "engineHash": "bc272267a41d3bc9ad92730f3e7ecf42698c3a33457fadc671fc516a524ebb49",
+  "libraryHash": "4378116df3a09f47bdae19eb571a65cac2816c2c0ff9537a0ab968f110f0690c",
+  "engineVersion": "0.3.0",
+  "status": "complete",
+  "startedAt": "2026-10-27T10:52:24.593Z",
+  "finishedAt": "2026-10-27T10:52:37.536Z",
+  "renderSeconds": 3.714,
+  "encodeSeconds": 9.229,
   "chromiumVersion": "153.0.8010.12",
   "jsErrors": 0,
+  "loadedModules": [
+    "/src/scenes/train-night-rain.js"
+  ],
+  "frameSize": {
+    "width": 480,
+    "height": 270
+  },
+  "framesHash": "8417a5f08d04fc194da2d55c26ee99603db8956d73d9796483dfadb638cef68a",
   "video": "output/video/train-night-rain.mp4",
-  "ffmpegCommand": "ffmpeg -y -v error -framerate 30 -start_number 0 -i output/frames/train-night-rain/frame_%04d.png -frames:v 150 -vf scale=1920:1080:flags=neighbor:out_color_matrix=bt709:out_range=tv,format=yuv420p -c:v libx264 -preset slow -crf 16 -tune animation -profile:v high -level:v 4.1 -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv -r 30 -movflags +faststart output/video/train-night-rain.mp4",
+  "videoSha256": "28e9a3a3c503dabd91eefaa77bdf64696375c45d089ee9aa53723914d97443c2",
+  "ffmpegCommand": "ffmpeg -y -v error -framerate 30 -start_number 0 -i output/frames/train-night-rain/frame_%04d.png -frames:v 150 -vf scale=1920:1080:flags=neighbor:out_color_matrix=bt709:out_range=tv,format=yuv420p -c:v libx264 -preset slow -crf 16 -tune animation -profile:v high -level:v 4.1 -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv -r 30 -movflags +faststart -f mp4 output/video/train-night-rain.mp4",
   "segments": [
     {
       "frame": 0,
