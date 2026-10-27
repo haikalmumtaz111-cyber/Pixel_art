@@ -7,7 +7,7 @@ Studio animasi pixel art berbasis kode. Tujuan jangka panjangnya adalah membuat 
 | Tahap | Isi | Status |
 |-------|-----|--------|
 | 1 | Fondasi mesin + prototipe 5 detik *Kereta Malam di Tengah Hujan* | Selesai |
-| 2 | Sistem multi-adegan + film pendek 15 detik *Kereta Malam Menuju Fajar* | Selesai, menunggu persetujuan merge |
+| 2 | Sistem multi-adegan + film pendek 15 detik *Kereta Malam Menuju Fajar* | Selesai, disetujui, di-merge ke `main` (PR #2) |
 
 ## Hasil Tahap 2
 
@@ -80,7 +80,7 @@ Bayangkan studio film sungguhan:
 - **Mesin** (`src/engine/`) adalah kru teknis: membaca timeline, menggambar setiap frame, dan menjalankan transisi.
 - **Render dan validasi** (`src/render/`) adalah ruang editing dan kontrol kualitas: membuat MP4 lalu memeriksanya.
 
-Penjelasan teknis lengkap ada di [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). Riwayat perubahan ada di [`docs/CHANGELOG.md`](docs/CHANGELOG.md).
+Penjelasan teknis lengkap ada di [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). Riwayat perubahan ada di [`docs/CHANGELOG.md`](docs/CHANGELOG.md). Catatan peningkatan untuk tahap berikutnya ada di [`docs/BACKLOG.md`](docs/BACKLOG.md).
 
 ## Struktur folder
 
@@ -142,3 +142,5 @@ Pemeriksa timeline akan menolak kesalahan seperti adegan yang bertumpuk, durasi 
 - Arah pandang dari jendela di Adegan 2 tidak mengikuti geometri 3D sungguhan. Ini disengaja mengikuti konvensi film 2D side-scroller.
 - Baru ada satu karakter dan satu set lokasi (pedesaan + interior gerbong).
 - Determinisme dijamin di lingkungan yang sama (versi Chromium dan FFmpeg yang sama). Versi berbeda bisa menghasilkan selisih piksel kecil.
+
+Daftar lengkap keterbatasan visual dan teknis beserta ide perbaikannya ada di [`docs/BACKLOG.md`](docs/BACKLOG.md).

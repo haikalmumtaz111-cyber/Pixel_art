@@ -1,6 +1,6 @@
 # Riwayat Perubahan
 
-## Tahap 2: sistem multi-adegan (branch `tahap-2-multi-scene`)
+## Tahap 2: sistem multi-adegan (PR #2, branch `tahap-2-multi-scene`)
 
 ### Baru
 
@@ -17,7 +17,7 @@
 - Validator diperluas menjadi 28 pemeriksaan untuk 14 kebutuhan, termasuk deteksi kilatan, hard cut, kesinambungan transisi, konsistensi kereta, determinisme penuh, kompatibilitas pemutar, dan encode ulang.
 - Pengujian negatif otomatis (`npm run test:negative`, 16 kasus) beserta adegan uji yang sengaja salah di `tests/fixtures/scenes/`.
 - Lembar cuplikan per adegan dan per transisi di `output/reports/`.
-- Dokumentasi arsitektur (`docs/ARCHITECTURE.md`).
+- Dokumentasi arsitektur (`docs/ARCHITECTURE.md`) dan catatan peningkatan (`docs/BACKLOG.md`).
 
 ### Diubah
 

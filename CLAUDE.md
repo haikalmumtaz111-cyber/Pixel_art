@@ -38,5 +38,6 @@ Pemilik proyek adalah sutradara kreatif yang masih awam pemrograman. Semua kode 
 ## Progres
 
 - Tahap 1 (selesai, sudah di-merge): fondasi mesin + prototipe `train-night-rain` (5 detik, 150 frame).
-- Tahap 2 (selesai di branch `tahap-2-multi-scene`, menunggu persetujuan merge): film 15 detik `film-night-to-dawn` (450 frame, 3 adegan, 2 transisi portal). Validasi 28/28, pengujian negatif 16/16, prototipe 23/23.
+- Tahap 2 (selesai, disetujui pemilik, di-merge ke `main` lewat PR #2): film 15 detik `film-night-to-dawn` (450 frame, 3 adegan, 2 transisi portal). Validasi 28/28, pengujian negatif 16/16, prototipe 23/23.
+- Bahan peningkatan berikutnya tercatat di `docs/BACKLOG.md` (keterbatasan visual V1-V13 dan teknis T1-T4).
 - Tahap 3: belum dimulai, menunggu keputusan pemilik.
