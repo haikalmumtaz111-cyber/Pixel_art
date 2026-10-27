@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <title>Pixel History Studio</title>
+  <style>
+    html, body { margin: 0; background: #000; }
+    canvas { display: block; image-rendering: pixelated; }
+    body.preview { display: grid; place-items: center; min-height: 100vh; color: #8a93b8; font: 14px monospace; }
+    body.preview canvas { width: min(96vw, 170vh); height: auto; aspect-ratio: 16 / 9; }
+  </style>
+</head>
+<body>
+  <canvas id="screen"></canvas>
+  <div id="info"></div>
+  <script type="module" src="./runtime.js"></script>
+</body>
+</html>

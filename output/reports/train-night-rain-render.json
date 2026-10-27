@@ -1,0 +1,9 @@
+{
+  "name": "train-night-rain",
+  "renderedAt": "2026-10-27T06:57:06.605Z",
+  "totalFrames": 150,
+  "renderSeconds": 3.142,
+  "encodeSeconds": 10.338,
+  "chromiumVersion": "153.0.8010.12",
+  "ffmpegCommand": "ffmpeg -y -v error -framerate 30 -start_number 0 -i output/frames/train-night-rain/frame_%04d.png -frames:v 150 -vf scale=1920:1080:flags=neighbor:out_color_matrix=bt709:out_range=tv,format=yuv420p -c:v libx264 -preset slow -crf 16 -tune animation -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv -r 30 -movflags +faststart output/video/train-night-rain.mp4"
+}

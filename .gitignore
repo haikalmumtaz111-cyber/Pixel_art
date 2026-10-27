@@ -1,0 +1,4 @@
+node_modules/
+# Frame PNG hasil render bisa dibuat ulang kapan saja dengan "npm run render".
+output/frames/
+.DS_Store
