@@ -15,7 +15,7 @@ Pemilik proyek adalah sutradara kreatif yang masih awam pemrograman. Semua kode 
 - Minta persetujuan sebelum instalasi sistem, perubahan di luar folder proyek, atau menghapus file.
 - Jangan mengklaim berhasil sebelum `npm run build:all` dan `npm test` lulus, dan hasilnya sudah dilihat secara visual (lembar cuplikan di `output/reports/`).
 - Jangan mengorbankan kemampuan tahap sebelumnya. `npm run test:regression` harus lulus: setiap proyek identik piksel dan byte dengan versi baseline resminya di `tests/baselines/registry.json` (Project A dan prototipe Tahap 1: `tahap-2`, Project B: `tahap-4`). `npm run build:prototype` harus tetap lulus.
-- Baseline tidak boleh diubah untuk menyembunyikan perubahan. File baseline tidak pernah diubah, ditimpa, atau dihapus (SHA-256-nya dikunci di registry, lint menolak perubahan). Perubahan hasil render yang disengaja dicatat di `tests/baselines/pending-changes.json` → `changes.<proyek>` (`against` = versi resmi, rentang frame + alasan, status "menunggu persetujuan pemilik"); frame di luar rentang tetap wajib identik. Setelah pemilik menyetujui dan memerintahkan pembaruan baseline, buat versi baru dengan `npm run baseline` di branch khusus; entri pending pindah ke riwayat `resolved`, tidak dihapus. Langkah lengkap di `docs/BASELINES.md`.
+- Baseline tidak boleh diubah untuk menyembunyikan perubahan. File baseline tidak pernah diubah, ditimpa, atau dihapus. Ada dua lapis pemeriksaan: lint mencocokkan SHA-256 setiap file dengan registry (menangkap perubahan file yang tidak ikut mengubah registry), dan `npm run test:baseline-guard` membandingkan file baseline, versi registry, dan riwayat `resolved` dengan `origin/main` (menangkap file yang diubah bersama hash registry-nya). Keduanya jalan di CI dan di `npm test`. Perubahan hasil render yang disengaja dicatat di `tests/baselines/pending-changes.json` → `changes.<proyek>` (`against` = versi resmi, rentang frame + alasan, status "menunggu persetujuan pemilik"); frame di luar rentang tetap wajib identik. Setelah pemilik menyetujui dan memerintahkan pembaruan baseline, buat versi baru dengan `npm run baseline` di branch khusus; entri pending pindah ke riwayat `resolved`, tidak dihapus. Langkah lengkap di `docs/BASELINES.md`.
 
 ## Konvensi kode
 
@@ -40,10 +40,11 @@ Semua perintah proyek memakai `--project <id>` (`old-town-morning`, `night-to-da
 - `npm run build -- --project <id>` / `npm run build:all`: render + validasi. Laporan ada di `output/reports/`
 - `npm run render -- --project <id> [--scene <adegan> | --frame <n> | --frames a-b] [--no-encode]`
 - `npm run preview -- --project <id> [--scene <adegan>]`: pratinjau di browser
-- `npm test`: lint, unit test, validasi semua proyek, uji negatif, regresi, uji antar-proyek (setelah `build:all`)
+- `npm test`: lint, unit test, penjaga baseline historis, validasi semua proyek, uji negatif, regresi, uji antar-proyek, lab zoom (setelah `build:all`)
 - `npm run test:ci`: lint + unit test + uji asap (yang dijalankan GitHub Actions, bersama `test:zoom`)
 - `npm run test:zoom`: lab zoom, mengukur grid piksel kamera semua mode zoom (laporan `output/reports/zoom-lab.md`)
 - `npm run test:regression [-- --project <id> --baseline <versi>]`: regresi terhadap versi baseline resmi, atau versi historis (laporan `output/reports/regression-<proyek>-<versi>.md`)
+- `npm run test:baseline-guard [-- --ref <branch | commit>]`: baseline historis di `tests/baselines/` harus sama dengan referensi tepercaya (bawaan `origin/main`)
 - `npm run baseline`: daftar versi baseline. Dengan `--project <id> --version tahap-<n> --source main@<commit> --approved-at <tanggal> --evidence "..." [--dry-run]`: rekam versi baru setelah persetujuan pemilik
 - `npm run demo:zoom`: buat ulang bahan pembanding zoom di `output/comparisons/`
 - `npm run build:prototype`: render, uji, dan cek regresi prototipe Tahap 1

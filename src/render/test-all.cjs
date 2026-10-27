@@ -9,7 +9,8 @@ const node = (args) => spawnSync(process.execPath, args, { stdio: 'inherit' }).s
 const script = (name, ...args) => node([path.join(__dirname, name), ...args]);
 const steps = [
   ['Lint kode dan konfigurasi', () => script('lint.cjs')],
-  ['Unit test mesin', () => node(['--test', ...require('fs').readdirSync(path.join(__dirname, '..', '..', 'tests', 'engine')).filter((f) => f.endsWith('.test.js')).map((f) => path.join('tests', 'engine', f))])]
+  ['Unit test mesin', () => node(['--test', ...require('fs').readdirSync(path.join(__dirname, '..', '..', 'tests', 'engine')).filter((f) => f.endsWith('.test.js')).map((f) => path.join('tests', 'engine', f))])],
+  ['Penjaga baseline historis (vs origin/main)', () => script('baseline-guard.cjs')]
 ];
 const projects = listProjects();
 for (const p of projects) steps.push([`Validasi ${p.id}`, () => script('validate.cjs', '--project', p.id)]);

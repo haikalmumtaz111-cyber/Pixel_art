@@ -21,6 +21,7 @@
     "test:negative": "node src/render/negative-tests.cjs",
     "test:regression": "node src/render/regression.cjs",
     "baseline": "node src/render/baseline.cjs",
+    "test:baseline-guard": "node src/render/baseline-guard.cjs",
     "test:projects": "node src/render/project-tests.cjs",
     "test:zoom": "node src/render/zoom-tests.cjs",
     "demo:zoom": "node src/render/zoom-demo.cjs",

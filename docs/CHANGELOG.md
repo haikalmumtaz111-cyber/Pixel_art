@@ -10,13 +10,15 @@ Bukan tahap baru. Hasil render, mesin (0.4.0), aset, konfigurasi, dan MP4 tidak 
 - **Baseline resmi Project B `tahap-4`** (`tests/baselines/old-town-morning.tahap-4.json`), direkam dari render ulang `main@a1fd4a1`. MP4-nya identik byte demi byte dengan MP4 yang di-merge di PR #4. Dibanding `tahap-3`: tepat 124 frame berubah (85-130, 262-339), 236 identik, 0 di luar rentang terdeklarasi.
 - `npm run baseline`: menampilkan versi baseline, atau merekam versi baru setelah persetujuan pemilik. Menolak render basi, kode render yang berbeda dari commit sumber, MP4 yang berbeda dari MP4 di commit sumber, frame berubah tanpa deklarasi, dan penimpaan versi atau file yang sudah ada.
 - `npm run test:regression -- --project <id> --baseline <versi>`: membandingkan dengan versi historis. Lulus hanya bila frame yang berbeda sama persis dengan perubahan yang disetujui sejak versi itu. Laporannya `output/reports/regression-<proyek>-<versi>.md`.
-- Pemeriksaan registry tanpa render di lint (ikut CI) dan regresi: file baseline utuh, tidak ada file liar, versi tersambung, catatan perubahan antar versi sama persis dengan isi file dan punya bukti persetujuan, entri pending menunjuk versi resmi.
-- 8 unit test registry (`tests/engine/baselines.test.js`).
+- Pemeriksaan registry tanpa render di lint (ikut CI) dan regresi: isi file cocok dengan SHA-256 di registry, tidak ada file liar, versi tersambung, catatan perubahan antar versi sama persis dengan isi file dan punya bukti persetujuan, entri pending menunjuk versi resmi.
+- **Penjaga baseline historis** (`npm run test:baseline-guard`, juga di CI dan `npm test`): membandingkan file baseline lama, versi registry, dan riwayat `resolved` dengan referensi tepercaya di Git (`origin/main`; di CI cabang tujuan PR atau commit main sebelumnya). Menutup celah yang ditemukan audit final PR #5: file baseline yang diubah bersama hash-nya di registry lolos lint.
+- 12 unit test registry dan penjaga (`tests/engine/baselines.test.js`).
 
 ### Diubah
 
 - Entri Project B Tahap 4 di `pending-changes.json` dipindah dari `changes` ke riwayat `resolved` dengan status "disetujui pemilik", tanggal, bukti, dan frame yang benar-benar berubah. Entri pending baru wajib menyebut versi yang dituju (`against`).
 - Uji regresi, uji asap, uji antar-proyek, dan lab zoom membaca baseline resmi lewat registry. Project B kini dicek ketat terhadap `tahap-4`: 360 frame, frame hasil decode, dan file MP4 identik.
+- Audit final PR #5: klaim "perubahan sekecil apa pun membuat lint gagal" di CLAUDE.md dan BASELINES.md dikoreksi. Lint hanya mencocokkan file dengan registry di folder yang sama; penjaga baseline historis menutup sisanya.
 
 ### Dipertahankan
 

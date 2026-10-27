@@ -260,6 +260,7 @@ Adegan kustom mengambil aset lewat `assets.pick(scene.assets, type)`. Project A 
 | `negative-tests.cjs` | pengujian negatif per proyek |
 | `regression.cjs`, `fingerprint.cjs` | uji regresi terhadap versi baseline resmi (atau historis dengan `--baseline <versi>`) |
 | `baselines.cjs`, `baseline.cjs` | registry versi baseline dan pemeriksaannya; `npm run baseline` untuk melihat dan merekam versi baru |
+| `baseline-guard.cjs` | penjaga baseline historis terhadap referensi tepercaya di Git (`npm run test:baseline-guard`) |
 | `project-tests.cjs`, `sandbox.cjs` | uji antar-proyek (mesin bersama, isolasi di salinan repository) |
 | `smoke.cjs`, `lint.cjs` | pemeriksaan ringan untuk CI |
 | `zoom-tests.cjs` | lab zoom: mengukur semua mode zoom dengan pola kalibrasi, plus penerapan pada Project A |
@@ -276,7 +277,8 @@ Setiap frame dihitung dari waktu global `time = frame / fps` dan `seed` proyek. 
 
 | Perintah | Isi | Butuh render? |
 |----------|-----|---------------|
-| `npm run lint` | sintaks JS, JSON, determinisme, kemurnian mesin inti, registry baseline utuh | tidak |
+| `npm run lint` | sintaks JS, JSON, determinisme, kemurnian mesin inti, file baseline cocok dengan registry | tidak |
+| `npm run test:baseline-guard` | file baseline lama, versi registry, dan riwayat persetujuan sama dengan `origin/main` | tidak |
 | `npm run test:engine` | unit test `tests/engine/*.test.js`: track, easing, PRNG, jadwal setengah terbuka, entitas (urutan bebas), kamera, registry, palet, loader dan skema | tidak |
 | `npm run test:smoke` | render beberapa frame per proyek, cocokkan dengan baseline | tidak (render kecil) |
 | `npm run validate -- --project <id>` | validasi lengkap satu proyek (video, frame, transisi, adegan terpisah, konsistensi aset, modul terisolasi, determinisme, manifest) | ya |
@@ -297,4 +299,4 @@ Teknik penting:
 - **Grid piksel kamera**: setiap frame mencatat mode zoom, nilai zoom, dan geseran lapisannya di manifest render. Validator menghitung ulang ukuran setiap kolom/baris dunia dan menolak crawl (ukuran berubah padahal zoom tetap) serta piksel bolak-balik.
 - **Lab zoom**: pola kalibrasi `calibration-grid` gaya `identity` memberi setiap piksel art warna unik (kolom, baris, lapisan), jadi ukuran, posisi, dan warna campuran bisa dibaca langsung dari gambar 1920x1080. Polanya opak, jadi efek lapisan semi-transparan (V24) dan potongan di batas lapisan yang tumpang tindih (V25) belum diukur di lab.
 - **Perubahan terdeklarasi**: regresi membandingkan setiap proyek dengan versi baseline resminya. Frame di dalam rentang entri `tests/baselines/pending-changes.json` yang menunjuk versi itu (`against`) boleh berbeda tetapi dilaporkan "menunggu persetujuan"; frame di luar rentang wajib identik.
-- **Versi baseline**: `tests/baselines/registry.json` mengunci SHA-256 setiap file baseline dan mencatat perubahan antar versi beserta bukti persetujuan. Lint dan regresi menolak file yang diubah, file yang tidak terdaftar, catatan perubahan yang tidak sama persis dengan isi file, dan entri pending yang menunjuk versi lama. Detail: [`BASELINES.md`](BASELINES.md).
+- **Versi baseline**: `tests/baselines/registry.json` mencatat SHA-256 setiap file baseline dan perubahan antar versi beserta bukti persetujuan. Lint dan regresi menolak file yang tidak cocok dengan hash registry, file yang tidak terdaftar, catatan perubahan yang tidak sama persis dengan isi file, dan entri pending yang menunjuk versi lama. Karena lint hanya melihat folder yang sama, `npm run test:baseline-guard` membandingkan file baseline lama, versi registry, dan riwayat `resolved` dengan `origin/main` (di CI: cabang tujuan PR), sehingga file yang diubah bersama hash registry-nya tetap tertangkap. Detail dan batasnya: [`BASELINES.md`](BASELINES.md).

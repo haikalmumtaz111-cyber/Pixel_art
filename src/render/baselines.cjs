@@ -101,9 +101,10 @@ function loadBaseline(project, version, dir = DIR) {
 // Hash piksel baseline resmi, atau null bila proyek belum punya baseline
 const officialPixels = (project, dir = DIR) => loadBaseline(project, null, dir)?.data.pixelMd5 || null;
 
-// Pemeriksaan registry tanpa render: file utuh (SHA-256), tidak ada file liar, versi resmi ada,
+// Pemeriksaan registry tanpa render: isi file cocok dengan SHA-256 di registry, tidak ada file liar, versi resmi ada,
 // perubahan antar versi sama persis dengan catatan dan berada di rentang yang dideklarasikan,
-// serta perubahan terdeklarasi yang masih aktif menunjuk versi resmi.
+// serta perubahan terdeklarasi yang masih aktif menunjuk versi resmi. File yang diubah bersama hash-nya di registry
+// tidak terlihat dari sini; itu tugas guardAgainst() (pembanding dari Git).
 function verifyRegistry({ dir = DIR, project = null } = {}) {
   const out = [];
   const add = (id, name, pass, detail) => out.push({ id, name, pass: Boolean(pass), detail: String(detail) });
@@ -131,8 +132,8 @@ function verifyRegistry({ dir = DIR, project = null } = {}) {
       if (data.project !== p) problems.push(`${v}: file berisi proyek "${data.project}"`);
       if (data.frameCount !== record.frames || data.pixelMd5.length !== record.frames) problems.push(`${v}: jumlah frame ${data.frameCount} (registry ${record.frames})`);
     }
-    add(`registry:${p}:files`, `${p}: file baseline utuh (SHA-256 terkunci)`, problems.length === 0,
-      problems.length ? problems.join('; ') : `${versions.length} versi (${versions.join(', ')}), isi file sama dengan saat direkam`);
+    add(`registry:${p}:files`, `${p}: file baseline cocok dengan SHA-256 di registry`, problems.length === 0,
+      problems.length ? problems.join('; ') : `${versions.length} versi (${versions.join(', ')}), isi file sama dengan hash di registry`);
     if (problems.length) continue;
 
     let chain = [];
@@ -176,8 +177,68 @@ function verifyRegistry({ dir = DIR, project = null } = {}) {
   return out;
 }
 
+// --- penjaga baseline historis terhadap referensi tepercaya ---
+
+// Isi catatan versi yang tidak boleh berubah setelah tercatat di referensi (catatan teks seperti "note" boleh diperbaiki)
+const LOCKED_FIELDS = ['file', 'sha256', 'source', 'engineVersion', 'frames', 'previous', 'changes', 'approval'];
+const META_FILES = ['registry.json', 'pending-changes.json'];
+
+// JSON dengan kunci objek diurutkan, supaya urutan penulisan tidak dianggap perubahan
+const canonical = (value) => JSON.stringify(value, (_, v) => (v && typeof v === 'object' && !Array.isArray(v)
+  ? Object.fromEntries(Object.keys(v).sort().map((k) => [k, v[k]])) : v));
+
+// Membandingkan isi tests/baselines sekarang dengan referensi tepercaya (misalnya main). Masing-masing berupa
+// { "<nama file>": Buffer | string }. Lint hanya bisa mencocokkan file dengan hash di registry yang ada di folder
+// yang sama; penjaga ini juga menangkap file baseline yang diubah bersama hash registry-nya.
+// - setiap file baseline di referensi harus tetap ada dan identik byte demi byte
+// - setiap versi di registry referensi harus tetap ada dengan isi terkunci yang sama (versi baru dan perpindahan
+//   versi resmi diperbolehkan)
+// - setiap riwayat "resolved" di pending-changes.json referensi harus tetap ada tanpa diubah
+function guardAgainst(reference, current) {
+  const out = [];
+  const add = (id, name, pass, detail) => out.push({ id, name, pass: Boolean(pass), detail: String(detail) });
+  const same = (a, b) => b !== undefined && Buffer.from(a).equals(Buffer.from(b));
+  const parse = (files, name) => (files[name] === undefined ? null : JSON.parse(String(files[name])));
+
+  const data = Object.keys(reference).filter((f) => f.endsWith('.json') && !META_FILES.includes(f)).sort();
+  const missing = data.filter((f) => current[f] === undefined);
+  const changed = data.filter((f) => current[f] !== undefined && !same(reference[f], current[f]));
+  const added = Object.keys(current).filter((f) => f.endsWith('.json') && !META_FILES.includes(f) && reference[f] === undefined).sort();
+  add('guard:files', 'File baseline di referensi tetap ada dan identik byte demi byte', missing.length === 0 && changed.length === 0,
+    [missing.length ? `hilang: ${missing.join(', ')}` : '', changed.length ? `berubah: ${changed.join(', ')}` : '',
+      !missing.length && !changed.length ? `${data.length} file identik (${data.join(', ') || '-'})` : '',
+      added.length ? `file baru: ${added.join(', ')}` : ''].filter(Boolean).join('; '));
+
+  const refRegistry = parse(reference, 'registry.json');
+  const curRegistry = parse(current, 'registry.json');
+  if (refRegistry) {
+    const problems = [];
+    let count = 0;
+    for (const [project, info] of Object.entries(refRegistry.projects || {})) {
+      for (const [version, record] of Object.entries(info.versions || {})) {
+        count++;
+        const now = curRegistry?.projects?.[project]?.versions?.[version];
+        if (!now) { problems.push(`${project} ${version} dihapus dari registry`); continue; }
+        const diff = LOCKED_FIELDS.filter((k) => canonical(record[k]) !== canonical(now[k]));
+        if (diff.length) problems.push(`${project} ${version}: ${diff.join(', ')} berubah`);
+      }
+    }
+    add('guard:registry', 'Versi di registry referensi tetap ada dengan isi terkunci yang sama', problems.length === 0,
+      problems.length ? problems.join('; ') : `${count} versi tidak berubah (${LOCKED_FIELDS.join(', ')})`);
+  } else {
+    add('guard:registry', 'Versi di registry referensi tetap ada dengan isi terkunci yang sama', true, 'referensi belum punya registry, tidak ada versi yang dikunci');
+  }
+
+  const refResolved = parse(reference, 'pending-changes.json')?.resolved || [];
+  const curResolved = new Set((parse(current, 'pending-changes.json')?.resolved || []).map(canonical));
+  const lost = refResolved.filter((entry) => !curResolved.has(canonical(entry)));
+  add('guard:resolved', 'Riwayat persetujuan (resolved) di referensi tetap ada tanpa diubah', lost.length === 0,
+    lost.length ? `${lost.length} entri hilang atau diubah: ${lost.map((e) => `${e.project} ${e.stage}`).join(', ')}` : `${refResolved.length} entri riwayat utuh`);
+  return out;
+}
+
 module.exports = {
   DIR, REGISTRY, PENDING, readJson, sha256, stringify,
   inRanges, toRanges, formatRanges, listFrames, countRanges, diffFrames,
-  readRegistry, readPending, pendingFor, lineage, loadBaseline, officialPixels, verifyRegistry
+  readRegistry, readPending, pendingFor, lineage, loadBaseline, officialPixels, verifyRegistry, guardAgainst
 };

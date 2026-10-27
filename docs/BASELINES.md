@@ -25,7 +25,9 @@ Perintah `npm run baseline` menampilkan tabel ini langsung dari registry.
 ## Aturan
 
 1. **Nama versi** = kondisi `main` setelah tahap itu di-merge: `tahap-2`, `tahap-3`, `tahap-4`, dan seterusnya. Project A dan prototipe direkam dari `main@cfed35a` (akhir Tahap 2), jadi versinya `tahap-2`.
-2. **File baseline tidak pernah diubah, ditimpa, atau dihapus.** Versi baru selalu file baru. SHA-256 setiap file dikunci di `registry.json`, jadi perubahan sekecil apa pun membuat `npm run lint` gagal.
+2. **File baseline tidak pernah diubah, ditimpa, atau dihapus.** Versi baru selalu file baru. Pemeriksaannya dua lapis:
+   - `npm run lint` mencocokkan SHA-256 setiap file dengan `registry.json`. Ini menangkap file yang diubah, dihapus, atau ditambah tanpa ikut memperbarui registry. Lint **tidak** menangkap file yang diubah bersama hash-nya di registry, karena keduanya ada di folder yang sama. Untuk Project B, perubahan seperti itu masih tertangkap lewat rantai versi `tahap-3` -> `tahap-4`; untuk proyek yang baru punya satu versi tidak ada pembandingnya.
+   - `npm run test:baseline-guard` menutup celah itu dengan membandingkan isi folder dengan referensi tepercaya di Git (bawaan `origin/main`): setiap file baseline di referensi harus tetap ada dan identik byte demi byte, setiap versi di registry referensi harus tetap ada dengan isi terkunci yang sama (`file`, `sha256`, `source`, `engineVersion`, `frames`, `previous`, `changes`, `approval`), dan setiap riwayat `resolved` harus tetap ada tanpa diubah. Versi baru dan perpindahan versi resmi tetap diperbolehkan.
 3. **Versi baru hanya dibuat setelah pemilik menyetujui** perubahan hasil render, dan hanya lewat `npm run baseline` (bukan menyunting JSON dengan tangan).
 4. **Perubahan yang menunggu persetujuan** dicatat di `pending-changes.json` → `changes.<proyek>` dengan `against` = versi resmi saat itu. Entri yang menunjuk versi lain ditolak lint.
 5. **Riwayat tidak dihapus.** Setelah disetujui, entri pending dipindah ke `resolved` lengkap dengan tanggal, bukti, dan daftar frame yang benar-benar berubah.
@@ -63,7 +65,7 @@ Perintah `npm run baseline` menampilkan tabel ini langsung dari registry.
    - menolak bila ada frame berbeda dari versi resmi tanpa entri pending, atau di luar rentang entri itu;
    - menolak menimpa versi atau file yang sudah ada;
    - menulis `<proyek>.<versi>.json`, mendaftarkannya di registry (SHA-256, sumber, perubahan, bukti persetujuan), memindahkan versi resmi, dan memindahkan entri pending ke `resolved`.
-7. `npm test`, lalu buat PR khusus baseline. Merge hanya dengan persetujuan pemilik.
+7. `npm test` (termasuk `npm run test:baseline-guard`, yang harus melaporkan file lama identik dan versi baru sebagai tambahan), lalu buat PR khusus baseline. Merge hanya dengan persetujuan pemilik.
 
 **Proyek baru**: setelah proyeknya disetujui, rekam baseline pertamanya dengan perintah yang sama. Tanpa versi sebelumnya, tidak perlu entri pending.
 
@@ -80,7 +82,8 @@ Perbandingan dengan versi historis lulus hanya bila frame yang berbeda **sama pe
 
 | Pemeriksaan | Di mana | Butuh render? |
 |-------------|---------|---------------|
-| Setiap file baseline terdaftar dan SHA-256-nya cocok | `npm run lint` (juga di CI), `npm run test:regression` | tidak |
+| Setiap file baseline terdaftar dan SHA-256-nya cocok dengan registry | `npm run lint` (juga di CI), `npm run test:regression` | tidak |
+| File baseline lama, versi registry, dan riwayat `resolved` sama dengan referensi tepercaya (`origin/main`; di CI: cabang tujuan PR atau commit main sebelumnya) | `npm run test:baseline-guard` (juga di CI dan `npm test`) | tidak |
 | Versi resmi ada dan semua versi tersambung lewat `previous` | lint, regresi | tidak |
 | Perubahan antar versi sama persis dengan catatan registry, di dalam rentang terdeklarasi, dan punya bukti persetujuan | lint, regresi | tidak |
 | Entri pending aktif menunjuk versi resmi | lint, regresi | tidak |
@@ -88,7 +91,9 @@ Perbandingan dengan versi historis lulus hanya bila frame yang berbeda **sama pe
 | Frame contoh identik dengan versi resmi | `npm run test:smoke` (CI) | render kecil |
 | Isolasi antar-proyek dan lab zoom memakai versi resmi Project A | `npm run test:projects`, `npm run test:zoom` | ya / render kecil |
 
-Kode: `src/render/baselines.cjs` (registry dan pemeriksaannya), `src/render/baseline.cjs` (`npm run baseline`), `src/render/regression.cjs`. Unit test: `tests/engine/baselines.test.js`.
+Kode: `src/render/baselines.cjs` (registry, pemeriksaannya, dan aturan penjaga), `src/render/baseline.cjs` (`npm run baseline`), `src/render/baseline-guard.cjs` (`npm run test:baseline-guard`), `src/render/regression.cjs`. Unit test: `tests/engine/baselines.test.js`.
+
+**Batas yang diketahui.** Penjaga di CI dijalankan oleh `.github/workflows/ci.yml`, dan file itu bisa diubah oleh PR yang sama. Jadi lapis terakhirnya tetap tinjauan diff PR: perubahan pada file baseline lama, `registry.json`, atau langkah penjaga di `ci.yml` harus terlihat jelas dan dijelaskan. Pemilik bisa menambah lapis lagi lewat branch protection GitHub (wajib PR dan wajib check CI lulus untuk `main`); lihat T18 di [`BACKLOG.md`](BACKLOG.md).
 
 ## Riwayat: Project B Tahap 4
 

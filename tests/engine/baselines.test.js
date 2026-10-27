@@ -111,3 +111,60 @@ test('perubahan terdeklarasi hanya berlaku terhadap versi yang disebut', () => {
   assert.equal(B.pendingFor(B.readPending(legacy), B.readRegistry(legacy), 'mini', 'v2').stage, 'Tahap X');
   assert.equal(B.pendingFor(B.readPending(legacy), B.readRegistry(legacy), 'mini', 'v1'), null);
 });
+
+// penjaga baseline historis: folder sekarang dibandingkan dengan referensi tepercaya (misalnya main)
+function guardFixture() {
+  const registry = {
+    projects: {
+      mini: {
+        official: 'v1',
+        versions: { v1: { file: 'mini.json', sha256: 'aaa', source: 'main@1', frames: 2, approval: { evidence: ['uji'] }, note: 'lama' } }
+      }
+    }
+  };
+  const pending = { changes: {}, resolved: [{ project: 'mini', stage: 'Tahap X', frames: [[0, 1]], status: 'disetujui pemilik' }] };
+  return { 'mini.json': '{"project":"mini"}\n', 'registry.json': JSON.stringify(registry), 'pending-changes.json': JSON.stringify(pending) };
+}
+const edit = (files, name, fn) => {
+  const data = JSON.parse(files[name]);
+  fn(data);
+  return { ...files, [name]: JSON.stringify(data) };
+};
+
+test('penjaga: folder yang sama dengan referensi lulus, versi dan file baru boleh ditambah', () => {
+  const ref = guardFixture();
+  assert.deepEqual(failed(B.guardAgainst(ref, ref)), []);
+  let now = { ...ref, 'mini.v2.json': '{"project":"mini"}\n' };
+  now = edit(now, 'registry.json', (r) => {
+    r.projects.mini.versions.v2 = { file: 'mini.v2.json', sha256: 'bbb', previous: 'v1' };
+    r.projects.mini.official = 'v2';
+    r.projects.mini.versions.v1.note = 'catatan diperbaiki';
+  });
+  now = edit(now, 'pending-changes.json', (p) => p.resolved.push({ project: 'mini', stage: 'Tahap Y' }));
+  // urutan kunci berbeda tidak dianggap perubahan
+  now = edit(now, 'registry.json', (r) => { r.projects.mini.versions.v1 = Object.fromEntries(Object.entries(r.projects.mini.versions.v1).reverse()); });
+  assert.deepEqual(failed(B.guardAgainst(ref, now)), []);
+});
+
+test('penjaga: file baseline lama diubah bersama hash registry tetap tertangkap', () => {
+  const ref = guardFixture();
+  let now = { ...ref, 'mini.json': '{"project":"mini","x":1}\n' };
+  now = edit(now, 'registry.json', (r) => { r.projects.mini.versions.v1.sha256 = 'hash-baru'; });
+  assert.deepEqual(failed(B.guardAgainst(ref, now)), ['guard:files', 'guard:registry']);
+});
+
+test('penjaga: file lama yang dihapus, versi yang dihapus, dan riwayat yang hilang ditolak', () => {
+  const ref = guardFixture();
+  const { 'mini.json': _, ...withoutFile } = ref;
+  assert.deepEqual(failed(B.guardAgainst(ref, withoutFile)), ['guard:files']);
+  assert.deepEqual(failed(B.guardAgainst(ref, edit(ref, 'registry.json', (r) => { delete r.projects.mini.versions.v1; }))), ['guard:registry']);
+  assert.deepEqual(failed(B.guardAgainst(ref, edit(ref, 'registry.json', (r) => { delete r.projects.mini.versions.v1.approval; }))), ['guard:registry']);
+  assert.deepEqual(failed(B.guardAgainst(ref, edit(ref, 'pending-changes.json', (p) => { p.resolved = []; }))), ['guard:resolved']);
+  assert.deepEqual(failed(B.guardAgainst(ref, edit(ref, 'pending-changes.json', (p) => { p.resolved[0].frames = [[0, 5]]; }))), ['guard:resolved']);
+});
+
+test('penjaga: referensi tanpa registry (sebelum ada versi) hanya mengunci file baseline', () => {
+  const ref = { 'mini.json': '{"project":"mini"}\n' };
+  assert.deepEqual(failed(B.guardAgainst(ref, guardFixture())), []);
+  assert.deepEqual(failed(B.guardAgainst(ref, { ...guardFixture(), 'mini.json': 'beda' })), ['guard:files']);
+});

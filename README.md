@@ -100,6 +100,7 @@ npm run test:negative -- --project old-town-morning   # kesalahan yang sengaja d
 npm run test:regression                               # semua proyek identik dengan baseline resmi (tests/baselines/registry.json)
 npm run test:regression -- --project old-town-morning --baseline tahap-3   # bandingkan dengan versi baseline historis
 npm run baseline                                      # daftar versi baseline per proyek (versi baru: docs/BASELINES.md)
+npm run test:baseline-guard                           # baseline historis harus sama dengan origin/main
 npm run test:projects                                 # semua proyek memakai mesin yang sama dan saling terisolasi
 npm run test:zoom                                     # lab zoom: ukur grid piksel kamera di semua mode zoom
 npm run demo:zoom                                     # buat ulang video/gambar pembanding zoom di output/comparisons/

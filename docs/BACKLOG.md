@@ -4,15 +4,15 @@ Daftar keterbatasan yang ditemukan saat meninjau hasil setiap tahap. Semua pengu
 
 Prioritas: **Tinggi** = paling terasa di hasil atau paling berisiko, **Sedang** = layak dikerjakan di tahap berikutnya, **Rendah** = penghalusan.
 
-Kondisi terakhir: Tahap 3 disetujui dan di-merge ke `main` (PR #3). Tahap 4 (kamera pixel-perfect, fokus V14) disetujui pemilik dan di-merge ke `main` (PR #4), termasuk perubahan hasil render Project B. Audit final PR #4 (clean clone) lulus di semua pemeriksaan wajib. Dua temuannya dicatat sebagai V24 dan V25. Tahap 5 belum dimulai. Butir di bawah adalah kandidat, bukan rencana yang sudah disetujui; pemilik yang memilih isi tahap berikutnya.
+Kondisi terakhir: Tahap 3 disetujui dan di-merge ke `main` (PR #3). Tahap 4 (kamera pixel-perfect, fokus V14) disetujui pemilik dan di-merge ke `main` (PR #4), termasuk perubahan hasil render Project B. Audit final PR #4 (clean clone) lulus di semua pemeriksaan wajib. Dua temuannya dicatat sebagai V24 dan V25. Setelah Tahap 4, baseline regresi dibuat berversi dan Project B memakai baseline resmi Tahap 4 (PR #5, menunggu persetujuan); audit final PR #5 mencatat T17 dan T18. Tahap 5 belum dimulai. Butir di bawah adalah kandidat, bukan rencana yang sudah disetujui; pemilik yang memilih isi tahap berikutnya.
 
 ## Ringkasan kandidat untuk tahap berikutnya
 
 | Prioritas | Butir terbuka |
 |-----------|---------------|
 | Tinggi | (kosong: V14 selesai di Tahap 4) |
-| Sedang | V1, V3, V5, V10, V13 (Project A); V15, V16, V17 (Project B); T2, T5, T6, T7, T13, T14 |
-| Rendah | sisanya: V2, V4, V6-V9, V11, V12, V18-V22, V23, V24, V25, T3, T8-T12, T15, T16 |
+| Sedang | V1, V3, V5, V10, V13 (Project A); V15, V16, V17 (Project B); T2, T5, T6, T7, T13, T14, T17 |
+| Rendah | sisanya: V2, V4, V6-V9, V11, V12, V18-V22, V23, V24, V25, T3, T8-T12, T15, T16, T18 |
 
 ## Temuan Tahap 2: film *Kereta Malam Menuju Fajar* (Project A)
 
@@ -82,3 +82,5 @@ Nomor frame merujuk ke `config/old-town-morning.json`.
 | T15 | (Tahap 4) Mode `anchored` di zoom pecahan menggambar setiap lapisan dengan ratusan potongan `drawImage`. Render Project B naik dari sekitar 22 menjadi 28 detik (360 frame). | Gabungkan lapisan yang geserannya sama, atau perbesar di GPU/WebGL | Rendah |
 | T16 | (Tahap 4) Kamera bergeser per piksel art (4-5 piksel layar per langkah). Gerak sub-piksel (smooth scrolling) belum ada; bila ditambah, grid antar lapisan akan bergeser relatif satu sama lain. | Opsi `subpixelCamera` di penyaji, diukur dengan lab zoom | Rendah |
 | T13 | Detektor potongan kasar membaca lonjakan beda kecerahan antar frame. Bila dua adegan berbatasan dengan framing yang sama (seperti push-in Project B), lalu dissolve diganti potongan langsung, tokoh yang tiba-tiba muncul ("pop") tidak terdeteksi. Ketahuan lewat uji negatif; ujinya kini memakai potongan dengan framing berbeda. | Deteksi "pop" per entitas: bandingkan visibilitas entitas di frame batas adegan, atau beda piksel per wilayah | Sedang |
+| T17 | (Audit final PR #5) Job uji asap CI memasang FFmpeg dan pustaka Chromium lewat apt di setiap run. Pada 27 Oktober 2026 mirror Ubuntu di runner sangat lambat, dan job habis waktu 25 menit dua kali sebelum satu tes pun jalan. | Jalankan job di image resmi Playwright yang dikunci digest (Chromium dan pustakanya sudah ada) dan pasang FFmpeg paket resmi Ubuntu dari cache GitHub. Diusulkan di PR #6 (hanya `ci.yml`), menunggu persetujuan | Sedang |
+| T18 | (Audit final PR #5) Lint hanya mencocokkan file baseline dengan hash di registry di folder yang sama, jadi file yang diubah bersama hash-nya lolos lint. Sudah ditutup oleh `npm run test:baseline-guard` (pembanding `origin/main`, jalan di CI). Sisa celahnya: langkah penjaga ada di `ci.yml`, yang bisa diubah oleh PR yang sama, sehingga lapis terakhirnya tinjauan diff PR. | Pemilik mengaktifkan branch protection untuk `main` di pengaturan GitHub: wajib lewat PR dan wajib check CI lulus. Ini pengaturan repository, bukan kode | Rendah |
