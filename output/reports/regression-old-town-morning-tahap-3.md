@@ -2,14 +2,14 @@
 
 Hasil render sekarang dibandingkan dengan baseline `old-town-morning` versi tahap-3 (main@9d7a144, historis).
 Versi baseline diatur di `tests/baselines/registry.json` (panduan: `docs/BASELINES.md`).
-Dibuat otomatis oleh `npm run test:regression -- --project old-town-morning --baseline tahap-3` pada 2026-10-27T15:55:05.201Z.
+Dibuat otomatis oleh `npm run test:regression -- --project old-town-morning --baseline tahap-3` pada 2026-10-27T23:38:13.294Z.
 
 | No | Pemeriksaan | Hasil | Detail |
 |----|-------------|-------|--------|
-| 1 | old-town-morning: file baseline utuh (SHA-256 terkunci) | LULUS | 2 versi (tahap-3, tahap-4), isi file sama dengan saat direkam |
+| 1 | old-town-morning: file baseline cocok dengan SHA-256 di registry | LULUS | 2 versi (tahap-3, tahap-4), isi file sama dengan hash di registry |
 | 2 | old-town-morning: versi resmi dan riwayat versi tersambung | LULUS | resmi tahap-4; riwayat tahap-3 -> tahap-4 |
 | 3 | old-town-morning: perubahan tahap-3 -> tahap-4 sama persis dengan catatan persetujuan | LULUS | 124 frame berubah (85-130, 262-339), 236 identik; catatan 124 frame (85-130, 262-339); semua di rentang terdeklarasi 84-131, 255-345 |
-| 4 | old-town-morning: hasil render terbaru dan sukses | LULUS | status complete, selesai 2026-10-27T15:37:44.969Z / konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest |
+| 4 | old-town-morning: hasil render terbaru dan sukses | LULUS | status complete, selesai 2026-10-27T23:30:01.655Z / konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest |
 | 5 | old-town-morning: jumlah frame sama | LULUS | 360 (baseline 360) |
 | 6 | old-town-morning: ukuran frame sama | LULUS | 1920x1080 (baseline 1920x1080) |
 | 7 | old-town-morning: piksel identik di luar perubahan yang disetujui/dideklarasikan | LULUS | 236 frame identik; 124 frame berbeda sesuai perubahan yang disetujui di tahap-4 (85-130, 262-339) |

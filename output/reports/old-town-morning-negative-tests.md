@@ -1,7 +1,7 @@
 # Pengujian Negatif: Pagi di Kota Tua
 
 Setiap baris adalah hasil yang SENGAJA dibuat salah. Pengujian lulus bila validator menolaknya (TERDETEKSI).
-Dibuat otomatis oleh `npm run test:negative -- --project old-town-morning` pada 2026-10-27T15:53:06.525Z.
+Dibuat otomatis oleh `npm run test:negative -- --project old-town-morning` pada 2026-10-27T23:35:57.514Z.
 
 | No | Kesalahan yang disengaja | Hasil | Detail |
 |----|--------------------------|-------|--------|

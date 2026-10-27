@@ -2,13 +2,13 @@
 
 Laporan ini dibuat otomatis oleh `npm run validate`.
 
-- Waktu uji: 2026-10-27T15:51:08.715Z
+- Waktu uji: 2026-10-27T23:33:33.490Z
 - Proyek: `old-town-morning`
 - Konfigurasi: `config/old-town-morning.json` (+ 7 file $include)
 - Mesin: Pixel History Studio 0.4.0, sidik jari mesin `7f37881be8af508c`, pustaka aset `2925f4ab08ab5d4f`
 - Video: `output/video/old-town-morning.mp4`
 - Spesifikasi: 480x270 internal, 1920x1080 output (upscale browser), 30 FPS, 12 detik, 360 frame, seed 1958
-- Lama render frame: 17.2 detik, lama encoding: 13.3 detik
+- Lama render frame: 22.5 detik, lama encoding: 17.6 detik
 
 ## Ringkasan kebutuhan
 
@@ -54,7 +54,7 @@ Status akhir: **SEMUA LULUS** (34/34 pemeriksaan)
 |----|-------------|-------|--------|
 | 1 | Interval adegan valid | LULUS | 3 adegan menutup 360/360 frame tanpa celah: s01-old-town-morning [0, 120), s02-morning-walk [120, 240), s03-town-awakens [240, 360) |
 | 2 | Transisi berada di dalam durasi film | LULUS | dissolve 108-131 |
-| 3 | Render terakhir selesai dengan sukses | LULUS | status complete, selesai 2026-10-27T15:37:44.969Z |
+| 3 | Render terakhir selesai dengan sukses | LULUS | status complete, selesai 2026-10-27T23:30:01.655Z |
 | 4 | Video berasal dari render terbaru (bukan sisa render lama) | LULUS | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest |
 | 5 | File MP4 ada | LULUS | old-town-morning.mp4 (6.70 MB) |
 | 6 | Kontainer MP4 | LULUS | mov,mp4,m4a,3gp,3g2,mj2 |
