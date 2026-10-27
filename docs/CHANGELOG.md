@@ -1,8 +1,8 @@
 # Riwayat Perubahan
 
-## Tahap 4: kamera pixel-perfect (branch `tahap-4-pixel-perfect-camera`, menunggu persetujuan)
+## Tahap 4: kamera pixel-perfect (PR #4, branch `tahap-4-pixel-perfect-camera`)
 
-Fokus: memperbaiki V14, yaitu pixel crawling saat kamera zoom dengan nilai tidak bulat. Versi mesin 0.4.0.
+Disetujui pemilik, termasuk perubahan 124 frame Project B, dan di-merge ke `main`. Fokus: memperbaiki V14, yaitu pixel crawling saat kamera zoom dengan nilai tidak bulat. Versi mesin 0.4.0.
 
 ### Baru
 
@@ -20,7 +20,7 @@ Fokus: memperbaiki V14, yaitu pixel crawling saat kamera zoom dengan nilai tidak
 
 ### Diubah
 
-- Project B dirender ulang dengan `anchored`. 124 dari 360 frame berubah, semuanya di jendela zoom/dissolve yang dideklarasikan (frame 85-130 dan 262-339); 236 frame lain identik dengan Tahap 3. Perubahan ini **belum dianggap diterima** sampai pemilik menyetujui.
+- Project B dirender ulang dengan `anchored`. 124 dari 360 frame berubah, semuanya di jendela zoom/dissolve yang dideklarasikan (frame 85-130 dan 262-339); 236 frame lain identik dengan Tahap 3. Perubahan ini **disetujui pemilik** pada 27 Oktober 2026. Baseline Project B masih referensi Tahap 3 ditambah entri di `pending-changes.json`, sampai pemilik memberi instruksi untuk memperbarui baseline.
 - Penyaji frame (`presenter.js`) ditulis ulang; jalur `ffmpeg` tidak berubah.
 - CI menjalankan lab zoom di job uji asap.
 

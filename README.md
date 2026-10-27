@@ -9,9 +9,9 @@ Studio animasi pixel art berbasis kode. Tujuan jangka panjangnya adalah membuat 
 | 1 | Fondasi mesin + prototipe 5 detik *Kereta Malam di Tengah Hujan* | Selesai |
 | 2 | Sistem multi-adegan + film 15 detik *Kereta Malam Menuju Fajar* | Selesai, di-merge ke `main` (PR #2) |
 | 3 | Mesin reusable untuk banyak proyek + film 12 detik *Pagi di Kota Tua* | Selesai, disetujui, di-merge ke `main` (PR #3) |
-| 4 | Kamera pixel-perfect: zoom tanpa piksel merayap (V14) | Selesai di branch `tahap-4-pixel-perfect-camera`, menunggu persetujuan (PR) |
+| 4 | Kamera pixel-perfect: zoom tanpa piksel merayap (V14) | Selesai, disetujui, di-merge ke `main` (PR #4) |
 
-Versi mesin di branch Tahap 4: **0.4.0** (`config/engine.json`). Branch `main` (0.3.0) tetap kondisi resmi sampai Tahap 4 disetujui.
+Versi mesin: **0.4.0** (`config/engine.json`), kondisi resmi di `main` sejak Tahap 4 di-merge.
 
 ## Proyek yang tersedia
 
@@ -51,7 +51,7 @@ Bahan pembanding di `output/comparisons/`:
 
 Laporan pengukuran: [`output/reports/zoom-lab.md`](output/reports/zoom-lab.md). Penjelasan teknis: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) bagian penyaji frame.
 
-Perubahan hasil render Project B (124 frame di jendela zoom/dissolve) dicatat di `tests/baselines/pending-changes.json` dan **menunggu persetujuan pemilik**. Project A dan prototipe Tahap 1 tidak berubah sama sekali.
+Perubahan hasil render Project B (124 frame di jendela zoom/dissolve) dicatat di `tests/baselines/pending-changes.json` dan sudah **disetujui pemilik** (27 Oktober 2026). Baseline Project B masih memakai referensi Tahap 3 ditambah entri perubahan terdeklarasi itu, sampai pemilik memberi instruksi untuk memperbarui baseline. Project A dan prototipe Tahap 1 tidak berubah sama sekali.
 
 ## Hasil Tahap 3: *Pagi di Kota Tua*
 

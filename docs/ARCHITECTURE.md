@@ -6,13 +6,13 @@ Dokumen ini menjelaskan cara mesin animasi bekerja sejak Tahap 3 (mesin reusable
 
 | Hal | Kondisi |
 |-----|---------|
-| Versi mesin | 0.4.0 (`config/engine.json`). Tahap 3 (0.3.0) ada di `main` lewat PR #3; Tahap 4 (kamera pixel-perfect) ada di branch `tahap-4-pixel-perfect-camera` |
+| Versi mesin | 0.4.0 (`config/engine.json`), di `main` lewat PR #4 (Tahap 4, kamera pixel-perfect). Tahap 3 (0.3.0) masuk lewat PR #3 |
 | Proyek | `night-to-dawn` (Project A, adegan kustom), `old-town-morning` (Project B, adegan tersusun), `train-night-rain` (prototipe Tahap 1, format satu adegan) |
 | Katalog aset | 20 jenis di `src/assets/catalog.json` (4 aset gaya Tahap 2 + 16 aset entitas, termasuk pola kalibrasi `calibration-grid`) |
 | Jenis kamera | `keys`, `follow-entity`, `follow`, `speed`, ditambah lensa `scene.lens` untuk adegan jenis apa pun |
 | Mode zoom (`rendering.zoomMode`) | `anchored` (bawaan), `steps`, `nearest` (cara Tahap 3) |
 | Transisi | `cut`, `dissolve`, `portal` |
-| Baseline regresi | `tests/baselines/`: Project A dan prototipe dari `main@cfed35a`, Project B dari `main@9d7a144` (referensi Tahap 3). Baseline tidak boleh diubah tanpa persetujuan pemilik; perubahan yang disengaja dicatat di `tests/baselines/pending-changes.json` |
+| Baseline regresi | `tests/baselines/`: Project A dan prototipe dari `main@cfed35a`, Project B dari `main@9d7a144` (referensi Tahap 3). Baseline tidak boleh diubah tanpa persetujuan pemilik; perubahan yang disengaja dicatat di `tests/baselines/pending-changes.json`. Perubahan 124 frame Project B di Tahap 4 sudah disetujui pemilik; entrinya dipertahankan sampai baseline B diperbarui atas instruksi pemilik |
 | Keterbatasan yang diketahui | [`BACKLOG.md`](BACKLOG.md), termasuk V23 (dua ukuran piksel di zoom pecahan), V24 (warna baru dari lapisan semi-transparan), V25 (batas antar lapisan memotong piksel art), dan T13 (deteksi tokoh "pop") |
 
 ## Gambaran besar

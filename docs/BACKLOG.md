@@ -4,13 +4,13 @@ Daftar keterbatasan yang ditemukan saat meninjau hasil setiap tahap. Semua pengu
 
 Prioritas: **Tinggi** = paling terasa di hasil atau paling berisiko, **Sedang** = layak dikerjakan di tahap berikutnya, **Rendah** = penghalusan.
 
-Kondisi terakhir: Tahap 3 disetujui dan di-merge ke `main` (PR #3). Tahap 4 (kamera pixel-perfect, fokus V14) dikerjakan di branch `tahap-4-pixel-perfect-camera` dan menunggu persetujuan pemilik, termasuk perubahan hasil render Project B. Audit final PR #4 (clean clone) lulus di semua pemeriksaan wajib. Dua temuannya dicatat sebagai V24 dan V25. Tahap 5 belum dimulai. Butir di bawah adalah kandidat, bukan rencana yang sudah disetujui; pemilik yang memilih isi tahap berikutnya.
+Kondisi terakhir: Tahap 3 disetujui dan di-merge ke `main` (PR #3). Tahap 4 (kamera pixel-perfect, fokus V14) disetujui pemilik dan di-merge ke `main` (PR #4), termasuk perubahan hasil render Project B. Audit final PR #4 (clean clone) lulus di semua pemeriksaan wajib. Dua temuannya dicatat sebagai V24 dan V25. Tahap 5 belum dimulai. Butir di bawah adalah kandidat, bukan rencana yang sudah disetujui; pemilik yang memilih isi tahap berikutnya.
 
 ## Ringkasan kandidat untuk tahap berikutnya
 
 | Prioritas | Butir terbuka |
 |-----------|---------------|
-| Tinggi | (kosong: V14 dikerjakan di Tahap 4, menunggu persetujuan) |
+| Tinggi | (kosong: V14 selesai di Tahap 4) |
 | Sedang | V1, V3, V5, V10, V13 (Project A); V15, V16, V17 (Project B); T2, T5, T6, T7, T13, T14 |
 | Rendah | sisanya: V2, V4, V6-V9, V11, V12, V18-V22, V23, V24, V25, T3, T8-T12, T15, T16 |
 
@@ -53,7 +53,7 @@ Nomor frame merujuk ke `config/old-town-morning.json`.
 
 | No | Keterbatasan | Lokasi | Ide perbaikan | Prioritas |
 |----|--------------|--------|---------------|-----------|
-| V14 | Zoom dengan nilai tidak bulat (antara 1 dan 1,25) membuat lebar piksel art bergantian 4 dan 5 piksel layar. Saat zoom bergerak, tepi garis tampak sedikit "merayap". Tidak ada blur, dan di zoom 1 serta 1,25 piksel seragam sempurna. | Push-in adegan 1 (frame 84-119), pullback adegan 3 (frame 255-345) | Zoom bertingkat diskrit (1; 1,25; 1,5; 2) dengan dissolve antar tingkat, atau dunia digambar di resolusi kerja lebih tinggi | Tinggi. **Dikerjakan di Tahap 4 (menunggu persetujuan)**: mode zoom `anchored` (grid terkunci per lapisan). Lab zoom: crawl 43,9% menjadi 0%, piksel bolak-balik 18.902 menjadi 0, tanpa blur. Dither dissolve juga diselaraskan dengan grid. Sisa batas: lihat V23, V24, V25 |
+| V14 | Zoom dengan nilai tidak bulat (antara 1 dan 1,25) membuat lebar piksel art bergantian 4 dan 5 piksel layar. Saat zoom bergerak, tepi garis tampak sedikit "merayap". Tidak ada blur, dan di zoom 1 serta 1,25 piksel seragam sempurna. | Push-in adegan 1 (frame 84-119), pullback adegan 3 (frame 255-345) | Zoom bertingkat diskrit (1; 1,25; 1,5; 2) dengan dissolve antar tingkat, atau dunia digambar di resolusi kerja lebih tinggi | Tinggi. **Selesai di Tahap 4 (disetujui, PR #4)**: mode zoom `anchored` (grid terkunci per lapisan). Lab zoom: crawl 43,9% menjadi 0%, piksel bolak-balik 18.902 menjadi 0, tanpa blur. Dither dissolve juga diselaraskan dengan grid. Sisa batas: lihat V23, V24, V25 |
 | V15 | Warna karakter ditulis tetap (hex), jadi tidak ikut berubah bersama palet pencahayaan pagi seperti bangunan dan langit. | Seluruh film | Izinkan warna karakter berupa kunci palet, atau ramp warna kulit/baju per palet | Sedang |
 | V16 | Ayunan tangan saat berjalan masih kecil (sekitar 5 piksel) dan lengan depan hanya dibedakan garis bayangan, siku belum menekuk. | Pak Darto, Mbok Sumi, anak sekolah | Tambah sendi siku dan pose tangan per fase jalan, lengan dengan warna lebih kontras | Sedang |
 | V17 | Dissolve berdither adegan 1 ke 2 masih menampakkan "bayangan" berpola selama 0,8 detik. Sudah dikurangi dengan push-in yang menyamakan framing kedua adegan. | Frame 108-131 | Dissolve per tingkat palet (bukan per piksel), atau ganti dengan potongan bergerak (match cut) | Sedang |

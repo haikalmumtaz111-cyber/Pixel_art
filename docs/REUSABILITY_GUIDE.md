@@ -1,6 +1,6 @@
 # Panduan Reusability
 
-Berlaku untuk mesin versi 0.4.0 (Tahap 4: kamera pixel-perfect; Tahap 3 = 0.3.0 sudah di `main`). Kontrak teknis lengkapnya ada di [`ARCHITECTURE.md`](ARCHITECTURE.md).
+Berlaku untuk mesin versi 0.4.0 (Tahap 4: kamera pixel-perfect, di `main` lewat PR #4). Kontrak teknis lengkapnya ada di [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
 ## Bagaimana cara membuat proyek animasi baru menggunakan engine ini?
 
