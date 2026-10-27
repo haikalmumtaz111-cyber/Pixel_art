@@ -14,6 +14,7 @@ const { md5List } = require('./fingerprint.cjs');
 const { frameFile } = require('./config.cjs');
 const { result } = require('./checks.cjs');
 const { makeSandbox } = require('./sandbox.cjs');
+const { officialPixels } = require('./baselines.cjs');
 
 const A = 'night-to-dawn';
 const B = 'old-town-morning';
@@ -116,9 +117,9 @@ async function main() {
     `${Object.keys(engineFiles).length} proyek x ${(Object.values(engineFiles)[0] || []).length} file src/engine: ${(Object.values(engineFiles)[0] || []).map((f) => path.basename(f)).join(', ')}`));
 
   // isolasi dua arah: A dirusak -> B tetap; B dirusak -> A tetap
-  const baselineA = JSON.parse(fs.readFileSync(path.join(ROOT, 'tests', 'baselines', `${A}.json`), 'utf8'));
+  // A dicocokkan dengan baseline resminya (tests/baselines/registry.json)
   const framesA = [0, 225, 449];
-  add(await isolationTest(B, A, framesA, baselineA.pixelMd5));
+  add(await isolationTest(B, A, framesA, officialPixels(A)));
   const cfgB = configs[B];
   const framesB = [0, 180, 359];
   if (cfgB && framesB.every((f) => fs.existsSync(frameFile(cfgB.paths.frames, f)))) {

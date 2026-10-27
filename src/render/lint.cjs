@@ -4,10 +4,12 @@
 // 3. Aturan determinisme: kode browser tidak memakai Math.random(), Date, atau performance.now().
 // 4. Kemurnian mesin inti: src/engine tidak mengimpor aset/adegan dan tidak menyebut jenis aset tertentu.
 // 5. Konvensi modul: kode browser ES module .js, kode Node CommonJS .cjs.
+// 6. Registry baseline utuh: file baseline tidak berubah (SHA-256) dan riwayat versinya cocok dengan catatan persetujuan.
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
 const { ROOT, loadEngine } = require('./projects.cjs');
+const { verifyRegistry } = require('./baselines.cjs');
 
 const IGNORE = new Set(['node_modules', 'output', '.git']);
 
@@ -62,11 +64,20 @@ function main() {
     for (const type of types) if (new RegExp(`['"\`]${type}['"\`]`).test(code)) problems.push(`${f}: mesin inti menyebut jenis aset "${type}"`);
   }
 
+  // registry baseline (tanpa render): file utuh, riwayat versi dan perubahan terdeklarasi konsisten
+  let registry = [];
+  try {
+    registry = verifyRegistry();
+    for (const c of registry.filter((x) => !x.pass)) problems.push(`tests/baselines: ${c.name} (${c.detail})`);
+  } catch (error) {
+    problems.push(`tests/baselines: registry tidak bisa diperiksa (${error.message})`);
+  }
+
   if (problems.length) {
     console.error(`LINT GAGAL (${problems.length} masalah):\n- ${problems.join('\n- ')}`);
     process.exit(1);
   }
-  console.log(`LINT LULUS: ${scripts.length} file JavaScript, ${jsons.length} file JSON, ${browserCode.length} file kode browser deterministik, mesin inti bebas dari ${types.length} jenis aset.`);
+  console.log(`LINT LULUS: ${scripts.length} file JavaScript, ${jsons.length} file JSON, ${browserCode.length} file kode browser deterministik, mesin inti bebas dari ${types.length} jenis aset, ${registry.length} pemeriksaan registry baseline.`);
 }
 
 main();

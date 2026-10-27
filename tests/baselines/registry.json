@@ -1,0 +1,56 @@
+{
+  "note": "Daftar resmi baseline regresi per proyek dan per versi. Nama versi = kondisi main setelah tahap itu di-merge. File baseline tidak pernah diubah atau dihapus; SHA-256 setiap file dikunci di sini. \"official\" = versi patokan uji regresi, uji asap, dan uji antar-proyek. Versi lain adalah referensi historis (npm run test:regression -- --project <id> --baseline <versi>). Versi baru hanya dibuat lewat npm run baseline setelah pemilik menyetujui. Panduan: docs/BASELINES.md",
+  "projects": {
+    "night-to-dawn": {
+      "official": "tahap-2",
+      "versions": {
+        "tahap-2": {
+          "file": "night-to-dawn.json",
+          "sha256": "23fce792f12039e1ac316aa3dbea3d92af68d374e33907c45e1fe212c77f94da",
+          "source": "main@cfed35a",
+          "engineVersion": "0.2.0",
+          "frames": 450,
+          "addedIn": "bbf2fff (Tahap 3)",
+          "note": "Project A (film Tahap 2), direkam dari main setelah Tahap 2 di-merge, sebelum pengembangan Tahap 3",
+          "approval": {
+            "evidence": ["Tahap 2 disetujui pemilik dan di-merge ke main lewat PR #2 (merge commit cfed35a)"]
+          }
+        }
+      }
+    },
+    "old-town-morning": {
+      "official": "tahap-3",
+      "versions": {
+        "tahap-3": {
+          "file": "old-town-morning.json",
+          "sha256": "4b24dfa7966ef2ea9850b35edcd5dbb85061265e9116f3bd9e50a8eef9cf11ef",
+          "source": "main@9d7a144",
+          "engineVersion": "0.3.0",
+          "frames": 360,
+          "addedIn": "120709c (Tahap 4)",
+          "note": "Project B hasil Tahap 3, direkam dari main sebelum pengembangan Tahap 4",
+          "approval": {
+            "evidence": ["Tahap 3 disetujui pemilik sebagai milestone dan di-merge ke main lewat PR #3 (merge commit 9d7a144)"]
+          }
+        }
+      }
+    },
+    "train-night-rain": {
+      "official": "tahap-2",
+      "versions": {
+        "tahap-2": {
+          "file": "train-night-rain.json",
+          "sha256": "faca92e5e4b50d5fd4359da2e3f40a81fa5d90ef9d019fb35ea3a3ec37201a48",
+          "source": "main@cfed35a",
+          "engineVersion": "0.2.0",
+          "frames": 150,
+          "addedIn": "bbf2fff (Tahap 3)",
+          "note": "Prototipe Tahap 1, direkam dari main setelah Tahap 2 di-merge. Piksel PNG sama dengan hasil Tahap 1; MP4 di-encode ulang di Tahap 2 (H.264 level 4.1, lihat CHANGELOG Tahap 2)",
+          "approval": {
+            "evidence": ["Prototipe di-merge ke main lewat PR #1 (merge commit a2c3b0d); encode ulang MP4 masuk Tahap 2 yang disetujui pemilik dan di-merge lewat PR #2 (merge commit cfed35a)"]
+          }
+        }
+      }
+    }
+  }
+}
