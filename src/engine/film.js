@@ -9,7 +9,8 @@ import { createAssetRegistry } from './registry.js';
 import { createEnvironment } from './environment.js';
 import { createSchedule } from './schedule.js';
 import { createComposedScene } from './composer.js';
-import { createPresenter } from './presenter.js';
+import { createPresenter, gridDitherMask } from './presenter.js';
+import { createTrack } from './tracks.js';
 
 // Adegan bawaan mesin yang bisa dipakai proyek mana pun tanpa menulis kode.
 const BUILTIN_SCENES = { compose: { createScene: createComposedScene } };
@@ -28,7 +29,10 @@ export async function createFilm(config) {
 
   const scenes = {};
   const sceneModules = [];
+  // lensa: zoom tambahan per adegan dari timeline (scene.lens.zoom), berlaku untuk adegan jenis apa pun
+  const lenses = {};
   for (const entry of timeline.scenes) {
+    if (entry.lens?.zoom) lenses[entry.id] = createTrack(entry.lens.zoom, 1);
     let module = BUILTIN_SCENES[entry.module];
     if (!module) {
       sceneModules.push(sceneUrl(entry.module));
@@ -56,29 +60,46 @@ export async function createFilm(config) {
     };
   }
 
+  const grids = [];
   function drawScene(id, ctx, frame, extra) {
     const scene = scenes[id];
+    const lens = lenses[id] ? lenses[id](frame) : 1;
     ctx.save();
     try {
-      return presenter.draw(ctx, (target) => scene.impl.render(target, shotFor(scene.entry, frame, extra)) || {}) || {};
+      const result = presenter.draw(ctx, (target, surface) => {
+        const r = scene.impl.render(target, shotFor(scene.entry, frame, { ...extra, surface, lens })) || {};
+        return r.lensApplied || lens === 1 ? r : { ...r, zoom: (r.zoom || 1) * lens };
+      }) || {};
+      const grid = presenter.gridInfo();
+      if (grid) grids.push({ scene: id, ...grid });
+      return result;
     } finally {
       ctx.restore();
     }
   }
 
+  // Topeng dither transisi yang selaras dengan grid art adegan yang terakhir digambar (adegan tujuan).
+  const ditherMask = (level) => {
+    const grid = presenter.ditherGrid();
+    return grid ? gridDitherMask(grid, width, height, level) : null;
+  };
+
+  // info.grid = mode zoom, nilai zoom, dan geseran lapisan setiap adegan yang digambar di frame ini
+  // (dipakai validator untuk memeriksa bahwa grid piksel tidak merayap)
   function render(ctx, frame) {
+    grids.length = 0;
     const segment = schedule.segmentAt(frame);
     if (segment.kind === 'scene') {
       drawScene(segment.id, ctx, frame);
-      return { segment: segment.id };
+      return { segment: segment.id, ...(grids.length ? { grid: [...grids] } : {}) };
     }
     const t = segment.transition;
     const result = TRANSITIONS[t.type].render({
-      ctx, frame, p: segment.p, transition: t, params: t.params || {}, buffers, width, height, cell: presenter.cell,
+      ctx, frame, p: segment.p, transition: t, params: t.params || {}, buffers, width, height, cell: presenter.cell, ditherMask,
       drawFrom: (target, extra) => drawScene(t.from, target, frame, extra),
       drawTo: (target, extra) => drawScene(t.to, target, frame, extra)
     });
-    return { segment: t.id, ...result };
+    return { segment: t.id, ...result, ...(grids.length ? { grid: [...grids] } : {}) };
   }
 
   return {

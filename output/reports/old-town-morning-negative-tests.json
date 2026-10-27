@@ -1,9 +1,9 @@
 {
-  "testedAt": "2026-10-27T10:52:08.597Z",
+  "testedAt": "2026-10-27T12:25:46.994Z",
   "project": "old-town-morning",
   "allDetected": true,
-  "detected": 33,
-  "total": 33,
+  "detected": 36,
+  "total": 36,
   "results": [
     {
       "name": "Celah di timeline: adegan 2 mulai 1 frame terlambat",
@@ -84,6 +84,21 @@
       "name": "Zoom kamera tanpa mode upscale \"browser\" (piksel jadi tidak tajam)",
       "detected": true,
       "detail": "Track kamera \"walk-follow\": zoom kamera hanya didukung bila rendering.upscale = \"browser\" (agar piksel tetap tajam)"
+    },
+    {
+      "name": "Mode zoom salah ketik",
+      "detected": true,
+      "detail": "Proyek: rendering.zoomMode \"zoom-hantu\" tidak dikenal (pilihan: anchored, steps, nearest)"
+    },
+    {
+      "name": "Lensa zoom di mode upscale ffmpeg",
+      "detected": true,
+      "detail": "Track kamera \"walk-follow\": zoom kamera hanya didukung bila rendering.upscale = \"browser\" (agar piksel tetap tajam)"
+    },
+    {
+      "name": "Zoom pecahan dengan cara lama (nearest): grid piksel merayap",
+      "detected": true,
+      "detail": "Grid piksel stabil saat kamera bergerak dan zoom (tidak merayap): GAGAL, mode zoom \"nearest\", 29 frame zoom pecahan, 0 perubahan ukuran saat zoom tetap (crawl), 2304 bolak-balik dari 15992 perbandingan kolom/baris dunia (pakai rendering.zoomMode \"anchored\" agar tidak merayap) | kontrol anchored: lolos"
     },
     {
       "name": "Nama efek salah ketik",

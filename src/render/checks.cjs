@@ -209,6 +209,62 @@ function manifestChecks(config, manifest, { framesDir = config.paths.frames, vid
   return out;
 }
 
+// ---------- grid piksel saat kamera bergerak dan zoom ----------
+
+// Dari catatan render (manifest.segments[].grid: mode zoom, nilai zoom, geseran tiap lapisan) dihitung ulang
+// ukuran setiap kolom/baris DUNIA per frame dengan model yang sama seperti penyaji (src/engine/pixel-grid.js).
+// "Crawl" = kolom dunia yang berubah ukuran padahal zoom tidak berubah (pola bergeser di atas gambar).
+// "Bolak-balik" = kolom yang mengecil saat zoom naik (atau membesar saat zoom turun).
+async function gridChecks(config, renderInfo) {
+  const name = 'Grid piksel stabil saat kamera bergerak dan zoom (tidak merayap)';
+  if (config.rendering?.upscale !== 'browser') return [result('grid-stability', name, true, 'proyek memakai upscale ffmpeg tanpa zoom kamera')];
+  const segments = renderInfo?.segments || [];
+  if (!segments.length) return [result('grid-stability', name, false, 'catatan render tidak ditemukan')];
+  const G = await import(require('url').pathToFileURL(path.join(__dirname, '..', 'engine', 'pixel-grid.js')).href);
+  const axes = [
+    { size: config.width, outSize: config.outputWidth, axis: 'x', i: 0 },
+    { size: config.height, outSize: config.outputHeight, axis: 'y', i: 1 }
+  ];
+  // ukuran kolom dunia yang terlihat untuk satu lapisan di satu frame
+  const widths = (grid, anchor, ax) => {
+    const map = grid.zoomMode === 'nearest'
+      ? G.nearestAxisMap({ size: ax.size, outSize: ax.outSize, zoom: grid.zoom })
+      : G.axisMap({ size: ax.size, outSize: ax.outSize, zoom: grid.zoom, anchor: anchor[ax.i], mode: grid.zoomMode, axis: ax.axis });
+    const out = new Map();
+    for (let s = map.first; s <= map.last; s++) out.set(s + anchor[ax.i], map.size[s]);
+    return out;
+  };
+  let fractional = 0;
+  let crawl = 0;
+  let flips = 0;
+  let compared = 0;
+  const mode = segments.find((s) => s.grid)?.grid?.[0]?.zoomMode || config.rendering.zoomMode;
+  for (let k = 1; k < segments.length; k++) {
+    const a = segments[k - 1].grid;
+    const b = segments[k].grid;
+    if (b?.some((g) => G.cellOf(config.outputWidth / config.width, g.zoom, g.zoomMode).f > 0)) fractional++;
+    if (!a || !b || a.length !== 1 || b.length !== 1 || a[0].scene !== b[0].scene || a[0].layers.length !== b[0].layers.length) continue;
+    const dz = b[0].zoom - a[0].zoom;
+    for (let L = 0; L < b[0].layers.length; L++) {
+      for (const ax of axes) {
+        const before = widths(a[0], a[0].layers[L], ax);
+        for (const [j, w] of widths(b[0], b[0].layers[L], ax)) {
+          if (!before.has(j)) continue;
+          compared++;
+          const old = before.get(j);
+          if (w === old) continue;
+          if (dz === 0) crawl++;
+          else if ((dz > 0) !== (w > old)) flips++;
+        }
+      }
+    }
+  }
+  const pass = crawl === 0 && flips === 0;
+  return [result('grid-stability', name, pass,
+    `mode zoom "${mode}", ${fractional} frame zoom pecahan, ${crawl} perubahan ukuran saat zoom tetap (crawl), ${flips} bolak-balik dari ${compared} perbandingan kolom/baris dunia` +
+    (pass ? '' : ' (pakai rendering.zoomMode "anchored" agar tidak merayap)'))];
+}
+
 // ---------- frame PNG ----------
 
 function pngChecks(framesDir, count, width, height) {
@@ -236,5 +292,5 @@ function pngChecks(framesDir, count, width, height) {
 
 module.exports = {
   LIMITS, sha256, result, timelineChecks, probeVideo, videoChecks, decodeChecks,
-  lumaStats, frameHashes, frameChecks, lumaEvents, transitionLumaChecks, manifestChecks, pngChecks
+  lumaStats, frameHashes, frameChecks, lumaEvents, transitionLumaChecks, manifestChecks, gridChecks, pngChecks
 };

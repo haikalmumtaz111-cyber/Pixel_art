@@ -125,6 +125,12 @@ function buildProject(raw, file, { strict = true, engine = loadEngine(), include
   }
   const rendering = { upscale: engine.rendering.upscale, ...(raw.rendering || {}) };
   if (!['ffmpeg', 'browser'].includes(rendering.upscale)) issues.push('Proyek: rendering.upscale harus "ffmpeg" atau "browser"');
+  // mode zoom hanya berarti di upscale "browser"; proyek lama tanpa zoomMode memakai bawaan mesin ("anchored")
+  if (rendering.upscale === 'browser' && rendering.zoomMode === undefined) rendering.zoomMode = engine.rendering.zoomMode;
+  if (rendering.zoomMode !== undefined && !engine.rendering.zoomModes.includes(rendering.zoomMode)) {
+    issues.push(`Proyek: rendering.zoomMode "${rendering.zoomMode}" tidak dikenal (pilihan: ${engine.rendering.zoomModes.join(', ')})`);
+  }
+  if (rendering.zoomLayers !== undefined && typeof rendering.zoomLayers !== 'boolean') issues.push('Proyek: rendering.zoomLayers harus true atau false');
   const encoding = { ...engine.rendering.encoding, ...(raw.encoding || {}) };
   if (strict && issues.length) throw new Error(`Konfigurasi proyek tidak valid:\n- ${issues.join('\n- ')}`);
 

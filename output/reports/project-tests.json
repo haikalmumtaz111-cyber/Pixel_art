@@ -1,5 +1,5 @@
 {
-  "testedAt": "2026-10-27T10:52:24.296Z",
+  "testedAt": "2026-10-27T12:26:12.126Z",
   "allPass": true,
   "passed": 18,
   "total": 18,
@@ -12,6 +12,7 @@
       "/src/engine/film.js",
       "/src/engine/math.js",
       "/src/engine/palette.js",
+      "/src/engine/pixel-grid.js",
       "/src/engine/pixel.js",
       "/src/engine/presenter.js",
       "/src/engine/random.js",
@@ -29,6 +30,7 @@
       "/src/engine/film.js",
       "/src/engine/math.js",
       "/src/engine/palette.js",
+      "/src/engine/pixel-grid.js",
       "/src/engine/pixel.js",
       "/src/engine/presenter.js",
       "/src/engine/random.js",
@@ -46,6 +48,7 @@
       "/src/engine/film.js",
       "/src/engine/math.js",
       "/src/engine/palette.js",
+      "/src/engine/pixel-grid.js",
       "/src/engine/pixel.js",
       "/src/engine/presenter.js",
       "/src/engine/random.js",
@@ -85,7 +88,7 @@
       "id": "engine-config",
       "name": "Semua proyek memakai satu konfigurasi mesin",
       "pass": true,
-      "detail": "Pixel History Studio 0.3.0"
+      "detail": "Pixel History Studio 0.4.0"
     },
     {
       "id": "config-files",
@@ -151,7 +154,7 @@
       "id": "shared-engine",
       "name": "Semua proyek memuat file mesin inti yang sama",
       "pass": true,
-      "detail": "3 proyek x 15 file src/engine: camera.js, composer.js, entities.js, environment.js, film.js, math.js, palette.js, pixel.js, presenter.js, random.js, registry.js, runtime.js, schedule.js, tracks.js, transitions.js"
+      "detail": "3 proyek x 16 file src/engine: camera.js, composer.js, entities.js, environment.js, film.js, math.js, palette.js, pixel-grid.js, pixel.js, presenter.js, random.js, registry.js, runtime.js, schedule.js, tracks.js, transitions.js"
     },
     {
       "id": "isolation:old-town-morning->night-to-dawn",

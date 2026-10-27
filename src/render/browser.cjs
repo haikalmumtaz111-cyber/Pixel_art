@@ -64,6 +64,12 @@ async function openStudio(config) {
       return result;
     },
     toBuffer,
+    // jalankan fungsi di halaman (dipakai alat uji seperti lab zoom)
+    async evaluate(fn, arg) {
+      const result = await page.evaluate(fn, arg);
+      fail();
+      return result;
+    },
     async close() {
       await browser.close();
       server.close();

@@ -143,6 +143,11 @@ function normalizeTimeline(raw, ctx) {
       cursor = end;
     }
 
+    // lensa: zoom tambahan untuk adegan jenis apa pun (butuh upscale "browser" agar piksel tetap tajam)
+    if (scene.lens !== undefined) {
+      if (!scene.lens || typeof scene.lens !== 'object' || Array.isArray(scene.lens)) issues.push(`${label}: lens harus objek { "zoom": keyframe }`);
+      else S.checkCamera({ type: 'keys', zoom: scene.lens.zoom }, `${label} lens`, ctx, issues, new Set());
+    }
     const builtin = ctx.engine.builtinScenes.includes(scene.module);
     if (scene.module && !builtin && !fs.existsSync(moduleFile(root, scene.module))) issues.push(`${label}: modul "${scene.module}" tidak ditemukan`);
     const sceneEffects = [...(scene.environment?.effects || []), ...(scene.camera?.windowView?.effects || [])];

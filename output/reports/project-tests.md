@@ -1,7 +1,7 @@
 # Uji Antar-Proyek
 
 Membuktikan semua proyek memakai mesin yang sama dan tidak saling bergantung.
-Dibuat otomatis oleh `npm run test:projects` pada 2026-10-27T10:52:24.296Z.
+Dibuat otomatis oleh `npm run test:projects` pada 2026-10-27T12:26:12.126Z.
 
 | No | Pemeriksaan | Hasil | Detail |
 |----|-------------|-------|--------|
@@ -9,7 +9,7 @@ Dibuat otomatis oleh `npm run test:projects` pada 2026-10-27T10:52:24.296Z.
 | 2 | Konfigurasi night-to-dawn valid | LULUS | 3 adegan, 450 frame, 4 aset |
 | 3 | Konfigurasi old-town-morning valid | LULUS | 3 adegan, 360 frame, 25 aset |
 | 4 | Konfigurasi train-night-rain valid | LULUS | 1 adegan, 150 frame, 0 aset |
-| 5 | Semua proyek memakai satu konfigurasi mesin | LULUS | Pixel History Studio 0.3.0 |
+| 5 | Semua proyek memakai satu konfigurasi mesin | LULUS | Pixel History Studio 0.4.0 |
 | 6 | File konfigurasi proyek tidak saling berbagi | LULUS | night-to-dawn: 1 file, old-town-morning: 8 file, train-night-rain: 1 file |
 | 7 | Semua aset night-to-dawn bisa dibuat | LULUS | 4/4 aset (character, steam-train, countryside, coach-interior) |
 | 8 | Referensi aset night-to-dawn utuh | LULUS | s01-night-train (3), s02-inside-train (4), s03-journey-to-dawn (2) |
@@ -20,7 +20,7 @@ Dibuat otomatis oleh `npm run test:projects` pada 2026-10-27T10:52:24.296Z.
 | 13 | Semua aset train-night-rain bisa dibuat | LULUS | 0/0 aset (tanpa daftar aset bersama) |
 | 14 | Referensi aset train-night-rain utuh | LULUS | train-night-rain (0) |
 | 15 | Setiap adegan train-night-rain bisa dirender terpisah | LULUS | 1 adegan dirender sendiri-sendiri tanpa error |
-| 16 | Semua proyek memuat file mesin inti yang sama | LULUS | 3 proyek x 15 file src/engine: camera.js, composer.js, entities.js, environment.js, film.js, math.js, palette.js, pixel.js, presenter.js, random.js, registry.js, runtime.js, schedule.js, tracks.js, transitions.js |
+| 16 | Semua proyek memuat file mesin inti yang sama | LULUS | 3 proyek x 16 file src/engine: camera.js, composer.js, entities.js, environment.js, film.js, math.js, palette.js, pixel-grid.js, pixel.js, presenter.js, random.js, registry.js, runtime.js, schedule.js, tracks.js, transitions.js |
 | 17 | Merusak konfigurasi old-town-morning tidak memengaruhi night-to-dawn | LULUS | old-town-morning ditolak validator, night-to-dawn frame 0, 225, 449 identik dengan render resmi |
 | 18 | Merusak konfigurasi night-to-dawn tidak memengaruhi old-town-morning | LULUS | night-to-dawn ditolak validator, old-town-morning frame 0, 180, 359 identik dengan render resmi |
 

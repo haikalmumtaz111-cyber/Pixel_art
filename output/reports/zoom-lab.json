@@ -1,0 +1,1045 @@
+{
+  "testedAt": "2026-10-27T12:28:04.117Z",
+  "allPass": true,
+  "passed": 10,
+  "total": 10,
+  "scenarios": [
+    {
+      "id": "ladder",
+      "name": "Tangga zoom 1 sampai 4 (kamera diam)",
+      "frames": 15,
+      "x": 100,
+      "y": 60,
+      "zoom": [
+        1,
+        1.05,
+        1.1,
+        1.2,
+        1.25,
+        1.3,
+        1.5,
+        1.6,
+        1.75,
+        2,
+        2.2,
+        2.5,
+        3,
+        3.5,
+        4
+      ]
+    },
+    {
+      "id": "pan-h-110",
+      "name": "Geser horizontal, zoom 1,1",
+      "frames": 30,
+      "x": [
+        100,
+        160
+      ],
+      "y": 60,
+      "zoom": 1.1
+    },
+    {
+      "id": "pan-v-110",
+      "name": "Geser vertikal, zoom 1,1",
+      "frames": 30,
+      "x": 100,
+      "y": [
+        60,
+        100
+      ],
+      "zoom": 1.1
+    },
+    {
+      "id": "pan-d-110",
+      "name": "Geser diagonal, zoom 1,1",
+      "frames": 30,
+      "x": [
+        100,
+        145
+      ],
+      "y": [
+        60,
+        90
+      ],
+      "zoom": 1.1
+    },
+    {
+      "id": "pan-d-237",
+      "name": "Geser diagonal, zoom 2,37",
+      "frames": 30,
+      "x": [
+        100,
+        130
+      ],
+      "y": [
+        60,
+        80
+      ],
+      "zoom": 2.37
+    },
+    {
+      "id": "pan-h-125",
+      "name": "Geser horizontal, zoom 1,25 (bulat)",
+      "frames": 30,
+      "x": [
+        100,
+        160
+      ],
+      "y": 60,
+      "zoom": 1.25
+    },
+    {
+      "id": "pan-d-175",
+      "name": "Geser diagonal, zoom 1,75 (bulat)",
+      "frames": 30,
+      "x": [
+        100,
+        140
+      ],
+      "y": [
+        60,
+        85
+      ],
+      "zoom": 1.75
+    },
+    {
+      "id": "ramp-in",
+      "name": "Zoom masuk 1 ke 1,25 (kamera diam)",
+      "frames": 36,
+      "x": 100,
+      "y": 60,
+      "zoom": [
+        1,
+        1.25
+      ]
+    },
+    {
+      "id": "ramp-out-pan",
+      "name": "Zoom keluar 1,5 ke 1 sambil geser horizontal",
+      "frames": 45,
+      "x": [
+        100,
+        170
+      ],
+      "y": 60,
+      "zoom": [
+        1.5,
+        1
+      ]
+    },
+    {
+      "id": "ramp-in-diag",
+      "name": "Zoom masuk 1 ke 2 sambil geser diagonal",
+      "frames": 60,
+      "x": [
+        100,
+        150
+      ],
+      "y": [
+        60,
+        90
+      ],
+      "zoom": [
+        1,
+        2
+      ]
+    }
+  ],
+  "results": {
+    "nearest": {
+      "label": "nearest (cara Tahap 3)",
+      "scenarios": {
+        "ladder": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 9,
+          "framesAtLevel": 9,
+          "framesTooManySizes": 0,
+          "crawl": 0,
+          "comparedAtConstantZoom": 0,
+          "rigidSpreadMax": 0,
+          "nonMonotonic": 224,
+          "scaleErrorMax": 0.003,
+          "scaleJumpMax": 0.003,
+          "sizes": {
+            "4": 4,
+            "5": 5,
+            "6": 3,
+            "7": 2,
+            "8": 2,
+            "9": 1,
+            "10": 1,
+            "12": 1,
+            "14": 1,
+            "16": 1
+          },
+          "ms": 831
+        },
+        "pan-h-110": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 0,
+          "framesAtLevel": 0,
+          "framesTooManySizes": 0,
+          "crawl": 14960,
+          "comparedAtConstantZoom": 32158,
+          "rigidSpreadMax": 1,
+          "nonMonotonic": 0,
+          "scaleErrorMax": 0,
+          "scaleJumpMax": 0,
+          "sizes": {
+            "4": 30,
+            "5": 30
+          },
+          "ms": 1860
+        },
+        "pan-v-110": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 0,
+          "framesAtLevel": 0,
+          "framesTooManySizes": 0,
+          "crawl": 4182,
+          "comparedAtConstantZoom": 32208,
+          "rigidSpreadMax": 1,
+          "nonMonotonic": 0,
+          "scaleErrorMax": 0,
+          "scaleJumpMax": 0,
+          "sizes": {
+            "4": 30,
+            "5": 30
+          },
+          "ms": 1859
+        },
+        "pan-d-110": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 0,
+          "framesAtLevel": 0,
+          "framesTooManySizes": 0,
+          "crawl": 19608,
+          "comparedAtConstantZoom": 32150,
+          "rigidSpreadMax": 1,
+          "nonMonotonic": 0,
+          "scaleErrorMax": 0,
+          "scaleJumpMax": 0,
+          "sizes": {
+            "4": 30,
+            "5": 30
+          },
+          "ms": 1851
+        },
+        "pan-d-237": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 0,
+          "framesAtLevel": 0,
+          "framesTooManySizes": 0,
+          "crawl": 8072,
+          "comparedAtConstantZoom": 10247,
+          "rigidSpreadMax": 1,
+          "nonMonotonic": 0,
+          "scaleErrorMax": 0.002,
+          "scaleJumpMax": 0,
+          "sizes": {
+            "9": 30,
+            "10": 30
+          },
+          "ms": 1206
+        },
+        "pan-h-125": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 30,
+          "framesAtLevel": 30,
+          "framesTooManySizes": 0,
+          "crawl": 0,
+          "comparedAtConstantZoom": 28156,
+          "rigidSpreadMax": 0,
+          "nonMonotonic": 0,
+          "scaleErrorMax": 0,
+          "scaleJumpMax": 0,
+          "sizes": {
+            "5": 30
+          },
+          "ms": 1832
+        },
+        "pan-d-175": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 30,
+          "framesAtLevel": 30,
+          "framesTooManySizes": 0,
+          "crawl": 0,
+          "comparedAtConstantZoom": 20184,
+          "rigidSpreadMax": 0,
+          "nonMonotonic": 0,
+          "scaleErrorMax": 0,
+          "scaleJumpMax": 0,
+          "sizes": {
+            "7": 30
+          },
+          "ms": 1594
+        },
+        "ramp-in": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 2,
+          "framesAtLevel": 2,
+          "framesTooManySizes": 0,
+          "crawl": 0,
+          "comparedAtConstantZoom": 0,
+          "rigidSpreadMax": 0,
+          "nonMonotonic": 5965,
+          "scaleErrorMax": 0.002,
+          "scaleJumpMax": 0.003,
+          "sizes": {
+            "4": 35,
+            "5": 35
+          },
+          "ms": 2020
+        },
+        "ramp-out-pan": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 3,
+          "framesAtLevel": 3,
+          "framesTooManySizes": 0,
+          "crawl": 0,
+          "comparedAtConstantZoom": 0,
+          "rigidSpreadMax": 0,
+          "nonMonotonic": 6099,
+          "scaleErrorMax": 0.002,
+          "scaleJumpMax": 0.004,
+          "sizes": {
+            "4": 22,
+            "5": 43,
+            "6": 22
+          },
+          "ms": 2529
+        },
+        "ramp-in-diag": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 2,
+          "framesAtLevel": 2,
+          "framesTooManySizes": 0,
+          "crawl": 0,
+          "comparedAtConstantZoom": 0,
+          "rigidSpreadMax": 0,
+          "nonMonotonic": 6614,
+          "scaleErrorMax": 0.003,
+          "scaleJumpMax": 0.005,
+          "sizes": {
+            "4": 15,
+            "5": 29,
+            "6": 30,
+            "7": 29,
+            "8": 15
+          },
+          "ms": 3001
+        }
+      },
+      "summary": {
+        "invalidPixels": 0,
+        "conflicts": 0,
+        "uniformAtLevel": "76/76",
+        "uniformAtLevelOk": true,
+        "framesTooManySizes": 0,
+        "crawlFractionalPans": 46822,
+        "crawlRatePct": 43.86,
+        "crawlIntegerPans": 0,
+        "rigidSpreadMax": 1,
+        "nonMonotonic": 18902,
+        "scaleErrorMax": 0.003,
+        "scaleJumpMax": 0.005
+      }
+    },
+    "steps": {
+      "label": "steps (zoom dibulatkan)",
+      "scenarios": {
+        "ladder": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 15,
+          "framesAtLevel": 15,
+          "framesTooManySizes": 0,
+          "crawl": 0,
+          "comparedAtConstantZoom": 0,
+          "rigidSpreadMax": 0,
+          "nonMonotonic": 0,
+          "scaleErrorMax": 0.4,
+          "scaleJumpMax": 0.6,
+          "sizes": {
+            "4": 3,
+            "5": 3,
+            "6": 2,
+            "7": 1,
+            "8": 1,
+            "9": 1,
+            "10": 1,
+            "12": 1,
+            "14": 1,
+            "16": 1
+          },
+          "ms": 759
+        },
+        "pan-h-110": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 30,
+          "framesAtLevel": 30,
+          "framesTooManySizes": 0,
+          "crawl": 0,
+          "comparedAtConstantZoom": 35290,
+          "rigidSpreadMax": 0,
+          "nonMonotonic": 0,
+          "scaleErrorMax": 0.4,
+          "scaleJumpMax": 0,
+          "sizes": {
+            "4": 30
+          },
+          "ms": 1942
+        },
+        "pan-v-110": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 30,
+          "framesAtLevel": 30,
+          "framesTooManySizes": 0,
+          "crawl": 0,
+          "comparedAtConstantZoom": 35340,
+          "rigidSpreadMax": 0,
+          "nonMonotonic": 0,
+          "scaleErrorMax": 0.4,
+          "scaleJumpMax": 0,
+          "sizes": {
+            "4": 30
+          },
+          "ms": 1899
+        },
+        "pan-d-110": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 30,
+          "framesAtLevel": 30,
+          "framesTooManySizes": 0,
+          "crawl": 0,
+          "comparedAtConstantZoom": 35282,
+          "rigidSpreadMax": 0,
+          "nonMonotonic": 0,
+          "scaleErrorMax": 0.4,
+          "scaleJumpMax": 0,
+          "sizes": {
+            "4": 30
+          },
+          "ms": 1958
+        },
+        "pan-d-237": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 30,
+          "framesAtLevel": 30,
+          "framesTooManySizes": 0,
+          "crawl": 0,
+          "comparedAtConstantZoom": 11608,
+          "rigidSpreadMax": 0,
+          "nonMonotonic": 0,
+          "scaleErrorMax": 0.48,
+          "scaleJumpMax": 0,
+          "sizes": {
+            "9": 30
+          },
+          "ms": 1185
+        },
+        "pan-h-125": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 30,
+          "framesAtLevel": 30,
+          "framesTooManySizes": 0,
+          "crawl": 0,
+          "comparedAtConstantZoom": 28156,
+          "rigidSpreadMax": 0,
+          "nonMonotonic": 0,
+          "scaleErrorMax": 0,
+          "scaleJumpMax": 0,
+          "sizes": {
+            "5": 30
+          },
+          "ms": 1642
+        },
+        "pan-d-175": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 30,
+          "framesAtLevel": 30,
+          "framesTooManySizes": 0,
+          "crawl": 0,
+          "comparedAtConstantZoom": 20184,
+          "rigidSpreadMax": 0,
+          "nonMonotonic": 0,
+          "scaleErrorMax": 0,
+          "scaleJumpMax": 0,
+          "sizes": {
+            "7": 30
+          },
+          "ms": 1455
+        },
+        "ramp-in": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 36,
+          "framesAtLevel": 36,
+          "framesTooManySizes": 0,
+          "crawl": 0,
+          "comparedAtConstantZoom": 0,
+          "rigidSpreadMax": 0,
+          "nonMonotonic": 0,
+          "scaleErrorMax": 0.486,
+          "scaleJumpMax": 0.971,
+          "sizes": {
+            "4": 18,
+            "5": 18
+          },
+          "ms": 2216
+        },
+        "ramp-out-pan": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 45,
+          "framesAtLevel": 45,
+          "framesTooManySizes": 0,
+          "crawl": 0,
+          "comparedAtConstantZoom": 0,
+          "rigidSpreadMax": 0,
+          "nonMonotonic": 0,
+          "scaleErrorMax": 0.5,
+          "scaleJumpMax": 0.955,
+          "sizes": {
+            "4": 11,
+            "5": 22,
+            "6": 12
+          },
+          "ms": 2596
+        },
+        "ramp-in-diag": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 60,
+          "framesAtLevel": 60,
+          "framesTooManySizes": 0,
+          "crawl": 0,
+          "comparedAtConstantZoom": 0,
+          "rigidSpreadMax": 0,
+          "nonMonotonic": 0,
+          "scaleErrorMax": 0.492,
+          "scaleJumpMax": 0.932,
+          "sizes": {
+            "4": 8,
+            "5": 15,
+            "6": 14,
+            "7": 15,
+            "8": 8
+          },
+          "ms": 3358
+        }
+      },
+      "summary": {
+        "invalidPixels": 0,
+        "conflicts": 0,
+        "uniformAtLevel": "336/336",
+        "uniformAtLevelOk": true,
+        "framesTooManySizes": 0,
+        "crawlFractionalPans": 0,
+        "crawlRatePct": 0,
+        "crawlIntegerPans": 0,
+        "rigidSpreadMax": 0,
+        "nonMonotonic": 0,
+        "scaleErrorMax": 0.5,
+        "scaleJumpMax": 0.971
+      }
+    },
+    "anchored-screen": {
+      "label": "anchored, satu kanvas (pola menempel layar)",
+      "scenarios": {
+        "ladder": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 9,
+          "framesAtLevel": 9,
+          "framesTooManySizes": 0,
+          "crawl": 0,
+          "comparedAtConstantZoom": 0,
+          "rigidSpreadMax": 0,
+          "nonMonotonic": 0,
+          "scaleErrorMax": 0.007,
+          "scaleJumpMax": 0.007,
+          "sizes": {
+            "4": 4,
+            "5": 5,
+            "6": 3,
+            "7": 2,
+            "8": 2,
+            "9": 1,
+            "10": 1,
+            "12": 1,
+            "14": 1,
+            "16": 1
+          },
+          "ms": 926
+        },
+        "pan-h-110": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 0,
+          "framesAtLevel": 0,
+          "framesTooManySizes": 0,
+          "crawl": 15288,
+          "comparedAtConstantZoom": 32158,
+          "rigidSpreadMax": 2,
+          "nonMonotonic": 0,
+          "scaleErrorMax": 0.002,
+          "scaleJumpMax": 0,
+          "sizes": {
+            "4": 30,
+            "5": 30
+          },
+          "ms": 2214
+        },
+        "pan-v-110": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 0,
+          "framesAtLevel": 0,
+          "framesTooManySizes": 0,
+          "crawl": 4140,
+          "comparedAtConstantZoom": 32208,
+          "rigidSpreadMax": 1,
+          "nonMonotonic": 0,
+          "scaleErrorMax": 0.002,
+          "scaleJumpMax": 0,
+          "sizes": {
+            "4": 30,
+            "5": 30
+          },
+          "ms": 2144
+        },
+        "pan-d-110": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 0,
+          "framesAtLevel": 0,
+          "framesTooManySizes": 0,
+          "crawl": 19550,
+          "comparedAtConstantZoom": 32150,
+          "rigidSpreadMax": 2,
+          "nonMonotonic": 0,
+          "scaleErrorMax": 0.002,
+          "scaleJumpMax": 0,
+          "sizes": {
+            "4": 30,
+            "5": 30
+          },
+          "ms": 2278
+        },
+        "pan-d-237": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 0,
+          "framesAtLevel": 0,
+          "framesTooManySizes": 0,
+          "crawl": 6664,
+          "comparedAtConstantZoom": 10247,
+          "rigidSpreadMax": 2,
+          "nonMonotonic": 0,
+          "scaleErrorMax": 0.002,
+          "scaleJumpMax": 0,
+          "sizes": {
+            "9": 30,
+            "10": 30
+          },
+          "ms": 1464
+        },
+        "pan-h-125": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 30,
+          "framesAtLevel": 30,
+          "framesTooManySizes": 0,
+          "crawl": 0,
+          "comparedAtConstantZoom": 28156,
+          "rigidSpreadMax": 0,
+          "nonMonotonic": 0,
+          "scaleErrorMax": 0,
+          "scaleJumpMax": 0,
+          "sizes": {
+            "5": 30
+          },
+          "ms": 1783
+        },
+        "pan-d-175": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 30,
+          "framesAtLevel": 30,
+          "framesTooManySizes": 0,
+          "crawl": 0,
+          "comparedAtConstantZoom": 20184,
+          "rigidSpreadMax": 0,
+          "nonMonotonic": 0,
+          "scaleErrorMax": 0,
+          "scaleJumpMax": 0,
+          "sizes": {
+            "7": 30
+          },
+          "ms": 1443
+        },
+        "ramp-in": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 2,
+          "framesAtLevel": 2,
+          "framesTooManySizes": 0,
+          "crawl": 0,
+          "comparedAtConstantZoom": 0,
+          "rigidSpreadMax": 0,
+          "nonMonotonic": 0,
+          "scaleErrorMax": 0.004,
+          "scaleJumpMax": 0.005,
+          "sizes": {
+            "4": 35,
+            "5": 35
+          },
+          "ms": 2278
+        },
+        "ramp-out-pan": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 3,
+          "framesAtLevel": 3,
+          "framesTooManySizes": 0,
+          "crawl": 0,
+          "comparedAtConstantZoom": 0,
+          "rigidSpreadMax": 0,
+          "nonMonotonic": 5959,
+          "scaleErrorMax": 0.004,
+          "scaleJumpMax": 0.005,
+          "sizes": {
+            "4": 22,
+            "5": 43,
+            "6": 22
+          },
+          "ms": 2773
+        },
+        "ramp-in-diag": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 2,
+          "framesAtLevel": 2,
+          "framesTooManySizes": 0,
+          "crawl": 0,
+          "comparedAtConstantZoom": 0,
+          "rigidSpreadMax": 0,
+          "nonMonotonic": 5762,
+          "scaleErrorMax": 0.004,
+          "scaleJumpMax": 0.005,
+          "sizes": {
+            "4": 15,
+            "5": 29,
+            "6": 30,
+            "7": 29,
+            "8": 15
+          },
+          "ms": 3487
+        }
+      },
+      "summary": {
+        "invalidPixels": 0,
+        "conflicts": 0,
+        "uniformAtLevel": "76/76",
+        "uniformAtLevelOk": true,
+        "framesTooManySizes": 0,
+        "crawlFractionalPans": 45642,
+        "crawlRatePct": 42.75,
+        "crawlIntegerPans": 0,
+        "rigidSpreadMax": 2,
+        "nonMonotonic": 11721,
+        "scaleErrorMax": 0.007,
+        "scaleJumpMax": 0.007
+      }
+    },
+    "anchored": {
+      "label": "anchored per lapisan (bawaan Tahap 4)",
+      "scenarios": {
+        "ladder": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 9,
+          "framesAtLevel": 9,
+          "framesTooManySizes": 0,
+          "crawl": 0,
+          "comparedAtConstantZoom": 0,
+          "rigidSpreadMax": 0,
+          "nonMonotonic": 0,
+          "scaleErrorMax": 0.002,
+          "scaleJumpMax": 0.002,
+          "sizes": {
+            "4": 4,
+            "5": 5,
+            "6": 3,
+            "7": 2,
+            "8": 2,
+            "9": 1,
+            "10": 1,
+            "12": 1,
+            "14": 1,
+            "16": 1
+          },
+          "ms": 933
+        },
+        "pan-h-110": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 0,
+          "framesAtLevel": 0,
+          "framesTooManySizes": 0,
+          "crawl": 0,
+          "comparedAtConstantZoom": 32157,
+          "rigidSpreadMax": 0,
+          "nonMonotonic": 0,
+          "scaleErrorMax": 0.001,
+          "scaleJumpMax": 0.002,
+          "sizes": {
+            "4": 30,
+            "5": 30
+          },
+          "ms": 2468
+        },
+        "pan-v-110": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 0,
+          "framesAtLevel": 0,
+          "framesTooManySizes": 0,
+          "crawl": 0,
+          "comparedAtConstantZoom": 32174,
+          "rigidSpreadMax": 0,
+          "nonMonotonic": 0,
+          "scaleErrorMax": 0.001,
+          "scaleJumpMax": 0,
+          "sizes": {
+            "4": 30,
+            "5": 30
+          },
+          "ms": 2276
+        },
+        "pan-d-110": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 0,
+          "framesAtLevel": 0,
+          "framesTooManySizes": 0,
+          "crawl": 0,
+          "comparedAtConstantZoom": 32143,
+          "rigidSpreadMax": 0,
+          "nonMonotonic": 0,
+          "scaleErrorMax": 0.001,
+          "scaleJumpMax": 0.002,
+          "sizes": {
+            "4": 30,
+            "5": 30
+          },
+          "ms": 2477
+        },
+        "pan-d-237": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 0,
+          "framesAtLevel": 0,
+          "framesTooManySizes": 0,
+          "crawl": 0,
+          "comparedAtConstantZoom": 10255,
+          "rigidSpreadMax": 0,
+          "nonMonotonic": 0,
+          "scaleErrorMax": 0.007,
+          "scaleJumpMax": 0.005,
+          "sizes": {
+            "9": 30,
+            "10": 30
+          },
+          "ms": 1558
+        },
+        "pan-h-125": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 30,
+          "framesAtLevel": 30,
+          "framesTooManySizes": 0,
+          "crawl": 0,
+          "comparedAtConstantZoom": 28156,
+          "rigidSpreadMax": 0,
+          "nonMonotonic": 0,
+          "scaleErrorMax": 0,
+          "scaleJumpMax": 0,
+          "sizes": {
+            "5": 30
+          },
+          "ms": 1804
+        },
+        "pan-d-175": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 30,
+          "framesAtLevel": 30,
+          "framesTooManySizes": 0,
+          "crawl": 0,
+          "comparedAtConstantZoom": 20184,
+          "rigidSpreadMax": 0,
+          "nonMonotonic": 0,
+          "scaleErrorMax": 0,
+          "scaleJumpMax": 0,
+          "sizes": {
+            "7": 30
+          },
+          "ms": 1431
+        },
+        "ramp-in": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 2,
+          "framesAtLevel": 2,
+          "framesTooManySizes": 0,
+          "crawl": 0,
+          "comparedAtConstantZoom": 0,
+          "rigidSpreadMax": 0,
+          "nonMonotonic": 0,
+          "scaleErrorMax": 0.004,
+          "scaleJumpMax": 0.004,
+          "sizes": {
+            "4": 35,
+            "5": 35
+          },
+          "ms": 2844
+        },
+        "ramp-out-pan": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 3,
+          "framesAtLevel": 3,
+          "framesTooManySizes": 0,
+          "crawl": 0,
+          "comparedAtConstantZoom": 0,
+          "rigidSpreadMax": 0,
+          "nonMonotonic": 0,
+          "scaleErrorMax": 0.004,
+          "scaleJumpMax": 0.005,
+          "sizes": {
+            "4": 22,
+            "5": 43,
+            "6": 22
+          },
+          "ms": 3179
+        },
+        "ramp-in-diag": {
+          "invalidPixels": 0,
+          "conflicts": 0,
+          "framesUniformAtLevel": 2,
+          "framesAtLevel": 2,
+          "framesTooManySizes": 0,
+          "crawl": 0,
+          "comparedAtConstantZoom": 0,
+          "rigidSpreadMax": 0,
+          "nonMonotonic": 0,
+          "scaleErrorMax": 0.005,
+          "scaleJumpMax": 0.007,
+          "sizes": {
+            "4": 15,
+            "5": 29,
+            "6": 30,
+            "7": 29,
+            "8": 15
+          },
+          "ms": 3907
+        }
+      },
+      "summary": {
+        "invalidPixels": 0,
+        "conflicts": 0,
+        "uniformAtLevel": "76/76",
+        "uniformAtLevelOk": true,
+        "framesTooManySizes": 0,
+        "crawlFractionalPans": 0,
+        "crawlRatePct": 0,
+        "crawlIntegerPans": 0,
+        "rigidSpreadMax": 0,
+        "nonMonotonic": 0,
+        "scaleErrorMax": 0.007,
+        "scaleJumpMax": 0.007
+      }
+    }
+  },
+  "checks": [
+    {
+      "id": "zoom:no-blur",
+      "name": "Tanpa blur/anti-aliasing (semua mode, semua frame)",
+      "pass": true,
+      "detail": "nearest: 0 piksel asing, steps: 0 piksel asing, anchored-screen: 0 piksel asing, anchored: 0 piksel asing"
+    },
+    {
+      "id": "zoom:uniform-levels",
+      "name": "Zoom kelipatan 0,25: semua piksel berukuran sama",
+      "pass": true,
+      "detail": "anchored 76/76 frame seragam"
+    },
+    {
+      "id": "zoom:two-sizes",
+      "name": "Zoom pecahan: paling banyak dua ukuran berdampingan",
+      "pass": true,
+      "detail": "0 frame melanggar"
+    },
+    {
+      "id": "zoom:no-crawl",
+      "name": "Tidak merayap saat kamera geser di zoom pecahan (horizontal, vertikal, diagonal)",
+      "pass": true,
+      "detail": "anchored 0 perubahan ukuran (0%), pembanding nearest 46822 (43.86%)"
+    },
+    {
+      "id": "zoom:rigid",
+      "name": "Gerak kaku: semua piksel satu lapisan bergeser sama jauh",
+      "pass": true,
+      "detail": "selisih geseran terbesar anchored 0 px, nearest 1 px"
+    },
+    {
+      "id": "zoom:monotonic",
+      "name": "Saat zoom berubah tidak ada piksel yang bolak-balik ukuran",
+      "pass": true,
+      "detail": "anchored 0, nearest 18902"
+    },
+    {
+      "id": "zoom:smooth",
+      "name": "Skala halus: tidak ada lompatan zoom (pop)",
+      "pass": true,
+      "detail": "anchored lompatan 0.007 px/piksel art, galat 0.007; steps lompatan 0.971, galat 0.5"
+    },
+    {
+      "id": "zoom:consistent",
+      "name": "Pemetaan terpisah per sumbu konsisten (tiap kolom sama lebar di semua baris)",
+      "pass": true,
+      "detail": "0 konflik"
+    },
+    {
+      "id": "zoom:project-a-identity",
+      "name": "Project A di mode browser zoom 1 identik dengan baseline resmi",
+      "pass": true,
+      "detail": "frame 0, 15, 29: anchored 3/3, nearest 3/3 identik setelah diperkecil 4x"
+    },
+    {
+      "id": "zoom:project-a-no-crawl",
+      "name": "Project A dengan lensa zoom pecahan tidak merayap (adegan kustom berlapis)",
+      "pass": true,
+      "detail": "anchored: mode zoom \"anchored\", 89 frame zoom pecahan, 0 perubahan ukuran saat zoom tetap (crawl), 0 bolak-balik dari 649831 perbandingan kolom/baris dunia | pembanding nearest: mode zoom \"nearest\", 89 frame zoom pecahan, 0 perubahan ukuran saat zoom tetap (crawl), 6584 bolak-balik dari 80354 perbandingan kolom/baris dunia (pakai rendering.zoomMode \"anchored\" agar tidak merayap)"
+    }
+  ]
+}

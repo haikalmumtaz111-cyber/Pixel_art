@@ -2,13 +2,13 @@
 
 Laporan ini dibuat otomatis oleh `npm run validate`.
 
-- Waktu uji: 2026-10-27T10:48:32.879Z
+- Waktu uji: 2026-10-27T12:22:01.260Z
 - Proyek: `night-to-dawn`
 - Konfigurasi: `config/film-night-to-dawn.json`
-- Mesin: Pixel History Studio 0.3.0, sidik jari mesin `bc272267a41d3bc9`, pustaka aset `4378116df3a09f47`
+- Mesin: Pixel History Studio 0.4.0, sidik jari mesin `7f37881be8af508c`, pustaka aset `2925f4ab08ab5d4f`
 - Video: `output/video/film-night-to-dawn.mp4`
 - Spesifikasi: 480x270 internal, 1920x1080 output (upscale ffmpeg), 30 FPS, 15 detik, 450 frame, seed 1927
-- Lama render frame: 14.3 detik, lama encoding: 19.5 detik
+- Lama render frame: 11.4 detik, lama encoding: 21.3 detik
 
 ## Ringkasan kebutuhan
 
@@ -24,16 +24,17 @@ Laporan ini dibuat otomatis oleh `npm run validate`.
 | 8 | Frame terakhir valid | LULUS |
 | 9 | Tidak ada error JavaScript | LULUS |
 | 10 | Transisi tanpa artefak | LULUS |
-| 11 | Aset konsisten antar adegan | LULUS |
-| 12 | Adegan bisa dirender terpisah | LULUS |
-| 13 | Mesin bersama, modul proyek terisolasi | LULUS |
-| 14 | Video berasal dari render terbaru | LULUS |
-| 15 | Rendering deterministik | LULUS |
-| 16 | FFmpeg membaca seluruh video | LULUS |
-| 17 | Video dapat diputar | LULUS |
-| 18 | Render ulang konsisten | LULUS |
+| 11 | Grid piksel kamera stabil (tanpa crawl) | LULUS |
+| 12 | Aset konsisten antar adegan | LULUS |
+| 13 | Adegan bisa dirender terpisah | LULUS |
+| 14 | Mesin bersama, modul proyek terisolasi | LULUS |
+| 15 | Video berasal dari render terbaru | LULUS |
+| 16 | Rendering deterministik | LULUS |
+| 17 | FFmpeg membaca seluruh video | LULUS |
+| 18 | Video dapat diputar | LULUS |
+| 19 | Render ulang konsisten | LULUS |
 
-Status akhir: **SEMUA LULUS** (36/36 pemeriksaan)
+Status akhir: **SEMUA LULUS** (37/37 pemeriksaan)
 
 ## Timeline
 
@@ -54,7 +55,7 @@ Status akhir: **SEMUA LULUS** (36/36 pemeriksaan)
 |----|-------------|-------|--------|
 | 1 | Interval adegan valid | LULUS | 3 adegan menutup 450/450 frame tanpa celah: s01-night-train [0, 150), s02-inside-train [150, 300), s03-journey-to-dawn [300, 450) |
 | 2 | Transisi berada di dalam durasi film | LULUS | portal 132-167, portal 282-317 |
-| 3 | Render terakhir selesai dengan sukses | LULUS | status complete, selesai 2026-10-27T10:44:50.384Z |
+| 3 | Render terakhir selesai dengan sukses | LULUS | status complete, selesai 2026-10-27T12:09:44.180Z |
 | 4 | Video berasal dari render terbaru (bukan sisa render lama) | LULUS | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest |
 | 5 | File MP4 ada | LULUS | film-night-to-dawn.mp4 (5.33 MB) |
 | 6 | Kontainer MP4 | LULUS | mov,mp4,m4a,3gp,3g2,mj2 |
@@ -73,21 +74,22 @@ Status akhir: **SEMUA LULUS** (36/36 pemeriksaan)
 | 19 | Frame terakhir valid | LULUS | frame 449: kecerahan rata-rata 71.8, rentang 203 |
 | 20 | Tidak ada kilatan cahaya mendadak | LULUS | perubahan kecerahan terbesar antar frame 5.9 (batas 8) |
 | 21 | Tidak ada potongan kasar (hard cut) | LULUS | semua pergantian gambar berlangsung bertahap |
-| 22 | Frame PNG lengkap dan berurutan | LULUS | 450/450 file PNG 480x270 |
-| 23 | Hanya modul milik proyek ini yang dimuat | LULUS | 4 modul: /src/assets/registry.js, /src/scenes/night-train.js, /src/scenes/inside-train.js, /src/scenes/journey-to-dawn.js |
-| 24 | Tidak ada modul proyek lain yang ikut terunduh | LULUS | 28 file JS terunduh (/src/engine/: 15, /src/assets/: 10, /src/scenes/: 3) |
-| 25 | Transisi s01-night-train->s02-inside-train menyambung tanpa lompatan | LULUS | frame 132 sama dengan s01-night-train, frame 167 sama dengan s02-inside-train |
-| 26 | Portal s01-night-train->s02-inside-train menutup layar sebelum transisi selesai | LULUS | layar tertutup penuh mulai frame 160 (transisi berakhir di 167) |
-| 27 | Transisi s02-inside-train->s03-journey-to-dawn menyambung tanpa lompatan | LULUS | frame 282 sama dengan s02-inside-train, frame 317 sama dengan s03-journey-to-dawn |
-| 28 | Portal s02-inside-train->s03-journey-to-dawn menutup layar sebelum transisi selesai | LULUS | layar tertutup penuh mulai frame 307 (transisi berakhir di 317) |
-| 29 | Adegan s01-night-train bisa dirender terpisah | LULUS | frame 0, 66, 131 identik dengan film utuh |
-| 30 | Adegan s02-inside-train bisa dirender terpisah | LULUS | frame 168, 225, 281 identik dengan film utuh |
-| 31 | Adegan s03-journey-to-dawn bisa dirender terpisah | LULUS | frame 318, 384, 449 identik dengan film utuh |
-| 32 | Aset steam-train sama di semua adegan | LULUS | 3 adegan memakai 1 definisi (train), 1 bentuk berbeda |
-| 33 | Warna identitas steam-train konsisten | LULUS | warna #5c1c27, #c9a14e, #5e181e, #4d5474, #a8833a ditemukan persis di frame 60, 445 |
-| 34 | Rendering deterministik (render ulang identik, urutan terbalik) | LULUS | 450/450 frame identik byte demi byte, 3/3 frame identik saat dirender dua kali |
-| 35 | Tidak ada error JavaScript selama rendering | LULUS | 0 error saat render, 0 error saat pengujian |
-| 36 | Encode ulang menghasilkan MP4 identik | LULUS | SHA-256 sama: aa188168ec04b5d7... |
+| 22 | Grid piksel stabil saat kamera bergerak dan zoom (tidak merayap) | LULUS | proyek memakai upscale ffmpeg tanpa zoom kamera |
+| 23 | Frame PNG lengkap dan berurutan | LULUS | 450/450 file PNG 480x270 |
+| 24 | Hanya modul milik proyek ini yang dimuat | LULUS | 4 modul: /src/assets/registry.js, /src/scenes/night-train.js, /src/scenes/inside-train.js, /src/scenes/journey-to-dawn.js |
+| 25 | Tidak ada modul proyek lain yang ikut terunduh | LULUS | 29 file JS terunduh (/src/engine/: 16, /src/assets/: 10, /src/scenes/: 3) |
+| 26 | Transisi s01-night-train->s02-inside-train menyambung tanpa lompatan | LULUS | frame 132 sama dengan s01-night-train, frame 167 sama dengan s02-inside-train |
+| 27 | Portal s01-night-train->s02-inside-train menutup layar sebelum transisi selesai | LULUS | layar tertutup penuh mulai frame 160 (transisi berakhir di 167) |
+| 28 | Transisi s02-inside-train->s03-journey-to-dawn menyambung tanpa lompatan | LULUS | frame 282 sama dengan s02-inside-train, frame 317 sama dengan s03-journey-to-dawn |
+| 29 | Portal s02-inside-train->s03-journey-to-dawn menutup layar sebelum transisi selesai | LULUS | layar tertutup penuh mulai frame 307 (transisi berakhir di 317) |
+| 30 | Adegan s01-night-train bisa dirender terpisah | LULUS | frame 0, 66, 131 identik dengan film utuh |
+| 31 | Adegan s02-inside-train bisa dirender terpisah | LULUS | frame 168, 225, 281 identik dengan film utuh |
+| 32 | Adegan s03-journey-to-dawn bisa dirender terpisah | LULUS | frame 318, 384, 449 identik dengan film utuh |
+| 33 | Aset steam-train sama di semua adegan | LULUS | 3 adegan memakai 1 definisi (train), 1 bentuk berbeda |
+| 34 | Warna identitas steam-train konsisten | LULUS | warna #5c1c27, #c9a14e, #5e181e, #4d5474, #a8833a ditemukan persis di frame 60, 445 |
+| 35 | Rendering deterministik (render ulang identik, urutan terbalik) | LULUS | 450/450 frame identik byte demi byte, 3/3 frame identik saat dirender dua kali |
+| 36 | Tidak ada error JavaScript selama rendering | LULUS | 0 error saat render, 0 error saat pengujian |
+| 37 | Encode ulang menghasilkan MP4 identik | LULUS | SHA-256 sama: aa188168ec04b5d7... |
 
 ## Lembar kontak (preview)
 

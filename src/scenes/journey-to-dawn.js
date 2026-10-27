@@ -12,7 +12,10 @@ export function createScene({ film, scene, assets, environment }) {
 
   return {
     render(ctx, shot) {
-      return countryside.render(ctx, { time: shot.time, camera: camera(shot.frame), env: environment.at(shot.frame), effects });
+      const cam = camera(shot.frame);
+      // zoom lensa pecahan (scene.lens): setiap lapisan parallax ke kanvas sendiri agar grid piksel tidak merayap
+      const layer = shot.surface?.wantsLayers(shot.lens) ? (fx, fy) => shot.surface.layer(Math.round(cam.x * fx), Math.round((cam.y || 0) * fy)) : null;
+      return countryside.render(ctx, { time: shot.time, camera: cam, env: environment.at(shot.frame), effects, layer });
     }
   };
 }

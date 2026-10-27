@@ -4,15 +4,15 @@ Daftar keterbatasan yang ditemukan saat meninjau hasil setiap tahap. Semua pengu
 
 Prioritas: **Tinggi** = paling terasa di hasil atau paling berisiko, **Sedang** = layak dikerjakan di tahap berikutnya, **Rendah** = penghalusan.
 
-Kondisi terakhir: Tahap 3 disetujui dan di-merge ke `main` (PR #3). Tahap 4 belum dimulai. Butir di bawah adalah kandidat, bukan rencana yang sudah disetujui; pemilik yang memilih isi tahap berikutnya.
+Kondisi terakhir: Tahap 3 disetujui dan di-merge ke `main` (PR #3). Tahap 4 (kamera pixel-perfect, fokus V14) dikerjakan di branch `tahap-4-pixel-perfect-camera` dan menunggu persetujuan pemilik, termasuk perubahan hasil render Project B. Tahap 5 belum dimulai. Butir di bawah adalah kandidat, bukan rencana yang sudah disetujui; pemilik yang memilih isi tahap berikutnya.
 
 ## Ringkasan kandidat untuk tahap berikutnya
 
 | Prioritas | Butir terbuka |
 |-----------|---------------|
-| Tinggi | V14 (zoom tidak bulat membuat piksel "merayap") |
-| Sedang | V1, V3, V5, V10, V13 (Project A); V15, V16, V17 (Project B); T2, T5, T6, T7, T13 |
-| Rendah | sisanya: V2, V4, V6-V9, V11, V12, V18-V22, T3, T8-T12 |
+| Tinggi | (kosong: V14 dikerjakan di Tahap 4, menunggu persetujuan) |
+| Sedang | V1, V3, V5, V10, V13 (Project A); V15, V16, V17 (Project B); T2, T5, T6, T7, T13, T14 |
+| Rendah | sisanya: V2, V4, V6-V9, V11, V12, V18-V22, V23, T3, T8-T12, T15, T16 |
 
 ## Temuan Tahap 2: film *Kereta Malam Menuju Fajar* (Project A)
 
@@ -53,7 +53,7 @@ Nomor frame merujuk ke `config/old-town-morning.json`.
 
 | No | Keterbatasan | Lokasi | Ide perbaikan | Prioritas |
 |----|--------------|--------|---------------|-----------|
-| V14 | Zoom dengan nilai tidak bulat (antara 1 dan 1,25) membuat lebar piksel art bergantian 4 dan 5 piksel layar. Saat zoom bergerak, tepi garis tampak sedikit "merayap". Tidak ada blur, dan di zoom 1 serta 1,25 piksel seragam sempurna. | Push-in adegan 1 (frame 84-119), pullback adegan 3 (frame 255-345) | Zoom bertingkat diskrit (1; 1,25; 1,5; 2) dengan dissolve antar tingkat, atau dunia digambar di resolusi kerja lebih tinggi | Tinggi |
+| V14 | Zoom dengan nilai tidak bulat (antara 1 dan 1,25) membuat lebar piksel art bergantian 4 dan 5 piksel layar. Saat zoom bergerak, tepi garis tampak sedikit "merayap". Tidak ada blur, dan di zoom 1 serta 1,25 piksel seragam sempurna. | Push-in adegan 1 (frame 84-119), pullback adegan 3 (frame 255-345) | Zoom bertingkat diskrit (1; 1,25; 1,5; 2) dengan dissolve antar tingkat, atau dunia digambar di resolusi kerja lebih tinggi | Tinggi. **Dikerjakan di Tahap 4 (menunggu persetujuan)**: mode zoom `anchored` (grid terkunci per lapisan). Lab zoom: crawl 43,9% menjadi 0%, piksel bolak-balik 18.902 menjadi 0, tanpa blur. Dither dissolve juga diselaraskan dengan grid. Sisa batas: lihat V23 |
 | V15 | Warna karakter ditulis tetap (hex), jadi tidak ikut berubah bersama palet pencahayaan pagi seperti bangunan dan langit. | Seluruh film | Izinkan warna karakter berupa kunci palet, atau ramp warna kulit/baju per palet | Sedang |
 | V16 | Ayunan tangan saat berjalan masih kecil (sekitar 5 piksel) dan lengan depan hanya dibedakan garis bayangan, siku belum menekuk. | Pak Darto, Mbok Sumi, anak sekolah | Tambah sendi siku dan pose tangan per fase jalan, lengan dengan warna lebih kontras | Sedang |
 | V17 | Dissolve berdither adegan 1 ke 2 masih menampakkan "bayangan" berpola selama 0,8 detik. Sudah dikurangi dengan push-in yang menyamakan framing kedua adegan. | Frame 108-131 | Dissolve per tingkat palet (bukan per piksel), atau ganti dengan potongan bergerak (match cut) | Sedang |
@@ -62,6 +62,7 @@ Nomor frame merujuk ke `config/old-town-morning.json`.
 | V20 | Lampu jalan padam mendadak dalam satu frame. | Frame 70, 100, 140, 175, 210, 250 | Redup bertahap lewat beberapa status warna, atau berkedip sebelum padam | Rendah |
 | V21 | Merpati di trotoar kecil (4x2 piksel) dan sulit terlihat di layar HP. Uap kopi di warung tipis dan baru muncul di 2 detik terakhir. | Adegan 1-3, warung kopi | Perbesar merpati, tambah kepakan saat terbang menjauh dari penyapu; uap lebih tebal | Rendah |
 | V22 | Berkas cahaya pagi digambar di atas semua lapisan, termasuk karakter. Belum ada bayangan karakter dan benda di trotoar. | Adegan 3 | Lapisan cahaya di belakang karakter, bayangan berdither di kaki entitas | Rendah |
+| V23 | (Tahap 4) Di zoom pecahan, satu frame masih berisi dua ukuran piksel berdampingan (misalnya 4 dan 5 piksel layar). Polanya stabil dan tidak merayap, tetapi tidak seragam penuh. Ini batas matematis bila tanpa blur. | Selama push-in dan pullback | Tahan zoom di kelipatan 0,25 untuk shot panjang; push-in lebih cepat supaya fase campuran lebih singkat | Rendah |
 
 ### Teknis
 
@@ -75,4 +76,7 @@ Nomor frame merujuk ke `config/old-town-morning.json`.
 | T10 | Sidik jari pustaka aset di manifest mencakup seluruh `src/assets` dan `src/scenes`. Mengubah aset Project B membuat manifest Project A ikut kedaluwarsa, sehingga A perlu dirender ulang walau hasilnya sama. Disengaja (lebih aman), tetapi menambah waktu. | Sidik jari per modul yang benar-benar dimuat proyek (daftar `fetchedScripts` sudah tersedia) | Rendah |
 | T11 | Font piksel baru mengenal A-Z, 0-9, titik, tanda hubung, dan &. Rasio layar yang didukung baru 16:9. | Tambah huruf kecil dan tanda baca; dukung 4:3 dan 9:16 di loader dan presenter | Rendah |
 | T12 | Uji negatif dan validasi lengkap butuh render proyek terlebih dahulu. Prototipe Tahap 1 (format satu adegan) tidak ikut uji negatif karena tidak punya timeline. | Konversi prototipe ke format timeline sambil menjaga frame identik | Rendah |
+| T14 | (Tahap 4) Adegan interior gerbong Project A (`inside-train`, dengan pemandangan jendela) belum menggambar per lapisan lewat surface. Bila diberi lensa zoom pecahan, lapisannya masih memakai pola yang menempel layar. Adegan `night-train` dan `journey-to-dawn` sudah per lapisan. | Teruskan fungsi `layer` ke interior dan pemandangan jendela | Sedang |
+| T15 | (Tahap 4) Mode `anchored` di zoom pecahan menggambar setiap lapisan dengan ratusan potongan `drawImage`. Render Project B naik dari sekitar 22 menjadi 28 detik (360 frame). | Gabungkan lapisan yang geserannya sama, atau perbesar di GPU/WebGL | Rendah |
+| T16 | (Tahap 4) Kamera bergeser per piksel art (4-5 piksel layar per langkah). Gerak sub-piksel (smooth scrolling) belum ada; bila ditambah, grid antar lapisan akan bergeser relatif satu sama lain. | Opsi `subpixelCamera` di penyaji, diukur dengan lab zoom | Rendah |
 | T13 | Detektor potongan kasar membaca lonjakan beda kecerahan antar frame. Bila dua adegan berbatasan dengan framing yang sama (seperti push-in Project B), lalu dissolve diganti potongan langsung, tokoh yang tiba-tiba muncul ("pop") tidak terdeteksi. Ketahuan lewat uji negatif; ujinya kini memakai potongan dengan framing berbeda. | Deteksi "pop" per entitas: bandingkan visibilitas entitas di frame batas adegan, atau beda piksel per wilayah | Sedang |

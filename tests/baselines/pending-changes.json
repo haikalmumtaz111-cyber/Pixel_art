@@ -1,0 +1,13 @@
+{
+  "note": "Perubahan hasil render yang disengaja terhadap baseline resmi. Baseline-nya sendiri TIDAK diubah. Setiap perubahan di sini menunggu persetujuan pemilik; frame di luar rentang yang dideklarasikan tetap wajib identik.",
+  "changes": {
+    "old-town-morning": {
+      "stage": "Tahap 4",
+      "backlog": "V14",
+      "status": "menunggu persetujuan pemilik",
+      "reason": "Zoom kamera pecahan memakai grid piksel terkunci (zoomMode anchored) agar garis tidak merayap, dan dither transisi dissolve diselaraskan dengan grid art adegan tujuan. Rentang diambil dari konfigurasi: push-in adegan 1 (zoom berubah frame 84-119) + dissolve (108-131), dan pullback adegan 3 (zoom berubah frame 255-345).",
+      "frames": [[84, 131], [255, 345]],
+      "compatibility": "rendering.zoomMode \"nearest\" menghasilkan ulang Tahap 3 identik untuk semua frame"
+    }
+  }
+}

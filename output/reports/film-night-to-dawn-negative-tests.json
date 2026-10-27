@@ -1,9 +1,9 @@
 {
-  "testedAt": "2026-10-27T10:50:57.765Z",
+  "testedAt": "2026-10-27T12:24:37.356Z",
   "project": "night-to-dawn",
   "allDetected": true,
-  "detected": 33,
-  "total": 33,
+  "detected": 35,
+  "total": 35,
   "results": [
     {
       "name": "Celah di timeline: adegan 2 mulai 1 frame terlambat",
@@ -79,6 +79,16 @@
       "name": "Zoom kamera tanpa mode upscale \"browser\" (piksel jadi tidak tajam)",
       "detected": true,
       "detail": "Track kamera \"dawn-run\": zoom kamera hanya didukung bila rendering.upscale = \"browser\" (agar piksel tetap tajam)"
+    },
+    {
+      "name": "Mode zoom salah ketik",
+      "detected": true,
+      "detail": "Proyek: rendering.zoomMode \"zoom-hantu\" tidak dikenal (pilihan: anchored, steps, nearest)"
+    },
+    {
+      "name": "Lensa zoom di mode upscale ffmpeg",
+      "detected": true,
+      "detail": "Adegan 1 (s01-night-train) lens: zoom kamera hanya didukung bila rendering.upscale = \"browser\" (agar piksel tetap tajam)"
     },
     {
       "name": "Nama efek salah ketik",

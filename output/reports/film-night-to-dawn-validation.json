@@ -1,11 +1,11 @@
 {
-  "testedAt": "2026-10-27T10:48:32.879Z",
+  "testedAt": "2026-10-27T12:22:01.260Z",
   "project": "night-to-dawn",
   "config": "config/film-night-to-dawn.json",
   "includes": [],
   "allPass": true,
-  "passed": 36,
-  "total": 36,
+  "passed": 37,
+  "total": 37,
   "groups": [
     {
       "title": "Jumlah frame tepat",
@@ -45,6 +45,10 @@
     },
     {
       "title": "Transisi tanpa artefak",
+      "pass": true
+    },
+    {
+      "title": "Grid piksel kamera stabil (tanpa crawl)",
       "pass": true
     },
     {
@@ -97,7 +101,7 @@
       "id": "manifest:status",
       "name": "Render terakhir selesai dengan sukses",
       "pass": true,
-      "detail": "status complete, selesai 2026-10-27T10:44:50.384Z"
+      "detail": "status complete, selesai 2026-10-27T12:09:44.180Z"
     },
     {
       "id": "manifest:fresh",
@@ -208,6 +212,12 @@
       "detail": "semua pergantian gambar berlangsung bertahap"
     },
     {
+      "id": "grid-stability",
+      "name": "Grid piksel stabil saat kamera bergerak dan zoom (tidak merayap)",
+      "pass": true,
+      "detail": "proyek memakai upscale ffmpeg tanpa zoom kamera"
+    },
+    {
       "id": "png-frames",
       "name": "Frame PNG lengkap dan berurutan",
       "pass": true,
@@ -223,7 +233,7 @@
       "id": "engine-isolation",
       "name": "Tidak ada modul proyek lain yang ikut terunduh",
       "pass": true,
-      "detail": "28 file JS terunduh (/src/engine/: 15, /src/assets/: 10, /src/scenes/: 3)"
+      "detail": "29 file JS terunduh (/src/engine/: 16, /src/assets/: 10, /src/scenes/: 3)"
     },
     {
       "id": "boundary:s01-night-train->s02-inside-train",
@@ -372,9 +382,9 @@
   ],
   "engine": {
     "name": "Pixel History Studio",
-    "version": "0.3.0",
-    "engineHash": "bc272267a41d3bc9ad92730f3e7ecf42698c3a33457fadc671fc516a524ebb49",
-    "libraryHash": "4378116df3a09f47bdae19eb571a65cac2816c2c0ff9537a0ab968f110f0690c",
+    "version": "0.4.0",
+    "engineHash": "7f37881be8af508cc4165fcd196fd2cb8395b25373d9e2132e79594d747ea4aa",
+    "libraryHash": "2925f4ab08ab5d4f5875307cdff1c7d6f8bede58e456f3ad8c6395ea994da16d",
     "modules": [
       "/src/assets/registry.js",
       "/src/scenes/night-train.js",
@@ -399,15 +409,15 @@
       "scene": null
     },
     "configFile": "config/film-night-to-dawn.json",
-    "inputsHash": "16d3ba84345854e642fccfe4f70c9908f64ce2d1026e23a0623592f0606888ff",
-    "engineHash": "bc272267a41d3bc9ad92730f3e7ecf42698c3a33457fadc671fc516a524ebb49",
-    "libraryHash": "4378116df3a09f47bdae19eb571a65cac2816c2c0ff9537a0ab968f110f0690c",
-    "engineVersion": "0.3.0",
+    "inputsHash": "5de829ee36e3a67d79c4c5278a8bb657195e2834babaaf3bc3eee3c7e82866b4",
+    "engineHash": "7f37881be8af508cc4165fcd196fd2cb8395b25373d9e2132e79594d747ea4aa",
+    "libraryHash": "2925f4ab08ab5d4f5875307cdff1c7d6f8bede58e456f3ad8c6395ea994da16d",
+    "engineVersion": "0.4.0",
     "status": "complete",
-    "startedAt": "2026-10-27T10:44:16.505Z",
-    "finishedAt": "2026-10-27T10:44:50.384Z",
-    "renderSeconds": 14.349,
-    "encodeSeconds": 19.529,
+    "startedAt": "2026-10-27T12:09:11.499Z",
+    "finishedAt": "2026-10-27T12:09:44.180Z",
+    "renderSeconds": 11.409,
+    "encodeSeconds": 21.271,
     "chromiumVersion": "153.0.8010.12",
     "jsErrors": 0,
     "loadedModules": [

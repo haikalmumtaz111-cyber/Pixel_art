@@ -17,7 +17,9 @@ export function createScene({ film, scene, assets, environment }) {
     render(ctx, shot) {
       const env = environment.at(shot.frame);
       const cam = camera(shot.frame);
-      if (!shot.portal) return countryside.render(ctx, { time: shot.time, camera: cam, env, effects });
+      // zoom lensa pecahan (scene.lens): setiap lapisan parallax ke kanvas sendiri agar grid piksel tidak merayap
+      const layer = shot.surface?.wantsLayers(shot.lens) ? (fx, fy) => shot.surface.layer(Math.round(cam.x * fx), Math.round((cam.y || 0) * fy)) : null;
+      if (!shot.portal) return countryside.render(ctx, { time: shot.time, camera: cam, env, effects, layer });
 
       // Zoom ke arah jendela penumpang. Titik fokus perlahan digeser ke tengah layar.
       const headX = Math.round(train.headAt(shot.time) - cam.x);

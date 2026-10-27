@@ -26,6 +26,7 @@ const GROUPS = [
   ['Frame terakhir valid', ['end-frame']],
   ['Tidak ada error JavaScript', ['js-errors']],
   ['Transisi tanpa artefak', ['no-flash', 'no-hard-cut', 'boundary:', 'portal:', 'boundary']],
+  ['Grid piksel kamera stabil (tanpa crawl)', ['grid-stability']],
   ['Aset konsisten antar adegan', ['consistency:']],
   ['Adegan bisa dirender terpisah', ['scene:']],
   ['Mesin bersama, modul proyek terisolasi', ['engine-modules', 'engine-isolation']],
@@ -199,6 +200,7 @@ async function main() {
     add(C.transitionLumaChecks(stats, config.timeline.transitions, 0, limits));
     lumaSummary = stats.map((s) => [Number(s.yavg.toFixed(1)), Number(s.ydif.toFixed(1))]);
   }
+  add(await C.gridChecks(config, renderInfo));
   const png = C.pngChecks(config.paths.frames, config.totalFrames, config.frameSize.width, config.frameSize.height);
   add(png.checks);
 
