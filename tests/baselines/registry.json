@@ -13,13 +13,15 @@
           "addedIn": "bbf2fff (Tahap 3)",
           "note": "Project A (film Tahap 2), direkam dari main setelah Tahap 2 di-merge, sebelum pengembangan Tahap 3",
           "approval": {
-            "evidence": ["Tahap 2 disetujui pemilik dan di-merge ke main lewat PR #2 (merge commit cfed35a)"]
+            "evidence": [
+              "Tahap 2 disetujui pemilik dan di-merge ke main lewat PR #2 (merge commit cfed35a)"
+            ]
           }
         }
       }
     },
     "old-town-morning": {
-      "official": "tahap-3",
+      "official": "tahap-4",
       "versions": {
         "tahap-3": {
           "file": "old-town-morning.json",
@@ -30,7 +32,37 @@
           "addedIn": "120709c (Tahap 4)",
           "note": "Project B hasil Tahap 3, direkam dari main sebelum pengembangan Tahap 4",
           "approval": {
-            "evidence": ["Tahap 3 disetujui pemilik sebagai milestone dan di-merge ke main lewat PR #3 (merge commit 9d7a144)"]
+            "evidence": [
+              "Tahap 3 disetujui pemilik sebagai milestone dan di-merge ke main lewat PR #3 (merge commit 9d7a144)"
+            ]
+          }
+        },
+        "tahap-4": {
+          "file": "old-town-morning.tahap-4.json",
+          "sha256": "483f989e17ee589d390480e620331e0538a4f0449ea17bb523a2e81aa585785c",
+          "source": "main@a1fd4a1",
+          "engineVersion": "0.4.0",
+          "frames": 360,
+          "previous": "tahap-3",
+          "changes": {
+            "stage": "Tahap 4",
+            "backlog": "V14",
+            "reason": "Zoom kamera pecahan memakai grid piksel terkunci (zoomMode anchored) agar garis tidak merayap, dan dither transisi dissolve diselaraskan dengan grid art adegan tujuan. Rentang diambil dari konfigurasi: push-in adegan 1 (zoom berubah frame 84-119) + dissolve (108-131), dan pullback adegan 3 (zoom berubah frame 255-345).",
+            "declared": [[84, 131], [255, 345]],
+            "changed": [[85, 130], [262, 339]],
+            "changedCount": 124,
+            "unchangedCount": 236
+          },
+          "note": "Project B hasil Tahap 4 (mesin 0.4.0, zoomMode anchored), dirender ulang dari main@a1fd4a1",
+          "mergedVideo": "identik dengan output/video/old-town-morning.mp4 di a1fd4a1",
+          "approval": {
+            "by": "pemilik",
+            "date": "2026-10-27",
+            "evidence": [
+              "PR #4 (Tahap 4, termasuk perubahan 124 frame Project B) di-merge ke main oleh pemilik pada 2026-10-27T15:13:23Z, merge commit a1fd4a1",
+              "Commit 5f709da mencatat persetujuan pemilik atas Tahap 4 dan perubahan 124 frame Project B (27 Oktober 2026)",
+              "Instruksi pemilik 27 Oktober 2026: buat baseline resmi Project B Tahap 4 dari hasil render yang sudah di-merge dan disetujui"
+            ]
           }
         }
       }
@@ -47,7 +79,9 @@
           "addedIn": "bbf2fff (Tahap 3)",
           "note": "Prototipe Tahap 1, direkam dari main setelah Tahap 2 di-merge. Piksel PNG sama dengan hasil Tahap 1; MP4 di-encode ulang di Tahap 2 (H.264 level 4.1, lihat CHANGELOG Tahap 2)",
           "approval": {
-            "evidence": ["Prototipe di-merge ke main lewat PR #1 (merge commit a2c3b0d); encode ulang MP4 masuk Tahap 2 yang disetujui pemilik dan di-merge lewat PR #2 (merge commit cfed35a)"]
+            "evidence": [
+              "Prototipe di-merge ke main lewat PR #1 (merge commit a2c3b0d); encode ulang MP4 masuk Tahap 2 yang disetujui pemilik dan di-merge lewat PR #2 (merge commit cfed35a)"
+            ]
           }
         }
       }
