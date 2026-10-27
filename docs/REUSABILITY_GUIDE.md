@@ -153,6 +153,7 @@ Pixel art dibesarkan tanpa blur, jadi satu piksel art selalu berukuran bulat di 
 - Tidak perlu menulis apa pun untuk memakainya. Proyek lama dengan `upscale: "browser"` otomatis memakai `anchored`.
 - `"zoomMode": "steps"` membulatkan zoom ke kelipatan 0,25 (grid selalu seragam, tetapi zoom melompat). `"zoomMode": "nearest"` mengembalikan cara Tahap 3 persis (pola merayap), hanya untuk kompatibilitas.
 - Adegan kustom yang ingin bebas crawl saat zoom menggambar setiap lapisan parallax lewat `shot.surface.layer(geseranX, geseranY)` (contoh: `src/scenes/night-train.js` dan aset `countryside`).
+- **Hati-hati dengan lapisan semi-transparan dan parallax berbeda di zoom pecahan.** Setiap lapisan punya grid sendiri. Cahaya atau bayangan semi-transparan bisa menghasilkan sedikit warna baru (V24). Tepi objek di atas lapisan dengan parallax berbeda bisa menyisakan potongan piksel selebar 1-3 piksel layar (V25). Untuk shot penting, taruh cahaya di parallax yang sama dengan subjeknya, atau tahan zoom di kelipatan 0,25.
 - Validator memeriksa otomatis bahwa grid piksel tidak merayap (pemeriksaan "Grid piksel kamera stabil"). `npm run test:zoom` mengukur semua mode dengan pola kalibrasi `calibration-grid`.
 
 ### Langkah 4: jaga kualitas

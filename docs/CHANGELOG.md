@@ -6,7 +6,7 @@ Fokus: memperbaiki V14, yaitu pixel crawling saat kamera zoom dengan nilai tidak
 
 ### Baru
 
-- **Mode zoom `anchored`** (bawaan untuk `rendering.upscale: "browser"`): ukuran setiap piksel art ditentukan oleh posisinya di dunia dan lapisannya, bukan oleh posisinya di layar (`src/engine/pixel-grid.js`). Kamera geser = gerak kaku tanpa crawl; zoom naik = setiap piksel tumbuh tepat sekali; zoom kelipatan 0,25 = semua piksel sama besar. Tanpa blur, tanpa warna baru.
+- **Mode zoom `anchored`** (bawaan untuk `rendering.upscale: "browser"`): ukuran setiap piksel art ditentukan oleh posisinya di dunia dan lapisannya, bukan oleh posisinya di layar (`src/engine/pixel-grid.js`). Kamera geser = gerak kaku tanpa crawl; zoom naik = setiap piksel tumbuh tepat sekali; zoom kelipatan 0,25 = semua piksel sama besar. Tanpa blur. Pola uji opak tidak menghasilkan warna baru, tetapi lapisan semi-transparan bisa menghasilkan sedikit warna baru (V24, lihat catatan audit di bawah).
 - Mode pembanding `steps` (zoom dibulatkan) dan `nearest` (cara Tahap 3, identik 100% untuk kompatibilitas). Pilihan `rendering.zoomMode` divalidasi.
 - **Surface per lapisan**: adegan menggambar setiap lapisan parallax ke kanvas sendiri saat zoom pecahan. Otomatis untuk adegan tersusun; adegan kustom Project A (`night-train`, `journey-to-dawn`) ikut lewat fungsi `layer` di aset `countryside`/`landscape`.
 - **Lensa `scene.lens`**: zoom tambahan untuk adegan jenis apa pun, termasuk adegan kustom.
@@ -29,6 +29,13 @@ Fokus: memperbaiki V14, yaitu pixel crawling saat kamera zoom dengan nilai tidak
 - Project A dan prototipe Tahap 1: piksel setiap frame dan file MP4 identik byte demi byte dengan baseline `main@cfed35a`.
 - Project B dengan `rendering.zoomMode: "nearest"`: 360/360 frame identik dengan Tahap 3.
 - Project A dirender di mode `browser` zoom 1: identik dengan baseline setelah diperkecil 4x.
+
+### Catatan audit final PR #4
+
+Audit dijalankan ulang dari clean clone di commit `120709c`, dan semua pemeriksaan wajib lulus. Hasilnya: CI, Project A dan prototipe identik byte demi byte, Project B berubah hanya di 124 frame terdeklarasi, MP4 valid, mode `nearest` identik dengan Tahap 3, dan `anchored` tanpa crawl di 10 skenario lab. Ada dua temuan, dan perbaikannya hanya di dokumentasi (kode, aset, MP4, hasil uji, dan baseline tidak diubah):
+
+- Klaim "tanpa warna baru" dikoreksi. Lapisan semi-transparan di zoom pecahan menghasilkan 23 warna baru di Project B (0,0187% piksel film, 21 di antaranya selisih 1 nilai). Dicatat sebagai V24.
+- Batas antar lapisan dengan geseran berbeda bisa memotong piksel art menjadi potongan 1-3 piksel layar di zoom pecahan. Dicatat sebagai V25.
 
 ## Tahap 3: mesin reusable untuk banyak proyek (PR #3, branch `tahap-3-reusable-engine`)
 

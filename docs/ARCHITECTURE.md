@@ -13,7 +13,7 @@ Dokumen ini menjelaskan cara mesin animasi bekerja sejak Tahap 3 (mesin reusable
 | Mode zoom (`rendering.zoomMode`) | `anchored` (bawaan), `steps`, `nearest` (cara Tahap 3) |
 | Transisi | `cut`, `dissolve`, `portal` |
 | Baseline regresi | `tests/baselines/`: Project A dan prototipe dari `main@cfed35a`, Project B dari `main@9d7a144` (referensi Tahap 3). Baseline tidak boleh diubah tanpa persetujuan pemilik; perubahan yang disengaja dicatat di `tests/baselines/pending-changes.json` |
-| Keterbatasan yang diketahui | [`BACKLOG.md`](BACKLOG.md), termasuk V23 (dua ukuran piksel di zoom pecahan) dan T13 (deteksi tokoh "pop") |
+| Keterbatasan yang diketahui | [`BACKLOG.md`](BACKLOG.md), termasuk V23 (dua ukuran piksel di zoom pecahan), V24 (warna baru dari lapisan semi-transparan), V25 (batas antar lapisan memotong piksel art), dan T13 (deteksi tokoh "pop") |
 
 ## Gambaran besar
 
@@ -188,7 +188,22 @@ Akibatnya:
 - **Zoom kelipatan 0,25** (1; 1,25; 1,5; 1,75; 2; ...): `f = 0`, semua piksel berukuran sama persis, dan penyaji memakai satu `drawImage` yang identik dengan cara Tahap 3.
 - **Zoom pecahan**: satu frame tetap berisi dua ukuran berdampingan (`c` dan `c + 1`). Ini batas matematis tanpa blur, tetapi polanya stabil.
 
-Penggambaran: setiap lapisan diperbesar dalam dua tahap (kolom lalu baris) dengan potongan berfaktor bulat, jadi tidak ada piksel yang dicampur dan tidak ada warna baru (diukur: 0 piksel asing).
+Penggambaran: setiap lapisan diperbesar dalam dua tahap (kolom lalu baris) dengan potongan berfaktor bulat. Setiap piksel layar diambil dari tepat satu piksel art per lapisan, tanpa interpolasi, jadi tidak ada blur atau anti-aliasing. Pada pola kalibrasi lab zoom yang seluruhnya opak, hasilnya 0 piksel asing. Untuk lapisan semi-transparan, lihat batas di bawah.
+
+### Batas yang diketahui (audit final PR #4)
+
+Dua batas ini ditemukan saat audit final, dengan membandingkan render Project B mode `anchored` dan render Tahap 3 frame demi frame. Keduanya hanya muncul di zoom pecahan mode `anchored` per lapisan. Zoom kelipatan 0,25, mode `nearest`, dan upscale `ffmpeg` tidak terdampak.
+
+**Warna baru dari lapisan semi-transparan (V24).** Di zoom pecahan, setiap lapisan digambar ke kanvas transparan sendiri, lalu diperbesar dan digabung di resolusi layar. Di Tahap 3, semua lapisan digabung lebih dulu di resolusi art. Bentuk semi-transparan (`globalAlpha`, misalnya berkas cahaya pagi dengan alpha 0,16) yang jatuh di bagian kosong kanvas lapisan disimpan sebagai warna semi-transparan 8-bit, lalu baru dicampur dengan lapisan di bawahnya. Pembulatannya berbeda dengan cara Tahap 3. Selain itu, lapisan cahaya punya grid sendiri, sehingga piksel cahaya bisa menimpa piksel lapisan bawah yang berbeda dengan di Tahap 3. Hasil ukur di Project B:
+
+- 23 warna yang tidak pernah muncul di film Tahap 3, totalnya 139.375 piksel atau 0,0187% dari seluruh piksel film (360 frame).
+- 21 warna hanya selisih 1 nilai per kanal dari warna Tahap 3 (efek pembulatan, tidak terlihat).
+- 2 warna selisih 4-5 nilai, totalnya 11 piksel di frame 274 dan 285, di tempat tepi berkas cahaya memotong piksel karakter.
+- Muncul di frame 85-118, 274, 285, dan 330-337.
+
+Ini bukan blur atau anti-aliasing, karena tidak ada piksel yang dicampur dengan tetangganya. Yang berubah hanya pembulatan dan pasangan piksel saat warna semi-transparan bertumpuk. Lab zoom tidak menangkapnya karena pola kalibrasinya opak.
+
+**Batas antar lapisan bisa memotong piksel art (V25).** Setiap lapisan dipetakan dengan grid miliknya sendiri, berdasarkan geseran parallax masing-masing. Lapisan dengan geseran sama (di Project B: `buildings`, `street`, `sidewalk`, `road`, semuanya parallax 1) memakai grid yang sama, jadi batasnya selalu sejajar. Lapisan dengan geseran berbeda punya batas piksel di posisi layar yang berbeda. Akibatnya, tepi objek di lapisan atas bisa jatuh di tengah piksel art lapisan bawah, dan sisa piksel art itu tampil sebagai potongan selebar 1-3 piksel layar. Di Tahap 3, tepi seperti itu selalu jatuh di batas piksel art karena penggabungan terjadi sebelum diperbesar, tetapi seluruh gridnya merayap. Paling terlihat saat lapisan `light` (parallax 0) di atas karakter (parallax 1), misalnya tepi berkas cahaya yang melintasi wajah karakter di frame 284-286. Ini bukan crawl. Di dalam satu lapisan semua piksel tetap bergerak kaku, dan gerak relatif antar lapisan memang gerak parallax-nya.
 
 ### Surface: lapisan untuk penyaji
 
@@ -279,5 +294,5 @@ Teknik penting:
 - **Isolasi modul**: daftar file JS yang benar-benar diunduh browser. Project B tidak memuat satu pun modul kereta.
 - **Determinisme**: seluruh frame dirender ulang di browser baru dengan urutan terbalik lalu dibandingkan per byte. MP4 di-encode ulang dan dibandingkan SHA-256-nya.
 - **Grid piksel kamera**: setiap frame mencatat mode zoom, nilai zoom, dan geseran lapisannya di manifest render. Validator menghitung ulang ukuran setiap kolom/baris dunia dan menolak crawl (ukuran berubah padahal zoom tetap) serta piksel bolak-balik.
-- **Lab zoom**: pola kalibrasi `calibration-grid` gaya `identity` memberi setiap piksel art warna unik (kolom, baris, lapisan), jadi ukuran, posisi, dan warna campuran bisa dibaca langsung dari gambar 1920x1080.
+- **Lab zoom**: pola kalibrasi `calibration-grid` gaya `identity` memberi setiap piksel art warna unik (kolom, baris, lapisan), jadi ukuran, posisi, dan warna campuran bisa dibaca langsung dari gambar 1920x1080. Polanya opak, jadi efek lapisan semi-transparan (V24) dan potongan di batas lapisan yang tumpang tindih (V25) belum diukur di lab.
 - **Perubahan terdeklarasi**: regresi membandingkan setiap proyek yang punya baseline. Frame di dalam rentang `tests/baselines/pending-changes.json` boleh berbeda tetapi dilaporkan "menunggu persetujuan"; frame di luar rentang wajib identik.

@@ -33,8 +33,10 @@ Masalah V14: saat kamera zoom dengan nilai tidak bulat, ukuran piksel art campur
 |-------------------|---------------------|---------|
 | Kolom berganti ukuran tiap frame saat geser di zoom pecahan | 43,9% | 0% |
 | Piksel bolak-balik ukuran selama zoom | 18.902 | 0 |
-| Piksel blur/warna campuran | 0 | 0 |
+| Piksel blur/warna campuran (pola uji opak) | 0 | 0 |
 | Lompatan skala (pop) | 0,005 | 0,007 |
+
+Catatan audit final: di film sungguhan yang punya lapisan semi-transparan, zoom pecahan masih menghasilkan sedikit warna baru. Di Project B ada 23 warna (0,0187% piksel), hampir semuanya hanya selisih 1 nilai (V24). Selain itu, batas antar lapisan dengan parallax berbeda bisa menyisakan potongan piksel selebar 1-3 piksel layar (V25). Keduanya bukan blur atau crawl. Rinciannya ada di [`docs/BACKLOG.md`](docs/BACKLOG.md) dan [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 Bahan pembanding di `output/comparisons/`:
 
