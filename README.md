@@ -8,7 +8,10 @@ Studio animasi pixel art berbasis kode. Tujuan jangka panjangnya adalah membuat 
 |-------|-----|--------|
 | 1 | Fondasi mesin + prototipe 5 detik *Kereta Malam di Tengah Hujan* | Selesai |
 | 2 | Sistem multi-adegan + film 15 detik *Kereta Malam Menuju Fajar* | Selesai, di-merge ke `main` (PR #2) |
-| 3 | Mesin reusable untuk banyak proyek + film 12 detik *Pagi di Kota Tua* | Selesai di branch `tahap-3-reusable-engine`, menunggu persetujuan |
+| 3 | Mesin reusable untuk banyak proyek + film 12 detik *Pagi di Kota Tua* | Selesai, disetujui, di-merge ke `main` (PR #3) |
+| 4 | Belum ditentukan | Belum dimulai, menunggu keputusan pemilik |
+
+Versi mesin saat ini: **0.3.0** (`config/engine.json`). Branch `main` adalah kondisi resmi terbaru.
 
 ## Proyek yang tersedia
 

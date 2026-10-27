@@ -1,5 +1,5 @@
 {
-  "testedAt": "2026-10-27T10:09:13.341Z",
+  "testedAt": "2026-10-27T10:53:35.577Z",
   "allPass": true,
   "passed": 14,
   "total": 14,
@@ -26,7 +26,7 @@
       "id": "night-to-dawn:manifest",
       "name": "night-to-dawn: hasil render terbaru dan sukses",
       "pass": true,
-      "detail": "status complete, selesai 2026-10-27T10:00:45.322Z | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest"
+      "detail": "status complete, selesai 2026-10-27T10:44:50.384Z | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest"
     },
     {
       "id": "night-to-dawn:frames",
@@ -68,7 +68,7 @@
       "id": "train-night-rain:manifest",
       "name": "train-night-rain: hasil render terbaru dan sukses",
       "pass": true,
-      "detail": "status complete, selesai 2026-10-27T10:03:09.233Z | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest"
+      "detail": "status complete, selesai 2026-10-27T10:52:37.536Z | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest"
     },
     {
       "id": "train-night-rain:frames",

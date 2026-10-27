@@ -46,6 +46,16 @@ Semua perintah proyek memakai `--project <id>` (`old-town-morning`, `night-to-da
 
 - Tahap 1 (selesai, sudah di-merge): fondasi mesin + prototipe `train-night-rain` (5 detik, 150 frame).
 - Tahap 2 (selesai, disetujui pemilik, di-merge ke `main` lewat PR #2): film 15 detik `film-night-to-dawn` (450 frame, 3 adegan, 2 transisi portal).
-- Tahap 3 (selesai, di branch `tahap-3-reusable-engine`, PR ke `main` menunggu persetujuan, jangan merge sendiri): mesin reusable multi-proyek, project loader + validasi skema, sistem entitas, karakter rig, aset kota tua, Project B `old-town-morning` (12 detik, 360 frame). Validasi A 36/36, B 33/33, prototipe 29/29; uji negatif A dan B masing-masing 33/33; regresi 14/14 (identik dengan `main`); uji antar-proyek 18/18.
-- Bahan peningkatan berikutnya tercatat di `docs/BACKLOG.md` (V1-V22, T1-T13, dengan prioritas).
-- Tahap 4: belum dimulai, menunggu keputusan pemilik.
+- Tahap 3 (selesai, disetujui pemilik sebagai milestone, di-merge ke `main` lewat PR #3): mesin reusable multi-proyek (versi 0.3.0), project loader + validasi skema, sistem entitas, karakter rig, aset kota tua, Project B `old-town-morning` (12 detik, 360 frame). Validasi A 36/36, B 33/33, prototipe 29/29; uji negatif A dan B masing-masing 33/33; regresi 14/14 (identik dengan `main@cfed35a`); uji antar-proyek 18/18; unit test 44/44; CI GitHub hijau.
+- Bahan peningkatan berikutnya tercatat di `docs/BACKLOG.md` (V1-V22, T1-T13, dengan prioritas dan ringkasan kandidat).
+- Tahap 4: belum dimulai, menunggu keputusan pemilik. Jangan memulainya tanpa perintah.
+
+## Cara melanjutkan di sesi baru
+
+1. Mulai dari `main` (kondisi resmi terbaru). Untuk tahap baru, buat branch `tahap-<n>-<nama>` dari `main` hanya setelah pemilik memberi perintah. Branch tahap lama tidak dihapus tanpa izin.
+2. Siapkan lingkungan: `npm run check`. Di Claude Code Cloud, Playwright 1.63.0 dan Chromium sudah terpasang global, FFmpeg juga ada. Di komputer lain: `npm ci` lalu `npx playwright install chromium`.
+3. Frame PNG tidak masuk Git. Setelah clone baru, jalankan `npm run build:all` (render + validasi semua proyek, beberapa menit) lalu `npm test` (sekitar 6 menit).
+4. Setiap perubahan di `src/` atau `config/` membuat manifest render kedaluwarsa. Render ulang proyek yang terdampak (praktisnya semua: `npm run build:all`) sebelum `npm test`, karena validator menolak MP4 yang tidak berasal dari render terbaru.
+5. Baseline di `tests/baselines/` adalah patokan Project A dan prototipe. Jangan diperbarui kecuali pemilik menyetujui perubahan visual pada proyek tersebut.
+6. MP4 untuk pemilik dikirim lewat chat (SendUserFile) dan ikut di-commit di `output/video/`, supaya bisa diputar di iPhone.
+7. Peta dokumen: `README.md` (pemakaian), `docs/ARCHITECTURE.md` (cara kerja mesin dan status saat ini), `docs/REUSABILITY_GUIDE.md` (membuat proyek baru), `docs/BACKLOG.md` (keterbatasan dan kandidat pekerjaan), `docs/CHANGELOG.md` (riwayat).

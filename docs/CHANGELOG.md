@@ -1,6 +1,8 @@
 # Riwayat Perubahan
 
-## Tahap 3: mesin reusable untuk banyak proyek (branch `tahap-3-reusable-engine`)
+## Tahap 3: mesin reusable untuk banyak proyek (PR #3, branch `tahap-3-reusable-engine`)
+
+Disetujui pemilik sebagai milestone pengembangan dan di-merge ke `main`. Versi mesin 0.3.0.
 
 ### Baru
 

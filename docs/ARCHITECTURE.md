@@ -2,6 +2,18 @@
 
 Dokumen ini menjelaskan cara mesin animasi bekerja sejak Tahap 3 (mesin reusable untuk banyak proyek). Panduan praktis membuat proyek baru ada di [`REUSABILITY_GUIDE.md`](REUSABILITY_GUIDE.md).
 
+## Status saat ini
+
+| Hal | Kondisi |
+|-----|---------|
+| Versi mesin | 0.3.0 (`config/engine.json`), di-merge ke `main` lewat PR #3 |
+| Proyek | `night-to-dawn` (Project A, adegan kustom), `old-town-morning` (Project B, adegan tersusun), `train-night-rain` (prototipe Tahap 1, format satu adegan) |
+| Katalog aset | 19 jenis di `src/assets/catalog.json` (4 aset gaya Tahap 2 + 15 aset entitas) |
+| Jenis kamera | `keys`, `follow-entity`, `follow`, `speed` |
+| Transisi | `cut`, `dissolve`, `portal` |
+| Baseline regresi | `tests/baselines/` dari `main@cfed35a` (Project A dan prototipe). Tidak boleh diubah tanpa persetujuan pemilik |
+| Keterbatasan yang diketahui | [`BACKLOG.md`](BACKLOG.md), termasuk V14 (zoom tidak bulat) dan T13 (deteksi tokoh "pop") |
+
 ## Gambaran besar
 
 ```

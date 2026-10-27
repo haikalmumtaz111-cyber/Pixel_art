@@ -2,13 +2,13 @@
 
 Laporan ini dibuat otomatis oleh `npm run validate`.
 
-- Waktu uji: 2026-10-27T10:05:38.362Z
+- Waktu uji: 2026-10-27T10:48:32.879Z
 - Proyek: `night-to-dawn`
 - Konfigurasi: `config/film-night-to-dawn.json`
 - Mesin: Pixel History Studio 0.3.0, sidik jari mesin `bc272267a41d3bc9`, pustaka aset `4378116df3a09f47`
 - Video: `output/video/film-night-to-dawn.mp4`
 - Spesifikasi: 480x270 internal, 1920x1080 output (upscale ffmpeg), 30 FPS, 15 detik, 450 frame, seed 1927
-- Lama render frame: 10.3 detik, lama encoding: 19.4 detik
+- Lama render frame: 14.3 detik, lama encoding: 19.5 detik
 
 ## Ringkasan kebutuhan
 
@@ -54,7 +54,7 @@ Status akhir: **SEMUA LULUS** (36/36 pemeriksaan)
 |----|-------------|-------|--------|
 | 1 | Interval adegan valid | LULUS | 3 adegan menutup 450/450 frame tanpa celah: s01-night-train [0, 150), s02-inside-train [150, 300), s03-journey-to-dawn [300, 450) |
 | 2 | Transisi berada di dalam durasi film | LULUS | portal 132-167, portal 282-317 |
-| 3 | Render terakhir selesai dengan sukses | LULUS | status complete, selesai 2026-10-27T10:00:45.322Z |
+| 3 | Render terakhir selesai dengan sukses | LULUS | status complete, selesai 2026-10-27T10:44:50.384Z |
 | 4 | Video berasal dari render terbaru (bukan sisa render lama) | LULUS | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest |
 | 5 | File MP4 ada | LULUS | film-night-to-dawn.mp4 (5.33 MB) |
 | 6 | Kontainer MP4 | LULUS | mov,mp4,m4a,3gp,3g2,mj2 |

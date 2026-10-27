@@ -4,6 +4,16 @@ Daftar keterbatasan yang ditemukan saat meninjau hasil setiap tahap. Semua pengu
 
 Prioritas: **Tinggi** = paling terasa di hasil atau paling berisiko, **Sedang** = layak dikerjakan di tahap berikutnya, **Rendah** = penghalusan.
 
+Kondisi terakhir: Tahap 3 disetujui dan di-merge ke `main` (PR #3). Tahap 4 belum dimulai. Butir di bawah adalah kandidat, bukan rencana yang sudah disetujui; pemilik yang memilih isi tahap berikutnya.
+
+## Ringkasan kandidat untuk tahap berikutnya
+
+| Prioritas | Butir terbuka |
+|-----------|---------------|
+| Tinggi | V14 (zoom tidak bulat membuat piksel "merayap") |
+| Sedang | V1, V3, V5, V10, V13 (Project A); V15, V16, V17 (Project B); T2, T5, T6, T7, T13 |
+| Rendah | sisanya: V2, V4, V6-V9, V11, V12, V18-V22, T3, T8-T12 |
+
 ## Temuan Tahap 2: film *Kereta Malam Menuju Fajar* (Project A)
 
 Nomor frame merujuk ke `config/film-night-to-dawn.json`. Visual Project A sengaja tidak diubah di Tahap 3, supaya uji regresi membuktikan hasilnya identik dengan `main`.

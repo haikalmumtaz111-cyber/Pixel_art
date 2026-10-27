@@ -2,13 +2,13 @@
 
 Laporan ini dibuat otomatis oleh `npm run validate`.
 
-- Waktu uji: 2026-10-27T10:06:49.786Z
+- Waktu uji: 2026-10-27T10:52:57.431Z
 - Proyek: `train-night-rain`
 - Konfigurasi: `config/train-night-rain.json`
 - Mesin: Pixel History Studio 0.3.0, sidik jari mesin `bc272267a41d3bc9`, pustaka aset `4378116df3a09f47`
 - Video: `output/video/train-night-rain.mp4`
 - Spesifikasi: 480x270 internal, 1920x1080 output (upscale ffmpeg), 30 FPS, 5 detik, 150 frame, seed 1927
-- Lama render frame: 4.3 detik, lama encoding: 9.9 detik
+- Lama render frame: 3.7 detik, lama encoding: 9.2 detik
 
 ## Ringkasan kebutuhan
 
@@ -51,7 +51,7 @@ Status akhir: **SEMUA LULUS** (29/29 pemeriksaan)
 |----|-------------|-------|--------|
 | 1 | Interval adegan valid | LULUS | 1 adegan menutup 150/150 frame tanpa celah: train-night-rain [0, 150) |
 | 2 | Transisi berada di dalam durasi film | LULUS | tidak ada transisi |
-| 3 | Render terakhir selesai dengan sukses | LULUS | status complete, selesai 2026-10-27T10:03:09.233Z |
+| 3 | Render terakhir selesai dengan sukses | LULUS | status complete, selesai 2026-10-27T10:52:37.536Z |
 | 4 | Video berasal dari render terbaru (bukan sisa render lama) | LULUS | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest |
 | 5 | File MP4 ada | LULUS | train-night-rain.mp4 (2.19 MB) |
 | 6 | Kontainer MP4 | LULUS | mov,mp4,m4a,3gp,3g2,mj2 |

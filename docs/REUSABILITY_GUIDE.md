@@ -1,5 +1,7 @@
 # Panduan Reusability
 
+Berlaku untuk mesin versi 0.3.0 (Tahap 3, sudah di `main`). Kontrak teknis lengkapnya ada di [`ARCHITECTURE.md`](ARCHITECTURE.md).
+
 ## Bagaimana cara membuat proyek animasi baru menggunakan engine ini?
 
 Singkatnya: **buat satu file JSON di `config/`, tanpa menyentuh mesin.** Mesin (`src/engine/`) tidak tahu cerita apa pun. Ia hanya membaca proyek, mengambil aset dari katalog, lalu menggambar setiap frame. Project B *Pagi di Kota Tua* dibuat dengan cara ini: nol baris kode di mesin, nol baris kode kereta.

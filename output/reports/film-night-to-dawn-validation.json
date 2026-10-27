@@ -1,5 +1,5 @@
 {
-  "testedAt": "2026-10-27T10:05:38.362Z",
+  "testedAt": "2026-10-27T10:48:32.879Z",
   "project": "night-to-dawn",
   "config": "config/film-night-to-dawn.json",
   "includes": [],
@@ -97,7 +97,7 @@
       "id": "manifest:status",
       "name": "Render terakhir selesai dengan sukses",
       "pass": true,
-      "detail": "status complete, selesai 2026-10-27T10:00:45.322Z"
+      "detail": "status complete, selesai 2026-10-27T10:44:50.384Z"
     },
     {
       "id": "manifest:fresh",
@@ -404,10 +404,10 @@
     "libraryHash": "4378116df3a09f47bdae19eb571a65cac2816c2c0ff9537a0ab968f110f0690c",
     "engineVersion": "0.3.0",
     "status": "complete",
-    "startedAt": "2026-10-27T10:00:15.678Z",
-    "finishedAt": "2026-10-27T10:00:45.322Z",
-    "renderSeconds": 10.27,
-    "encodeSeconds": 19.374,
+    "startedAt": "2026-10-27T10:44:16.505Z",
+    "finishedAt": "2026-10-27T10:44:50.384Z",
+    "renderSeconds": 14.349,
+    "encodeSeconds": 19.529,
     "chromiumVersion": "153.0.8010.12",
     "jsErrors": 0,
     "loadedModules": [
