@@ -1,4 +1,5 @@
-// Membuka adegan di Chromium (lewat Playwright) dan mengambil gambar per frame.
+// Membuka film di Chromium (lewat Playwright) dan mengambil gambar per frame.
+// Setiap error JavaScript di halaman dicatat dan membuat proses berhenti dengan pesan jelas.
 const { startServer } = require('./server.cjs');
 
 function loadPlaywright() {
@@ -20,22 +21,45 @@ async function openStudio(config) {
     if (msg.type() === 'error') errors.push(new Error(msg.text()));
   });
   const fail = () => {
-    if (errors.length) throw new Error(`Error di dalam adegan: ${errors[0].message}`);
+    if (errors.length) throw new Error(`Error JavaScript di dalam adegan: ${errors[0].message}`);
   };
 
-  await page.goto(`${url}/src/engine/page.html`);
-  await page.waitForFunction(() => window.studioReady === true, null, { timeout: 15000 });
-  fail();
-  await page.evaluate((cfg) => window.studio.init(cfg), config);
-  fail();
+  try {
+    await page.goto(`${url}/src/engine/page.html`);
+    await page.waitForFunction(() => window.studioReady === true, null, { timeout: 15000 });
+    fail();
+    await page.evaluate((cfg) => window.studio.init(cfg), config);
+    fail();
+  } catch (error) {
+    await browser.close();
+    server.close();
+    throw error;
+  }
+
+  const toBuffer = (dataUrl) => Buffer.from(dataUrl.slice(dataUrl.indexOf(',') + 1), 'base64');
 
   return {
     browserVersion: browser.version(),
-    async renderFrame(frame) {
-      const dataUrl = await page.evaluate((i) => window.studio.renderFrame(i), frame);
+    errors,
+    // sceneId (opsional): render adegan itu saja tanpa transisi
+    async renderFrame(frame, sceneId = null) {
+      let rendered;
+      try {
+        rendered = await page.evaluate(([i, id]) => (id ? window.studio.renderSceneFrame(id, i) : window.studio.renderFrame(i)), [frame, sceneId]);
+      } catch (error) {
+        errors.push(error);
+        throw new Error(`Error JavaScript di dalam adegan (frame ${frame}): ${error.message.split('\n')[0].replace('page.evaluate: ', '')}`);
+      }
       fail();
-      return Buffer.from(dataUrl.slice(dataUrl.indexOf(',') + 1), 'base64');
+      return { png: toBuffer(rendered.image), info: rendered.info };
     },
+    // Memanggil alat bantu pengujian di window.studio.inspect.
+    async inspect(method, ...args) {
+      const result = await page.evaluate(([m, a]) => window.studio.inspect[m](...a), [method, args]);
+      fail();
+      return result;
+    },
+    toBuffer,
     async close() {
       await browser.close();
       server.close();

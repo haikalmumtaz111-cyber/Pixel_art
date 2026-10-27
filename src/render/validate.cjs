@@ -1,113 +1,79 @@
-// Menguji hasil render: file video, metadata FFprobe, decoding penuh FFmpeg,
-// frame PNG, gerakan antar frame, dan determinisme (render ulang harus identik).
-// Hasilnya ditulis ke output/reports/ dalam bentuk JSON dan Markdown berbahasa Indonesia.
-// Pemakaian: node src/render/validate.cjs config/train-night-rain.json
+// Menguji hasil render secara otomatis lalu menulis laporan ke output/reports/ (JSON dan Markdown).
+// Pemakaian: node src/render/validate.cjs config/film-night-to-dawn.json
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const crypto = require('crypto');
 const { spawnSync } = require('child_process');
-const { loadConfig, frameFile } = require('./config.cjs');
+const { loadConfig, FRAME_PATTERN } = require('./config.cjs');
 const { openStudio } = require('./browser.cjs');
+const { FFMPEG, FFPROBE, run, encodeVideo } = require('./pipeline.cjs');
+const C = require('./checks.cjs');
+const B = require('./browser-checks.cjs');
 
-const FFMPEG = process.env.FFMPEG_PATH || 'ffmpeg';
-const FFPROBE = process.env.FFPROBE_PATH || 'ffprobe';
+// Pemeriksaan dikelompokkan sesuai daftar kebutuhan pengujian Tahap 2.
+const GROUPS = [
+  ['Jumlah frame tepat', ['frame-count']],
+  ['Durasi video tepat', ['duration']],
+  ['Resolusi sesuai target', ['resolution', 'aspect']],
+  ['FPS sesuai target', ['fps']],
+  ['Interval waktu adegan valid', ['timeline', 'timeline-transitions']],
+  ['Tidak ada frame yang hilang', ['png-frames', 'decoded-frames']],
+  ['Tidak ada frame kosong', ['blank']],
+  ['Tidak ada error JavaScript', ['js-errors']],
+  ['Transisi tanpa artefak', ['no-flash', 'no-hard-cut', 'boundary:', 'portal:', 'boundary']],
+  ['Aset kereta konsisten', ['train-asset', 'train-colors']],
+  ['Rendering deterministik', ['determinism']],
+  ['FFmpeg membaca seluruh video', ['decode', 'codec', 'container', 'pixel-format', 'motion']],
+  ['Video dapat diputar', ['playable', 'file']],
+  ['Render ulang konsisten', ['reencode']]
+];
 
-const sha256 = (buffer) => crypto.createHash('sha256').update(buffer).digest('hex');
+const groupOf = (id) => GROUPS.findIndex(([, ids]) => ids.some((k) => (k.endsWith(':') ? id.startsWith(k) : id === k)));
 
-function run(cmd, args) {
-  const result = spawnSync(cmd, args, { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
-  if (result.error) throw new Error(`${cmd} tidak bisa dijalankan: ${result.error.message}`);
-  return result;
+function sampleFrames(config) {
+  const custom = config.validation?.trainVisibleFrames;
+  if (custom) return custom;
+  const first = config.timeline.scenes[0];
+  return [Math.floor((first.startFrame + first.endFrame) / 2)];
 }
 
-function pngSize(buffer) {
-  const signature = buffer.subarray(0, 8).toString('hex');
-  if (signature !== '89504e470d0a1a0a') return null;
-  return { width: buffer.readUInt32BE(16), height: buffer.readUInt32BE(20) };
-}
-
-async function main() {
-  const config = loadConfig(process.argv[2]);
-  const video = config.paths.video;
-  const relVideo = path.relative(config.paths.root, video);
-  const checks = [];
-  const check = (name, pass, detail) => {
-    checks.push({ name, pass: Boolean(pass), detail });
-    console.log(`${pass ? 'LULUS' : 'GAGAL'}  ${name}: ${detail}`);
-  };
-
-  // 1. File video ada
-  const exists = fs.existsSync(video);
-  const size = exists ? fs.statSync(video).size : 0;
-  check('File MP4 ada', exists && size > 0, exists ? `${relVideo} (${(size / 1024 / 1024).toFixed(2)} MB)` : `${relVideo} tidak ditemukan`);
-  if (!exists) return finish(config, checks, {});
-
-  // 2. Metadata FFprobe (dengan menghitung frame satu per satu)
-  const probe = run(FFPROBE, ['-v', 'error', '-count_frames', '-show_streams', '-show_format', '-of', 'json', video]);
-  const info = JSON.parse(probe.stdout || '{}');
-  const stream = (info.streams || []).find((s) => s.codec_type === 'video') || {};
-  const format = info.format || {};
-  const duration = Number(format.duration);
-  const frames = Number(stream.nb_read_frames);
-  check('Kontainer MP4', /mp4/.test(format.format_name || ''), format.format_name);
-  check('Codec video H.264', stream.codec_name === 'h264', `${stream.codec_name} (${stream.profile})`);
-  check('Resolusi output', stream.width === config.outputWidth && stream.height === config.outputHeight, `${stream.width}x${stream.height}`);
-  check('Rasio 16:9', stream.width * 9 === stream.height * 16, `${stream.width}:${stream.height}`);
-  check('Frame rate', stream.r_frame_rate === `${config.fps}/1` && stream.avg_frame_rate === `${config.fps}/1`, `${stream.r_frame_rate} (rata-rata ${stream.avg_frame_rate})`);
-  check('Jumlah frame', frames === config.totalFrames, `${frames} dari ${config.totalFrames} frame`);
-  check('Durasi', Math.abs(duration - config.durationSeconds) < 0.05, `${duration.toFixed(3)} detik`);
-  check('Format piksel', stream.pix_fmt === config.encoding.pixelFormat, stream.pix_fmt);
-
-  // 3. Decoding penuh: seluruh video dibaca FFmpeg, error sekecil apa pun dianggap gagal
-  const decode = run(FFMPEG, ['-v', 'error', '-xerror', '-i', video, '-f', 'null', '-']);
-  check('Decoding FFmpeg tanpa error', decode.status === 0 && decode.stderr.trim() === '', decode.status === 0 && !decode.stderr.trim() ? 'semua frame terbaca bersih' : decode.stderr.trim().slice(0, 300));
-
-  // 4. Video benar-benar bergerak: setiap frame hasil decode dibandingkan dengan frame sebelumnya
-  const md5 = run(FFMPEG, ['-v', 'error', '-i', video, '-f', 'framemd5', '-']);
-  const hashes = md5.stdout.split('\n').filter((l) => l && !l.startsWith('#')).map((l) => l.split(',').pop().trim());
-  const unique = new Set(hashes).size;
-  let identicalPairs = 0;
-  for (let i = 1; i < hashes.length; i++) if (hashes[i] === hashes[i - 1]) identicalPairs++;
-  check('Frame hasil decode', hashes.length === config.totalFrames, `${hashes.length} frame ter-decode`);
-  check('Animasi bergerak (bukan gambar statis)', identicalPairs === 0 && unique === hashes.length, `${unique} frame unik, ${identicalPairs} pasang frame berurutan yang identik`);
-
-  // 5. Frame PNG mentah lengkap dan beresolusi internal
-  let pngOk = 0;
-  const pngHashes = [];
-  for (let i = 0; i < config.totalFrames; i++) {
-    const file = frameFile(config, i);
-    if (!fs.existsSync(file)) continue;
-    const buffer = fs.readFileSync(file);
-    const dim = pngSize(buffer);
-    if (dim && dim.width === config.width && dim.height === config.height) pngOk++;
-    pngHashes.push(sha256(buffer));
-  }
-  check('Frame PNG lengkap', pngOk === config.totalFrames, `${pngOk}/${config.totalFrames} file PNG ${config.width}x${config.height}`);
-
-  // 6. Determinisme: browser baru, urutan acak, hasil harus identik byte demi byte
-  const sample = [config.totalFrames - 1, 0, Math.floor(config.totalFrames / 2), 1, config.totalFrames - 2, 37];
-  const studio = await openStudio(config);
-  let same = 0;
+// Encode ulang frame PNG ke file sementara dan bandingkan dengan MP4 yang ada.
+function reencodeCheck(config) {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'pixel-reencode-'));
+  const video = path.join(temp, 'ulang.mp4');
   try {
-    for (const i of sample) {
-      const fresh = sha256(await studio.renderFrame(i));
-      const again = sha256(await studio.renderFrame(i));
-      if (fresh === pngHashes[i] && again === fresh) same++;
-    }
+    encodeVideo(config, { framesDir: config.paths.frames, count: config.totalFrames, video });
+    const a = C.sha256(fs.readFileSync(video));
+    const b = C.sha256(fs.readFileSync(config.paths.video));
+    return [C.result('reencode', 'Encode ulang menghasilkan MP4 identik', a === b, a === b ? `SHA-256 sama: ${a.slice(0, 16)}...` : `SHA-256 berbeda (${a.slice(0, 12)} vs ${b.slice(0, 12)})`)];
   } finally {
-    await studio.close();
+    fs.rmSync(temp, { recursive: true, force: true });
   }
-  check('Deterministik berdasarkan indeks frame', same === sample.length, `${same}/${sample.length} frame sampel (${sample.join(', ')}) identik saat dirender ulang tanpa urutan`);
+}
 
-  // 7. Lembar kontak: 4 cuplikan dari video untuk dilihat cepat
-  const sheet = path.join(config.paths.reports, `${config.name}-contact-sheet.png`);
-  const picks = [0, 50, 100, config.totalFrames - 1].map((n) => `eq(n\\,${n})`).join('+');
-  fs.mkdirSync(config.paths.reports, { recursive: true });
-  const thumb = run(FFMPEG, ['-v', 'error', '-y', '-i', video, '-vf', `select='${picks}',scale=960:540:flags=neighbor,tile=2x2`, '-frames:v', '1', '-update', '1', sheet]);
-  check('Lembar kontak dibuat', thumb.status === 0 && fs.existsSync(sheet), path.relative(config.paths.root, sheet));
-
-  finish(config, checks, { stream, format, chromium: studio.browserVersion });
+// Lembar kontak dari frame PNG asli (tajam, tanpa kompresi): ringkasan, per adegan, dan per transisi.
+function contactSheets(config) {
+  const sheets = [];
+  const make = (name, frames, cols) => {
+    const rows = Math.ceil(frames.length / cols);
+    const select = frames.map((n) => `eq(n\\,${n})`).join('+');
+    const file = path.join(config.paths.reports, `${config.name}-${name}.png`);
+    const r = run(FFMPEG, ['-v', 'error', '-y', '-start_number', '0', '-i', path.join(config.paths.frames, FRAME_PATTERN),
+      '-vf', `select='${select}',tile=${cols}x${rows}`, '-frames:v', '1', '-update', '1', file]);
+    if (r.status === 0) sheets.push({ name, frames, file: path.relative(config.paths.root, file) });
+  };
+  const total = config.totalFrames;
+  make('contact-sheet', [0, Math.round(total * 0.22), Math.round(total * 0.45), Math.round(total * 0.6), Math.round(total * 0.82), total - 1].filter((v, i, a) => a.indexOf(v) === i), 3);
+  for (const s of config.timeline.scenes) {
+    if (config.timeline.scenes.length < 2) break;
+    const step = (s.durationFrames - 1) / 3;
+    make(`scene-${s.id}`, [0, 1, 2, 3].map((k) => s.startFrame + Math.round(k * step)), 4);
+  }
+  for (const t of config.timeline.transitions) {
+    const step = (t.endFrame - t.startFrame) / 7;
+    make(`transition-${t.from}-to-${t.to}`, [...Array(8)].map((_, k) => t.startFrame + Math.round(k * step)), 4);
+  }
+  return sheets;
 }
 
 function versionLine(cmd) {
@@ -115,26 +81,30 @@ function versionLine(cmd) {
   return r.status === 0 ? r.stdout.split('\n')[0] : 'tidak tersedia';
 }
 
-function finish(config, checks, extra) {
+function writeReports(config, checks, sheets, extra) {
   const passed = checks.filter((c) => c.pass).length;
   const allPass = passed === checks.length;
-  const reportDir = config.paths.reports;
-  fs.mkdirSync(reportDir, { recursive: true });
-
-  const renderInfoFile = path.join(reportDir, `${config.name}-render.json`);
-  const renderInfo = fs.existsSync(renderInfoFile) ? JSON.parse(fs.readFileSync(renderInfoFile, 'utf8')) : null;
+  const testedAt = new Date().toISOString();
   const environment = {
     os: `${os.type()} ${os.release()} (${os.platform()}/${os.arch()})`,
     node: process.version,
-    chromium: extra.chromium || renderInfo?.chromiumVersion || '-',
+    chromium: extra.chromium || '-',
     ffmpeg: versionLine(FFMPEG),
     ffprobe: versionLine(FFPROBE)
   };
-  const testedAt = new Date().toISOString();
+  const groups = GROUPS.map(([title], g) => {
+    const items = checks.filter((c) => groupOf(c.id) === g);
+    return { title, pass: items.length > 0 && items.every((c) => c.pass), items };
+  });
+  const { segments, ...renderSummary } = extra.renderInfo || {};
+  fs.writeFileSync(path.join(config.paths.reports, `${config.name}-validation.json`),
+    JSON.stringify({ testedAt, config: config.configFile, allPass, passed, total: checks.length, groups: groups.map((g) => ({ title: g.title, pass: g.pass })), checks, sheets, environment, render: renderSummary, lumaSummary: extra.lumaSummary }, null, 2) + '\n');
 
-  fs.writeFileSync(path.join(reportDir, `${config.name}-validation.json`), JSON.stringify({ testedAt, config: config.configFile, allPass, passed, total: checks.length, checks, environment, renderInfo }, null, 2) + '\n');
-
-  const rows = checks.map((c, i) => `| ${i + 1} | ${c.name} | ${c.pass ? 'LULUS' : 'GAGAL'} | ${String(c.detail).replace(/\|/g, '/')} |`).join('\n');
+  const rows = checks.map((c, i) => `| ${i + 1} | ${c.name} | ${c.pass ? 'LULUS' : 'GAGAL'} | ${c.detail.replace(/\|/g, '/')} |`).join('\n');
+  const groupRows = groups.map((g, i) => `| ${i + 1} | ${g.title} | ${g.items.length ? (g.pass ? 'LULUS' : 'GAGAL') : 'TIDAK DIUJI'} |`).join('\n');
+  const sceneRows = config.timeline.scenes.map((s) => `| ${s.id} | ${s.name} | ${s.startFrame}-${s.endFrame} | ${s.durationFrames} | ${(s.durationFrames / config.fps).toFixed(2)} detik |`).join('\n');
+  const transitionRows = config.timeline.transitions.map((t) => `| ${t.id} | ${t.type} | ${t.startFrame}-${t.endFrame} | ${t.endFrame - t.startFrame + 1} |`).join('\n') || '| - | - | - | - |';
+  const sheetList = sheets.map((s) => `- \`${s.file}\` (frame ${s.frames.join(', ')})`).join('\n');
   const md = `# Laporan Pengujian: ${config.title}
 
 Laporan ini dibuat otomatis oleh \`npm run validate\`.
@@ -143,14 +113,34 @@ Laporan ini dibuat otomatis oleh \`npm run validate\`.
 - Konfigurasi: \`${config.configFile}\`
 - Video: \`${config.output.video}\`
 - Spesifikasi: ${config.width}x${config.height} internal, ${config.outputWidth}x${config.outputHeight} output, ${config.fps} FPS, ${config.durationSeconds} detik, ${config.totalFrames} frame
-${renderInfo ? `- Lama render frame: ${renderInfo.renderSeconds.toFixed(1)} detik, lama encoding: ${renderInfo.encodeSeconds.toFixed(1)} detik\n` : ''}
-## Hasil
+${renderSummary.renderSeconds ? `- Lama render frame: ${renderSummary.renderSeconds.toFixed(1)} detik, lama encoding: ${renderSummary.encodeSeconds.toFixed(1)} detik\n` : ''}
+## Ringkasan kebutuhan
+
+| No | Kebutuhan | Hasil |
+|----|-----------|-------|
+${groupRows}
+
+Status akhir: **${allPass ? 'SEMUA LULUS' : 'ADA YANG GAGAL'}** (${passed}/${checks.length} pemeriksaan)
+
+## Timeline
+
+| Adegan | Nama | Frame | Jumlah frame | Durasi |
+|--------|------|-------|--------------|--------|
+${sceneRows}
+
+| Transisi | Jenis | Frame | Jumlah frame |
+|----------|-------|-------|--------------|
+${transitionRows}
+
+## Detail pemeriksaan
 
 | No | Pemeriksaan | Hasil | Detail |
 |----|-------------|-------|--------|
 ${rows}
 
-Status akhir: **${allPass ? 'SEMUA LULUS' : 'ADA YANG GAGAL'}** (${passed}/${checks.length})
+## Lembar kontak (preview)
+
+${sheetList || '-'}
 
 ## Lingkungan
 
@@ -159,11 +149,62 @@ Status akhir: **${allPass ? 'SEMUA LULUS' : 'ADA YANG GAGAL'}** (${passed}/${che
 - Chromium: ${environment.chromium}
 - ${environment.ffmpeg}
 - ${environment.ffprobe}
-${renderInfo ? `\n## Perintah encoding\n\n\`\`\`\n${renderInfo.ffmpegCommand}\n\`\`\`\n` : ''}`;
-  fs.writeFileSync(path.join(reportDir, `${config.name}-validation.md`), md);
+${renderSummary.ffmpegCommand ? `\n## Perintah encoding\n\n\`\`\`\n${renderSummary.ffmpegCommand}\n\`\`\`\n` : ''}`;
+  fs.writeFileSync(path.join(config.paths.reports, `${config.name}-validation.md`), md);
+  return { allPass, passed, total: checks.length };
+}
 
-  console.log(`\n${allPass ? 'SEMUA LULUS' : 'ADA YANG GAGAL'} (${passed}/${checks.length}). Laporan: ${path.relative(config.paths.root, reportDir)}/${config.name}-validation.md`);
-  if (!allPass) process.exitCode = 1;
+async function main() {
+  const config = loadConfig(process.argv[2], { strict: false });
+  fs.mkdirSync(config.paths.reports, { recursive: true });
+  const renderFile = path.join(config.paths.reports, `${config.name}-render.json`);
+  const renderInfo = fs.existsSync(renderFile) ? JSON.parse(fs.readFileSync(renderFile, 'utf8')) : null;
+  const checks = [];
+  const add = (list) => list.forEach((c) => {
+    checks.push(c);
+    console.log(`${c.pass ? 'LULUS' : 'GAGAL'}  ${c.name}: ${c.detail}`);
+  });
+
+  add(C.timelineChecks(config));
+  const expect = { width: config.outputWidth, height: config.outputHeight, fps: config.fps, frames: config.totalFrames, pixelFormat: config.encoding.pixelFormat };
+  add(C.videoChecks(config.paths.video, expect));
+  let lumaSummary = null;
+  if (fs.existsSync(config.paths.video)) {
+    add(C.decodeChecks(config.paths.video));
+    const stats = C.lumaStats(config.paths.video);
+    add(C.frameChecks(stats, C.frameHashes(config.paths.video), config.totalFrames));
+    add(C.transitionLumaChecks(stats, config.timeline.transitions));
+    lumaSummary = stats.map((s) => [Number(s.yavg.toFixed(1)), Number(s.ydif.toFixed(1))]);
+  }
+  const png = C.pngChecks(config.paths.frames, config.totalFrames, config.width, config.height);
+  add(png.checks);
+
+  let chromium = null;
+  if (config.timelineIssues.length === 0) {
+    const studio = await openStudio(config);
+    chromium = studio.browserVersion;
+    try {
+      add(await B.transitionBoundaryChecks(studio, config, renderInfo));
+      // konfigurasi satu adegan dari Tahap 1 membuat kereta langsung di adegan, tanpa daftar aset bersama
+      if (Object.values(config.assets || {}).some((a) => a.type === 'steam-train')) {
+        add(await B.trainConsistencyChecks(studio, config, sampleFrames(config)));
+      }
+      console.log('Render ulang seluruh frame dengan urutan terbalik untuk uji determinisme...');
+      add(await B.determinismChecks(studio, png.hashes, {}));
+      add(B.jsErrorChecks(renderInfo, studio));
+    } finally {
+      await studio.close();
+    }
+  }
+  if (fs.existsSync(config.paths.video) && png.checks[0].pass) {
+    console.log('Encode ulang untuk uji konsistensi MP4...');
+    add(reencodeCheck(config));
+  }
+
+  const sheets = fs.existsSync(path.join(config.paths.frames, 'frame_0000.png')) ? contactSheets(config) : [];
+  const summary = writeReports(config, checks, sheets, { chromium, renderInfo, lumaSummary });
+  console.log(`\n${summary.allPass ? 'SEMUA LULUS' : 'ADA YANG GAGAL'} (${summary.passed}/${summary.total}). Laporan: ${path.relative(config.paths.root, config.paths.reports)}/${config.name}-validation.md`);
+  if (!summary.allPass) process.exitCode = 1;
 }
 
 main().catch((error) => {

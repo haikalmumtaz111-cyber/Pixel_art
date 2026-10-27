@@ -1,7 +1,11 @@
-// Palet warna terbatas ala konsol 16-bit untuk suasana malam hujan.
-// Semua aset mengambil warna dari sini supaya tampilannya seragam.
+// Palet warna terbatas ala konsol 16-bit.
+// NIGHT adalah palet Tahap 1 (malam hujan). DAWN berisi warna tujuan saat fajar.
+// Perubahan malam ke fajar dibagi menjadi beberapa anak tangga (ramp), mirip "palette fade"
+// di game 16-bit: tiap frame tetap memakai sekumpulan kecil warna, bukan gradasi halus.
+import { clamp } from '../engine/math.js';
+import { mixHex } from '../engine/pixel.js';
 
-export const PALETTE = {
+export const NIGHT = {
   // langit dari atas ke cakrawala
   sky: ['#080b1e', '#0c1128', '#111836', '#172044', '#1e2952', '#26335f', '#2f3d6c', '#39487a'],
   moon: '#e8e4c8', moonShade: '#bdbaa0', moonHalo: '#2e3c72', moonHaloLight: '#3a4a84',
@@ -50,5 +54,91 @@ export const PALETTE = {
   rainNear: '#7b8ac2', rainNearHi: '#a9b7e8', rainLit: '#f4e8ba',
   splash: '#a3b3e2',
 
+  // dipakai mulai Tahap 2 (kabut dan matahari hanya muncul saat fajar)
+  fog: '#2c3866', fogLight: '#3c4a80',
+  sunCore: '#fff6d8', sun: '#ffd47e', sunGlow: '#f6a65e', sunGlowFar: '#e07a62',
+
   vignette: [3, 4, 11]
 };
+
+// Tahap 1 mengimpor PALETTE, jadi namanya tetap tersedia.
+export const PALETTE = NIGHT;
+
+// Warna tujuan saat fajar penuh. Kunci yang tidak ada di sini tetap memakai warna malam
+// (misalnya warna kereta, supaya identitas kereta tidak berubah).
+export const DAWN = {
+  sky: ['#2a2862', '#3c2f6e', '#553677', '#76407d', '#9b4c7d', '#c35e74', '#e37f62', '#f5a95f'],
+  moonHalo: '#5a4a86', moonHaloLight: '#6c5a94',
+
+  cloudHigh: '#4b3569', cloudHighRim: '#cf7a7c',
+  cloudLow: '#6b4478', cloudLowLight: '#a35b7d', cloudLowRim: '#f2a472', cloudLowShadow: '#4c3367',
+
+  mountain: '#5b4079', mountainRim: '#e48c6c',
+  hillFar: '#403163', hillFarRim: '#b26c6c',
+  hillNear: '#2b2549', hillNearRim: '#7c4e60',
+
+  treeFar: '#221d3d', treeFarLight: '#5c405c',
+  treeNear: '#171429', treeNearLight: '#402d46',
+
+  house: '#2b2141', houseWindow: '#d8975a', houseWindowDim: '#8a5e42',
+  pole: '#1b1731', poleLight: '#4c3652', wire: '#3c2d4a', insulator: '#b48c7c',
+
+  gravel: ['#2b2535', '#3b3143', '#4d3f53', '#635165'],
+  rail: '#caa9a2', railShadow: '#5b4757', railGlint: '#ffe2c4',
+  sleeper: '#2b1f1f', sleeperLight: '#463131',
+  ground: ['#161021', '#1e1729', '#271e33', '#31263f'],
+  grass: '#3b3145',
+  puddle: '#8b5b7b', puddleLight: '#f2a382',
+  bush: '#0f0b17', bushLight: '#3b2b41',
+
+  smoke: ['#5b4b6b', '#7b6181', '#9b7991', '#c29ba2'],
+
+  rainFar: '#7b6b93', rainFarLit: '#9b8aa0',
+  rainNear: '#b9a9c9', rainNearHi: '#eadaea', rainLit: '#f4e0c8',
+  splash: '#d9c1d1',
+
+  fog: '#8e6d96', fogLight: '#b68ea6',
+
+  vignette: [24, 12, 34]
+};
+
+// Warna interior gerbong. Kayu dan kain sengaja diambil dari keluarga warna gerbong luar.
+export const INTERIOR = {
+  ceiling: '#1e0f09', ceilingRib: '#341b0f', ceilingLight: '#4a2a16',
+  wall: '#4f2817', wallLight: '#6a3820', wallDark: '#33180d', wallShine: '#86502c',
+  wainscot: '#3a1c10', wainscotLight: '#552c18',
+  floor: '#24140c', floorLight: '#3a2214', floorDark: '#160b06',
+  velvet: NIGHT.coach, velvetLight: NIGHT.coachLight, velvetDark: NIGHT.coachDark, velvetShine: NIGHT.coachShine,
+  frame: NIGHT.windowFrame, frameLight: '#4a2414',
+  brass: NIGHT.brass, brassLight: NIGHT.brassLight,
+  flame: '#fff0b0', flameCore: '#ffd060',
+  luggage: '#6c4126', luggageLight: '#8c5a36', luggageStrap: '#2e1a0e',
+  glassEdge: '#0d0b18',
+  droplet: '#aebde8', dropletHi: '#eef2ff', dropletTrail: '#5d6ca6',
+  shadow: '#0c0605'
+};
+
+function mixValue(a, b, t) {
+  if (Array.isArray(a)) return a.map((v, i) => (typeof v === 'number' ? Math.round(v + (b[i] - v) * t) : mixHex(v, b[i], t)));
+  return mixHex(a, b, t);
+}
+
+// Tangga palet dari `from` ke `to`. Anak tangga dibuat sekali lalu disimpan (deterministik).
+export function createPaletteRamp(from, to, steps = 32) {
+  const cache = [from];
+  return {
+    steps,
+    index(amount) {
+      return Math.round(clamp(amount, 0, 1) * (steps - 1));
+    },
+    at(index) {
+      if (!cache[index]) {
+        const t = index / (steps - 1);
+        const palette = { ...from };
+        for (const key of Object.keys(to)) palette[key] = mixValue(from[key], to[key], t);
+        cache[index] = palette;
+      }
+      return cache[index];
+    }
+  };
+}

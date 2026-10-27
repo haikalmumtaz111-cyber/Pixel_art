@@ -4,47 +4,61 @@ Studio animasi pixel art berbasis kode. Tujuan jangka panjangnya adalah membuat 
 
 ## Status
 
-**Tahap 1 selesai: fondasi dan prototipe animasi.**
+| Tahap | Isi | Status |
+|-------|-----|--------|
+| 1 | Fondasi mesin + prototipe 5 detik *Kereta Malam di Tengah Hujan* | Selesai |
+| 2 | Sistem multi-adegan + film pendek 15 detik *Kereta Malam Menuju Fajar* | Selesai, disetujui, di-merge ke `main` (PR #2) |
 
-Prototipe pertama berjudul *Kereta Malam di Tengah Hujan*: kereta uap melintasi pedesaan pada malam hari ketika hujan turun.
+## Hasil Tahap 2
 
 | Hal | Nilai |
 |-----|-------|
-| Video | [`output/video/train-night-rain.mp4`](output/video/train-night-rain.mp4) |
-| Durasi | 5 detik, 30 FPS, 150 frame |
-| Resolusi | digambar di 480 x 270, diperbesar 4x menjadi 1920 x 1080 (16:9) |
-| Laporan pengujian | [`output/reports/train-night-rain-validation.md`](output/reports/train-night-rain-validation.md) |
-| Cuplikan | [`output/reports/train-night-rain-contact-sheet.png`](output/reports/train-night-rain-contact-sheet.png) |
+| Video | [`output/video/film-night-to-dawn.mp4`](output/video/film-night-to-dawn.mp4) |
+| Durasi | 15 detik, 30 FPS, tepat 450 frame |
+| Resolusi | digambar di 480 x 270, diperbesar 4x (nearest neighbor) menjadi 1920 x 1080 |
+| Encoding | H.264 High level 4.1, yuv420p, faststart |
+| Laporan pengujian | [`output/reports/film-night-to-dawn-validation.md`](output/reports/film-night-to-dawn-validation.md) |
+| Pengujian negatif | [`output/reports/film-night-to-dawn-negative-tests.md`](output/reports/film-night-to-dawn-negative-tests.md) |
+| Cuplikan film | [`output/reports/film-night-to-dawn-contact-sheet.png`](output/reports/film-night-to-dawn-contact-sheet.png) |
 
-Yang bergerak di dalam video:
+### Alur cerita
 
-1. Kereta melaju dengan kecepatan tetap (90 piksel per detik di resolusi internal).
-2. Roda berputar sesuai jarak tempuh, lengkap dengan batang penghubung roda lokomotif.
-3. Hujan turun miring dalam dua lapis (jauh dan dekat), ditambah cipratan di tanah, rel, dan atap.
-4. Gunung, bukit, pohon, tiang telegraf, dan semak bergeser dengan kecepatan berbeda (parallax).
-5. Lampu jendela kereta menyala, kadang meredup sesaat, dan terpantul di tanah basah.
-6. Kamera mengikuti kereta. Di 2,2 detik pertama kamera sedikit tertinggal, lalu mengunci posisi kereta.
+| Adegan | Frame | Isi |
+|--------|-------|-----|
+| 01 Night Train | 0-149 | Kereta uap melaju di pedesaan saat malam hujan. Kamera mengikuti kereta, lalu mendekati jendela seorang penumpang. |
+| 02 Inside the Train | 150-299 | Interior gerbong yang hangat. Penumpang bertopi pet bernapas, berkedip, dan melirik ke luar. Hujan mengalir di kaca, pemandangan bergerak, ruangan bergetar halus. |
+| 03 Journey to Dawn | 300-449 | Kamera keluar lewat jendela, melambat, dan menengadah. Hujan reda, awan terbuka, langit berubah ungu-merah muda-oranye, matahari muncul di balik gunung, kabut tipis di lembah. Kereta menyalip masuk bingkai menuju cahaya fajar. |
 
-Bonus kecil: asap cerobong, sorot lampu depan yang menerangi hujan, api tungku di kabin masinis, rumah desa dengan jendela menyala.
+Dua transisi menyambungkan ketiga adegan tanpa potongan kasar:
+
+- **Adegan 1 ke 2 (frame 132-167)**: kamera mendekati jendela penumpang. Jendela-jendela di sekitarnya meredup menjadi warna ruangan, lalu kamera masuk ke dalam gerbong.
+- **Adegan 2 ke 3 (frame 282-317)**: penumpang melirik ke jendela, kamera bergeser ke arah jendela, lalu menembus kaca dan keluar ke pemandangan.
+
+Lembar cuplikan tiap adegan dan transisi ada di `output/reports/film-night-to-dawn-scene-*.png` dan `output/reports/film-night-to-dawn-transition-*.png`.
 
 ## Cara menjalankan
 
 Semua perintah dijalankan dari folder proyek.
 
 ```bash
-npm run check      # periksa apakah semua alat sudah terpasang
-npm run build      # render 150 frame, gabungkan jadi MP4, lalu uji hasilnya
-npm run preview    # lihat animasi langsung di browser (Ctrl+C untuk berhenti)
+npm run check            # periksa apakah semua alat sudah terpasang
+npm run build            # render 450 frame, buat MP4, lalu uji hasilnya
+npm test                 # uji hasil + uji negatif (jalankan setelah build)
+npm run preview          # tonton animasi langsung di browser (Ctrl+C untuk berhenti)
 ```
 
-`npm run build` sama dengan menjalankan dua perintah ini berurutan:
+Perintah lain yang berguna:
 
 ```bash
-npm run render     # menggambar frame PNG lalu membuat MP4
-npm run validate   # menguji MP4 dan menulis laporan pengujian
+npm run render                              # hanya render frame dan MP4
+npm run validate                            # hanya menguji hasil render
+npm run test:negative                       # uji negatif: memastikan validator menolak hasil yang salah
+npm run render:scene -- s02-inside-train    # render satu adegan saja, tanpa transisi
+npm run preview -- film-night-to-dawn s02-inside-train   # pratinjau satu adegan
+npm run build:prototype                     # render dan uji ulang prototipe Tahap 1
 ```
 
-Setiap render menimpa frame PNG dan MP4 lama dengan nama yang sama. Tidak ada file lain yang dihapus.
+Setiap render menimpa frame PNG dan MP4 lama dengan nama yang sama. Tidak ada file lain yang dihapus. Video per adegan disimpan di `output/scenes/` dan tidak masuk Git.
 
 ### Memasang di komputer baru
 
@@ -56,62 +70,77 @@ Setiap render menimpa frame PNG dan MP4 lama dengan nama yang sama. Tidak ada fi
 3. Di folder proyek jalankan `npm install` lalu `npx playwright install chromium`
 4. Jalankan `npm run check`. Kalau semua `[OK]`, lanjut `npm run build`
 
+## Cara kerjanya (versi singkat)
+
+Bayangkan studio film sungguhan:
+
+- **Timeline** (`config/film-night-to-dawn.json`) adalah naskah dan jadwal syuting. Isinya daftar adegan, kapan mulai dan selesai, gerak kamera, cuaca, dan transisi.
+- **Aset** (`src/assets/`) adalah properti dan pemain: kereta, pedesaan, interior gerbong, dan penumpang. Satu aset dipakai bersama oleh semua adegan, jadi keretanya selalu sama.
+- **Adegan** (`src/scenes/`) adalah sutradara per adegan: menata aset dan kamera sesuai timeline.
+- **Mesin** (`src/engine/`) adalah kru teknis: membaca timeline, menggambar setiap frame, dan menjalankan transisi.
+- **Render dan validasi** (`src/render/`) adalah ruang editing dan kontrol kualitas: membuat MP4 lalu memeriksanya.
+
+Penjelasan teknis lengkap ada di [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). Riwayat perubahan ada di [`docs/CHANGELOG.md`](docs/CHANGELOG.md). Catatan peningkatan untuk tahap berikutnya ada di [`docs/BACKLOG.md`](docs/BACKLOG.md).
+
 ## Struktur folder
 
 ```
-config/                     pengaturan adegan (resolusi, FPS, durasi, kecepatan, jumlah hujan)
-  train-night-rain.json
+config/
+  film-night-to-dawn.json   timeline film Tahap 2 (adegan, aset, kamera, cuaca, transisi)
+  train-night-rain.json     prototipe Tahap 1 (satu adegan)
 src/
-  engine/                   mesin inti yang bisa dipakai ulang untuk adegan lain
-    math.js                 fungsi matematika kecil
-    random.js               angka acak deterministik (seed)
-    pixel.js                alat gambar pixel art: kotak, garis, lingkaran, dithering
-    camera.js               kamera dan parallax
-    runtime.js, page.html   halaman browser tempat adegan digambar
-  assets/                   aset prosedural (digambar oleh kode, bukan file gambar)
-    palette.js              palet warna 16-bit
-    sky.js                  langit, bulan, awan
-    landscape.js            gunung, bukit, pohon, rumah, tiang, rel, tanah, semak
-    train.js                lokomotif, tender, gerbong, roda, lampu
-    rain.js                 hujan dan cipratan
-    smoke.js                asap cerobong
-  scenes/                   adegan: menyusun aset dan urutan gambarnya
-    train-night-rain.js
+  engine/                   mesin inti yang bisa dipakai ulang
+    film.js                 membaca timeline dan menentukan isi setiap frame
+    transitions.js          pustaka transisi: cut, dissolve, portal
+    tracks.js               keyframe berbasis frame untuk kamera dan cuaca
+    camera.js               kamera, parallax, track kamera "follow" dan "speed"
+    pixel.js                alat gambar pixel art, zoom tajam, dithering
+    random.js, math.js      angka acak deterministik dan fungsi bantu
+    runtime.js, page.html   halaman browser tempat film digambar
+  assets/                   aset prosedural (digambar oleh kode)
+    registry.js             daftar aset bersama
+    palette.js              palet malam, fajar, dan interior
+    train.js                kereta uap (satu desain untuk semua adegan)
+    countryside.js          set pedesaan: langit, lanskap, hujan, asap, kereta
+    interior.js             interior gerbong
+    characters/traveler.js  karakter penumpang
+    sky.js, landscape.js, rain.js, smoke.js
+  scenes/                   adegan
+    night-train.js, inside-train.js, journey-to-dawn.js   adegan film Tahap 2
+    train-night-rain.js     adegan prototipe Tahap 1
   render/                   program Node.js untuk render dan pengujian
-    render.cjs              Playwright menggambar frame, FFmpeg membuat MP4
-    validate.cjs            pengujian FFprobe dan FFmpeg, menulis laporan
-    check-env.cjs           pemeriksaan alat yang terpasang
-    preview.cjs             pratinjau di browser
-    browser.cjs, server.cjs, config.cjs   bagian pendukung
+    render.cjs              render film atau satu adegan
+    validate.cjs            pengujian otomatis + laporan
+    negative-tests.cjs      pengujian negatif
+    checks.cjs, browser-checks.cjs, pipeline.cjs, timeline.cjs, config.cjs, browser.cjs, server.cjs
+    check-env.cjs, preview.cjs
+tests/fixtures/scenes/      adegan uji yang sengaja salah (dipakai pengujian negatif)
+docs/                       dokumentasi arsitektur dan riwayat perubahan
 output/
-  frames/                   frame PNG hasil render (tidak disimpan ke git, bisa dibuat ulang)
+  frames/                   frame PNG (tidak masuk Git, bisa dibuat ulang)
   video/                    file MP4
-  reports/                  laporan pengujian dan cuplikan
+  reports/                  laporan pengujian dan lembar cuplikan
 ```
 
-## Cara kerjanya
+## Mengubah film tanpa menyentuh kode
 
-1. `render.cjs` membaca konfigurasi dari `config/`.
-2. Chromium dibuka lewat Playwright, lalu memuat adegan dari `src/scenes/`.
-3. Untuk setiap nomor frame (0 sampai 149), adegan digambar ulang dari nol di kanvas 480 x 270 lalu disimpan sebagai PNG.
-4. FFmpeg memperbesar setiap frame 4x dengan metode *nearest neighbor* agar piksel tetap kotak tajam, lalu menyandikannya menjadi MP4 H.264.
-5. `validate.cjs` memeriksa hasilnya dan menulis laporan ke `output/reports/`.
+Buka `config/film-night-to-dawn.json`, ubah nilainya, lalu jalankan `npm run build`. Contoh:
 
-## Aturan penting untuk animasi
+- `assets.train.motion.speed`: kecepatan kereta
+- `environment.dawn`: kapan langit mulai berubah menjadi fajar, dalam format `[frame, nilai, easing]`
+- `environment.rain`: seberapa cepat hujan reda
+- `timeline.scenes[...].camera`: gerak kamera tiap adegan
+- `timeline.scenes[...].transitionOut`: kapan dan seperti apa transisi ke adegan berikutnya
+- `timeline.scenes[1].characters.traveler.lookKeys`: kapan penumpang melirik ke jendela
 
-- **Deterministik.** Posisi semua benda dihitung hanya dari nomor frame (waktu = frame / FPS). Frame 75 selalu terlihat sama, kapan pun dan dalam urutan apa pun dirender. Pengujian membuktikan ini dengan merender ulang beberapa frame dalam urutan loncat-loncat lalu membandingkan isinya byte demi byte.
-- **Tanpa `Math.random()`.** Variasi acak memakai `hash(seed, ...)` dari `src/engine/random.js`. Mengganti `seed` di konfigurasi akan menghasilkan susunan pohon, hujan, dan asap yang berbeda tetapi tetap konsisten.
-- **Koordinat bulat.** Semua gambar memakai koordinat piksel bulat supaya tidak ada pinggiran buram.
+Pemeriksa timeline akan menolak kesalahan seperti adegan yang bertumpuk, durasi yang tidak cocok, atau nama efek yang salah ketik, lengkap dengan pesan berbahasa Indonesia.
 
-## Mengubah animasi tanpa menyentuh kode
+## Keterbatasan yang masih ada
 
-Buka `config/train-night-rain.json`, ubah nilainya, lalu jalankan `npm run build`. Contoh:
+- Belum ada audio atau musik.
+- Saat kamera zoom menembus jendela, piksel ikut membesar dengan ukuran yang tidak selalu sama (kadang 2 dan kadang 3 piksel). Efek ini hanya berlangsung sekitar setengah detik dan tidak menimbulkan blur.
+- Arah pandang dari jendela di Adegan 2 tidak mengikuti geometri 3D sungguhan. Ini disengaja mengikuti konvensi film 2D side-scroller.
+- Baru ada satu karakter dan satu set lokasi (pedesaan + interior gerbong).
+- Determinisme dijamin di lingkungan yang sama (versi Chromium dan FFmpeg yang sama). Versi berbeda bisa menghasilkan selisih piksel kecil.
 
-- `sceneParams.train.speed`: kecepatan kereta
-- `sceneParams.rain.near.count` dan `sceneParams.rain.far.count`: lebat hujan
-- `seed`: susunan acak pemandangan
-- `durationSeconds`: durasi video (jumlah frame ikut menyesuaikan)
-
-## Tahap berikutnya
-
-Belum dikerjakan. Akan diputuskan bersama sebelum mulai.
+Daftar lengkap keterbatasan visual dan teknis beserta ide perbaikannya ada di [`docs/BACKLOG.md`](docs/BACKLOG.md).

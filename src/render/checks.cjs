@@ -1,0 +1,207 @@
+// Kumpulan pemeriksaan hasil render. Setiap fungsi mengembalikan daftar hasil:
+// { id, name, pass, detail }. Dipakai validate.cjs (uji normal) dan negative-tests.cjs (uji negatif).
+const fs = require('fs');
+const path = require('path');
+const crypto = require('crypto');
+const { frameFile } = require('./config.cjs');
+const { FFMPEG, FFPROBE, run } = require('./pipeline.cjs');
+
+const sha256 = (buffer) => crypto.createHash('sha256').update(buffer).digest('hex');
+const result = (id, name, pass, detail) => ({ id, name, pass: Boolean(pass), detail: String(detail) });
+
+// Batas yang dipakai pemeriksaan transisi dan frame kosong.
+const LIMITS = {
+  maxLumaStep: 8, // perubahan kecerahan rata-rata maksimum antar frame (skala 0-255)
+  cutSpikeRatio: 3, // lonjakan perbedaan frame dianggap potongan kasar bila 3x tetangganya
+  cutSpikeMin: 10,
+  blankRange: 16, // frame dianggap kosong bila selisih piksel tergelap dan terterang di bawah ini
+  blankMean: 6
+};
+
+function pngSize(buffer) {
+  if (buffer.subarray(0, 8).toString('hex') !== '89504e470d0a1a0a') return null;
+  return { width: buffer.readUInt32BE(16), height: buffer.readUInt32BE(20) };
+}
+
+// ---------- timeline ----------
+
+function timelineChecks(config) {
+  const scenes = config.timeline.scenes;
+  const issues = config.timelineIssues || [];
+  const covered = scenes.reduce((sum, s) => sum + s.durationFrames, 0);
+  const ranges = scenes.map((s) => `${s.id} ${s.startFrame}-${s.endFrame}`).join(', ');
+  const out = [
+    result('timeline', 'Interval adegan valid', issues.length === 0 && covered === config.totalFrames,
+      issues.length ? issues.join(' | ') : `${scenes.length} adegan menutup ${covered}/${config.totalFrames} frame tanpa celah: ${ranges}`)
+  ];
+  const transitions = config.timeline.transitions;
+  out.push(result('timeline-transitions', 'Transisi berada di dalam durasi film', transitions.every((t) => t.startFrame >= 0 && t.endFrame < config.totalFrames),
+    transitions.length ? transitions.map((t) => `${t.type} ${t.startFrame}-${t.endFrame}`).join(', ') : 'tidak ada transisi'));
+  return out;
+}
+
+// ---------- video ----------
+
+function probeVideo(file) {
+  const probe = run(FFPROBE, ['-v', 'error', '-count_frames', '-show_streams', '-show_format', '-of', 'json', file]);
+  const info = JSON.parse(probe.stdout || '{}');
+  return {
+    stream: (info.streams || []).find((s) => s.codec_type === 'video') || {},
+    format: info.format || {}
+  };
+}
+
+// Urutan kotak teratas MP4: moov sebelum mdat berarti video bisa langsung diputar (faststart).
+function topLevelAtoms(file) {
+  const fd = fs.openSync(file, 'r');
+  const atoms = [];
+  try {
+    const size = fs.fstatSync(fd).size;
+    const header = Buffer.alloc(16);
+    let pos = 0;
+    while (pos + 8 <= size && atoms.length < 64) {
+      fs.readSync(fd, header, 0, 16, pos);
+      let len = header.readUInt32BE(0);
+      const type = header.toString('latin1', 4, 8);
+      if (len === 1) len = Number(header.readBigUInt64BE(8));
+      if (len === 0) len = size - pos;
+      if (len < 8) break;
+      atoms.push(type);
+      pos += len;
+    }
+  } finally {
+    fs.closeSync(fd);
+  }
+  return atoms;
+}
+
+function videoChecks(file, expect) {
+  const exists = fs.existsSync(file);
+  const size = exists ? fs.statSync(file).size : 0;
+  const out = [result('file', 'File MP4 ada', exists && size > 0, exists ? `${path.basename(file)} (${(size / 1024 / 1024).toFixed(2)} MB)` : 'tidak ditemukan')];
+  if (!exists) return out;
+  const { stream, format } = probeVideo(file);
+  const frames = Number(stream.nb_read_frames);
+  const duration = Number(format.duration);
+  out.push(
+    result('container', 'Kontainer MP4', /mp4/.test(format.format_name || ''), format.format_name),
+    result('codec', 'Codec video H.264', stream.codec_name === 'h264', `${stream.codec_name} (${stream.profile})`),
+    result('resolution', 'Resolusi output', stream.width === expect.width && stream.height === expect.height, `${stream.width}x${stream.height}`),
+    result('aspect', 'Rasio 16:9', stream.width * 9 === stream.height * 16, `${stream.width}:${stream.height}`),
+    result('fps', 'Frame rate', stream.r_frame_rate === `${expect.fps}/1` && stream.avg_frame_rate === `${expect.fps}/1`, `${stream.r_frame_rate} (rata-rata ${stream.avg_frame_rate})`),
+    result('frame-count', 'Jumlah frame', frames === expect.frames, `${frames} dari ${expect.frames} frame`),
+    // toleransi setengah frame: selisih 1 frame saja sudah dianggap salah
+    result('duration', 'Durasi', Math.abs(duration - expect.frames / expect.fps) < 0.5 / expect.fps, `${duration.toFixed(3)} detik (target ${(expect.frames / expect.fps).toFixed(3)})`),
+    result('pixel-format', 'Format piksel', stream.pix_fmt === expect.pixelFormat, stream.pix_fmt)
+  );
+  // Bisa diputar di perangkat umum: H.264 profil Baseline/Main/High 8-bit 4:2:0, level <= 4.2,
+  // piksel persegi, dan indeks video (moov) di depan supaya bisa langsung diputar.
+  const atoms = topLevelAtoms(file);
+  const faststart = atoms.indexOf('moov') >= 0 && atoms.indexOf('moov') < atoms.indexOf('mdat');
+  const profileOk = ['Baseline', 'Constrained Baseline', 'Main', 'High'].includes(stream.profile);
+  const levelOk = Number(stream.level) > 0 && Number(stream.level) <= 42;
+  const sarOk = !stream.sample_aspect_ratio || ['1:1', 'N/A', '0:1'].includes(stream.sample_aspect_ratio);
+  out.push(result('playable', 'Video dapat diputar di perangkat umum',
+    profileOk && levelOk && stream.pix_fmt === 'yuv420p' && sarOk && faststart,
+    `profil ${stream.profile}, level ${(Number(stream.level) / 10).toFixed(1)}, ${stream.pix_fmt}, piksel ${stream.sample_aspect_ratio || '1:1'}, faststart ${faststart ? 'ya' : 'tidak'}`));
+  return out;
+}
+
+function decodeChecks(file) {
+  const decode = run(FFMPEG, ['-v', 'error', '-xerror', '-i', file, '-f', 'null', '-']);
+  const clean = decode.status === 0 && decode.stderr.trim() === '';
+  return [result('decode', 'FFmpeg membaca seluruh video tanpa error', clean, clean ? 'semua frame terbaca bersih' : decode.stderr.trim().slice(0, 300))];
+}
+
+// Statistik kecerahan (luma) tiap frame hasil decode: rata-rata, minimum, maksimum, dan beda dari frame sebelumnya.
+function lumaStats(file) {
+  const r = run(FFMPEG, ['-v', 'error', '-i', file, '-vf', 'signalstats,metadata=print:file=-', '-f', 'null', '-']);
+  const frames = [];
+  let current = null;
+  for (const line of r.stdout.split('\n')) {
+    if (line.startsWith('frame:')) {
+      current = {};
+      frames.push(current);
+    }
+    const m = line.match(/lavfi\.signalstats\.(YAVG|YMIN|YMAX|YDIF)=([\d.]+)/);
+    if (m && current) current[m[1].toLowerCase()] = Number(m[2]);
+  }
+  return frames;
+}
+
+function frameHashes(file) {
+  const r = run(FFMPEG, ['-v', 'error', '-i', file, '-f', 'framemd5', '-']);
+  return r.stdout.split('\n').filter((l) => l && !l.startsWith('#')).map((l) => l.split(',').pop().trim());
+}
+
+function frameChecks(stats, hashes, expectFrames) {
+  const blank = stats.map((s, i) => ({ i, s })).filter(({ s }) => s.ymax - s.ymin < LIMITS.blankRange || s.yavg < LIMITS.blankMean);
+  let identical = 0;
+  for (let i = 1; i < hashes.length; i++) if (hashes[i] === hashes[i - 1]) identical++;
+  return [
+    result('decoded-frames', 'Tidak ada frame yang hilang saat decode', hashes.length === expectFrames && stats.length === expectFrames, `${hashes.length} frame ter-decode, ${stats.length} frame terukur`),
+    result('blank', 'Tidak ada frame kosong', blank.length === 0,
+      blank.length ? `frame kosong: ${blank.slice(0, 8).map((b) => b.i).join(', ')}` : `kecerahan rata-rata terendah ${Math.min(...stats.map((s) => s.yavg)).toFixed(1)}, rentang terendah ${Math.min(...stats.map((s) => s.ymax - s.ymin))}`),
+    result('motion', 'Animasi bergerak (bukan gambar statis)', identical === 0 && new Set(hashes).size === hashes.length, `${new Set(hashes).size} frame unik, ${identical} pasang frame berurutan identik`)
+  ];
+}
+
+// Cari kilatan (lompatan kecerahan) dan potongan kasar (lonjakan beda frame yang berdiri sendiri).
+function lumaEvents(stats, offset = 0) {
+  const flashes = [];
+  const cuts = [];
+  for (let i = 1; i < stats.length; i++) {
+    const step = stats[i].yavg - stats[i - 1].yavg;
+    if (Math.abs(step) > LIMITS.maxLumaStep) flashes.push({ frame: i + offset, step });
+    const around = [i - 2, i - 1, i + 1, i + 2].filter((j) => j >= 1 && j < stats.length).map((j) => stats[j].ydif);
+    const neighbor = Math.max(...around, 0.5);
+    if (stats[i].ydif > LIMITS.cutSpikeMin && stats[i].ydif > LIMITS.cutSpikeRatio * neighbor) cuts.push({ frame: i + offset, ydif: stats[i].ydif });
+  }
+  let maxStep = 0;
+  for (let i = 1; i < stats.length; i++) maxStep = Math.max(maxStep, Math.abs(stats[i].yavg - stats[i - 1].yavg));
+  return { flashes, cuts, maxStep };
+}
+
+function transitionLumaChecks(stats, transitions, offset = 0) {
+  const { flashes, cuts, maxStep } = lumaEvents(stats, offset);
+  const where = (f) => {
+    const t = transitions.find((x) => f >= x.startFrame - 1 && f <= x.endFrame + 1);
+    return t ? `, di transisi ${t.type}` : '';
+  };
+  return [
+    result('no-flash', 'Tidak ada kilatan cahaya mendadak', flashes.length === 0,
+      flashes.length ? `lompatan kecerahan di frame ${flashes.slice(0, 6).map((f) => `${f.frame} (${f.step.toFixed(1)})`).join(', ')}` : `perubahan kecerahan terbesar antar frame ${maxStep.toFixed(1)} (batas ${LIMITS.maxLumaStep})`),
+    result('no-hard-cut', 'Tidak ada potongan kasar (hard cut)', cuts.length === 0,
+      cuts.length ? `lonjakan di frame ${cuts.slice(0, 6).map((c) => `${c.frame} (beda ${c.ydif.toFixed(1)}${where(c.frame)})`).join(', ')}` : 'semua pergantian gambar berlangsung bertahap')
+  ];
+}
+
+// ---------- frame PNG ----------
+
+function pngChecks(framesDir, count, width, height) {
+  let ok = 0;
+  const missing = [];
+  const hashes = [];
+  for (let i = 0; i < count; i++) {
+    const file = frameFile(framesDir, i);
+    if (!fs.existsSync(file)) {
+      missing.push(i);
+      hashes.push(null);
+      continue;
+    }
+    const buffer = fs.readFileSync(file);
+    const dim = pngSize(buffer);
+    if (dim && dim.width === width && dim.height === height) ok++;
+    hashes.push(sha256(buffer));
+  }
+  return {
+    hashes,
+    checks: [result('png-frames', 'Frame PNG lengkap dan berurutan', ok === count && missing.length === 0,
+      missing.length ? `frame hilang: ${missing.slice(0, 8).join(', ')}` : `${ok}/${count} file PNG ${width}x${height}`)]
+  };
+}
+
+module.exports = {
+  LIMITS, sha256, result, timelineChecks, probeVideo, videoChecks, decodeChecks,
+  lumaStats, frameHashes, frameChecks, lumaEvents, transitionLumaChecks, pngChecks
+};

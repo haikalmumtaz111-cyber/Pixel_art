@@ -1,84 +1,219 @@
 {
-  "testedAt": "2026-10-27T06:57:17.831Z",
+  "testedAt": "2026-10-27T08:17:56.598Z",
   "config": "config/train-night-rain.json",
   "allPass": true,
-  "passed": 15,
-  "total": 15,
-  "checks": [
+  "passed": 23,
+  "total": 23,
+  "groups": [
     {
-      "name": "File MP4 ada",
-      "pass": true,
-      "detail": "output/video/train-night-rain.mp4 (2.07 MB)"
+      "title": "Jumlah frame tepat",
+      "pass": true
     },
     {
+      "title": "Durasi video tepat",
+      "pass": true
+    },
+    {
+      "title": "Resolusi sesuai target",
+      "pass": true
+    },
+    {
+      "title": "FPS sesuai target",
+      "pass": true
+    },
+    {
+      "title": "Interval waktu adegan valid",
+      "pass": true
+    },
+    {
+      "title": "Tidak ada frame yang hilang",
+      "pass": true
+    },
+    {
+      "title": "Tidak ada frame kosong",
+      "pass": true
+    },
+    {
+      "title": "Tidak ada error JavaScript",
+      "pass": true
+    },
+    {
+      "title": "Transisi tanpa artefak",
+      "pass": true
+    },
+    {
+      "title": "Aset kereta konsisten",
+      "pass": false
+    },
+    {
+      "title": "Rendering deterministik",
+      "pass": true
+    },
+    {
+      "title": "FFmpeg membaca seluruh video",
+      "pass": true
+    },
+    {
+      "title": "Video dapat diputar",
+      "pass": true
+    },
+    {
+      "title": "Render ulang konsisten",
+      "pass": true
+    }
+  ],
+  "checks": [
+    {
+      "id": "timeline",
+      "name": "Interval adegan valid",
+      "pass": true,
+      "detail": "1 adegan menutup 150/150 frame tanpa celah: train-night-rain 0-149"
+    },
+    {
+      "id": "timeline-transitions",
+      "name": "Transisi berada di dalam durasi film",
+      "pass": true,
+      "detail": "tidak ada transisi"
+    },
+    {
+      "id": "file",
+      "name": "File MP4 ada",
+      "pass": true,
+      "detail": "train-night-rain.mp4 (2.19 MB)"
+    },
+    {
+      "id": "container",
       "name": "Kontainer MP4",
       "pass": true,
       "detail": "mov,mp4,m4a,3gp,3g2,mj2"
     },
     {
+      "id": "codec",
       "name": "Codec video H.264",
       "pass": true,
       "detail": "h264 (High)"
     },
     {
+      "id": "resolution",
       "name": "Resolusi output",
       "pass": true,
       "detail": "1920x1080"
     },
     {
+      "id": "aspect",
       "name": "Rasio 16:9",
       "pass": true,
       "detail": "1920:1080"
     },
     {
+      "id": "fps",
       "name": "Frame rate",
       "pass": true,
       "detail": "30/1 (rata-rata 30/1)"
     },
     {
+      "id": "frame-count",
       "name": "Jumlah frame",
       "pass": true,
       "detail": "150 dari 150 frame"
     },
     {
+      "id": "duration",
       "name": "Durasi",
       "pass": true,
-      "detail": "5.000 detik"
+      "detail": "5.000 detik (target 5.000)"
     },
     {
+      "id": "pixel-format",
       "name": "Format piksel",
       "pass": true,
       "detail": "yuv420p"
     },
     {
-      "name": "Decoding FFmpeg tanpa error",
+      "id": "playable",
+      "name": "Video dapat diputar di perangkat umum",
+      "pass": true,
+      "detail": "profil High, level 4.1, yuv420p, piksel 1:1, faststart ya"
+    },
+    {
+      "id": "decode",
+      "name": "FFmpeg membaca seluruh video tanpa error",
       "pass": true,
       "detail": "semua frame terbaca bersih"
     },
     {
-      "name": "Frame hasil decode",
+      "id": "decoded-frames",
+      "name": "Tidak ada frame yang hilang saat decode",
       "pass": true,
-      "detail": "150 frame ter-decode"
+      "detail": "150 frame ter-decode, 150 frame terukur"
     },
     {
+      "id": "blank",
+      "name": "Tidak ada frame kosong",
+      "pass": true,
+      "detail": "kecerahan rata-rata terendah 46.3, rentang terendah 207"
+    },
+    {
+      "id": "motion",
       "name": "Animasi bergerak (bukan gambar statis)",
       "pass": true,
-      "detail": "150 frame unik, 0 pasang frame berurutan yang identik"
+      "detail": "150 frame unik, 0 pasang frame berurutan identik"
     },
     {
-      "name": "Frame PNG lengkap",
+      "id": "no-flash",
+      "name": "Tidak ada kilatan cahaya mendadak",
+      "pass": true,
+      "detail": "perubahan kecerahan terbesar antar frame 0.2 (batas 8)"
+    },
+    {
+      "id": "no-hard-cut",
+      "name": "Tidak ada potongan kasar (hard cut)",
+      "pass": true,
+      "detail": "semua pergantian gambar berlangsung bertahap"
+    },
+    {
+      "id": "png-frames",
+      "name": "Frame PNG lengkap dan berurutan",
       "pass": true,
       "detail": "150/150 file PNG 480x270"
     },
     {
-      "name": "Deterministik berdasarkan indeks frame",
+      "id": "boundary",
+      "name": "Transisi menyambung tanpa lompatan",
       "pass": true,
-      "detail": "6/6 frame sampel (149, 0, 75, 1, 148, 37) identik saat dirender ulang tanpa urutan"
+      "detail": "tidak ada transisi"
     },
     {
-      "name": "Lembar kontak dibuat",
+      "id": "determinism",
+      "name": "Rendering deterministik (render ulang identik, urutan terbalik)",
       "pass": true,
-      "detail": "output/reports/train-night-rain-contact-sheet.png"
+      "detail": "150/150 frame identik byte demi byte, 3/3 frame identik saat dirender dua kali"
+    },
+    {
+      "id": "js-errors",
+      "name": "Tidak ada error JavaScript selama rendering",
+      "pass": true,
+      "detail": "0 error saat render, 0 error saat pengujian"
+    },
+    {
+      "id": "reencode",
+      "name": "Encode ulang menghasilkan MP4 identik",
+      "pass": true,
+      "detail": "SHA-256 sama: 28e9a3a3c503dabd..."
+    }
+  ],
+  "sheets": [
+    {
+      "name": "contact-sheet",
+      "frames": [
+        0,
+        33,
+        68,
+        90,
+        123,
+        149
+      ],
+      "file": "output/reports/train-night-rain-contact-sheet.png"
     }
   ],
   "environment": {
@@ -88,13 +223,618 @@
     "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
     "ffprobe": "ffprobe version 6.1.1-3ubuntu5 Copyright (c) 2007-2023 the FFmpeg developers"
   },
-  "renderInfo": {
+  "render": {
     "name": "train-night-rain",
-    "renderedAt": "2026-10-27T06:57:06.605Z",
+    "renderedAt": "2026-10-27T08:17:11.241Z",
+    "firstFrame": 0,
     "totalFrames": 150,
-    "renderSeconds": 3.142,
-    "encodeSeconds": 10.338,
+    "renderSeconds": 3.752,
+    "encodeSeconds": 8.682,
     "chromiumVersion": "153.0.8010.12",
-    "ffmpegCommand": "ffmpeg -y -v error -framerate 30 -start_number 0 -i output/frames/train-night-rain/frame_%04d.png -frames:v 150 -vf scale=1920:1080:flags=neighbor:out_color_matrix=bt709:out_range=tv,format=yuv420p -c:v libx264 -preset slow -crf 16 -tune animation -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv -r 30 -movflags +faststart output/video/train-night-rain.mp4"
-  }
+    "jsErrors": 0,
+    "video": "output/video/train-night-rain.mp4",
+    "ffmpegCommand": "ffmpeg -y -v error -framerate 30 -start_number 0 -i output/frames/train-night-rain/frame_%04d.png -frames:v 150 -vf scale=1920:1080:flags=neighbor:out_color_matrix=bt709:out_range=tv,format=yuv420p -c:v libx264 -preset slow -crf 16 -tune animation -profile:v high -level:v 4.1 -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv -r 30 -movflags +faststart output/video/train-night-rain.mp4"
+  },
+  "lumaSummary": [
+    [
+      46.6,
+      0
+    ],
+    [
+      46.6,
+      2.7
+    ],
+    [
+      46.7,
+      2.7
+    ],
+    [
+      46.7,
+      2.8
+    ],
+    [
+      46.7,
+      3.1
+    ],
+    [
+      46.6,
+      2.7
+    ],
+    [
+      46.6,
+      2.7
+    ],
+    [
+      46.7,
+      3
+    ],
+    [
+      46.7,
+      3.8
+    ],
+    [
+      46.7,
+      2.9
+    ],
+    [
+      46.7,
+      2.7
+    ],
+    [
+      46.7,
+      3.4
+    ],
+    [
+      46.7,
+      2.8
+    ],
+    [
+      46.7,
+      3.8
+    ],
+    [
+      46.7,
+      3
+    ],
+    [
+      46.7,
+      3.4
+    ],
+    [
+      46.7,
+      3.3
+    ],
+    [
+      46.6,
+      3.2
+    ],
+    [
+      46.6,
+      3.2
+    ],
+    [
+      46.6,
+      3.3
+    ],
+    [
+      46.5,
+      3.6
+    ],
+    [
+      46.5,
+      3.2
+    ],
+    [
+      46.4,
+      3.5
+    ],
+    [
+      46.4,
+      3.6
+    ],
+    [
+      46.7,
+      3.9
+    ],
+    [
+      46.7,
+      3.5
+    ],
+    [
+      46.6,
+      3.3
+    ],
+    [
+      46.6,
+      3.2
+    ],
+    [
+      46.6,
+      3.5
+    ],
+    [
+      46.7,
+      3.4
+    ],
+    [
+      46.6,
+      3.4
+    ],
+    [
+      46.6,
+      3.9
+    ],
+    [
+      46.6,
+      3.3
+    ],
+    [
+      46.6,
+      3.8
+    ],
+    [
+      46.6,
+      3.9
+    ],
+    [
+      46.6,
+      3.2
+    ],
+    [
+      46.5,
+      4.2
+    ],
+    [
+      46.5,
+      3.2
+    ],
+    [
+      46.5,
+      3.2
+    ],
+    [
+      46.5,
+      3.8
+    ],
+    [
+      46.4,
+      3.7
+    ],
+    [
+      46.3,
+      3.3
+    ],
+    [
+      46.4,
+      3.5
+    ],
+    [
+      46.4,
+      3.7
+    ],
+    [
+      46.5,
+      3.5
+    ],
+    [
+      46.5,
+      4
+    ],
+    [
+      46.5,
+      3.8
+    ],
+    [
+      46.5,
+      3.7
+    ],
+    [
+      46.4,
+      3.4
+    ],
+    [
+      46.4,
+      3.3
+    ],
+    [
+      46.4,
+      3.3
+    ],
+    [
+      46.4,
+      3.5
+    ],
+    [
+      46.4,
+      3.3
+    ],
+    [
+      46.4,
+      2.8
+    ],
+    [
+      46.4,
+      3.2
+    ],
+    [
+      46.4,
+      3.1
+    ],
+    [
+      46.4,
+      3.8
+    ],
+    [
+      46.4,
+      3
+    ],
+    [
+      46.4,
+      2.7
+    ],
+    [
+      46.4,
+      3.2
+    ],
+    [
+      46.4,
+      2.7
+    ],
+    [
+      46.5,
+      3.1
+    ],
+    [
+      46.3,
+      3.2
+    ],
+    [
+      46.3,
+      2.7
+    ],
+    [
+      46.4,
+      2.7
+    ],
+    [
+      46.4,
+      2.8
+    ],
+    [
+      46.4,
+      2.8
+    ],
+    [
+      46.4,
+      2.8
+    ],
+    [
+      46.5,
+      2.8
+    ],
+    [
+      46.5,
+      2.7
+    ],
+    [
+      46.5,
+      2.8
+    ],
+    [
+      46.5,
+      3
+    ],
+    [
+      46.5,
+      3.2
+    ],
+    [
+      46.5,
+      3.1
+    ],
+    [
+      46.5,
+      2.7
+    ],
+    [
+      46.5,
+      2.8
+    ],
+    [
+      46.5,
+      2.7
+    ],
+    [
+      46.5,
+      3.2
+    ],
+    [
+      46.5,
+      3.1
+    ],
+    [
+      46.5,
+      2.7
+    ],
+    [
+      46.5,
+      2.7
+    ],
+    [
+      46.4,
+      2.7
+    ],
+    [
+      46.5,
+      2.7
+    ],
+    [
+      46.5,
+      2.9
+    ],
+    [
+      46.5,
+      2.7
+    ],
+    [
+      46.5,
+      2.8
+    ],
+    [
+      46.4,
+      2.6
+    ],
+    [
+      46.4,
+      3.1
+    ],
+    [
+      46.5,
+      3.3
+    ],
+    [
+      46.5,
+      2.8
+    ],
+    [
+      46.5,
+      2.7
+    ],
+    [
+      46.5,
+      2.6
+    ],
+    [
+      46.5,
+      2.6
+    ],
+    [
+      46.5,
+      3.2
+    ],
+    [
+      46.4,
+      3.1
+    ],
+    [
+      46.4,
+      2.8
+    ],
+    [
+      46.5,
+      2.8
+    ],
+    [
+      46.5,
+      2.9
+    ],
+    [
+      46.5,
+      2.8
+    ],
+    [
+      46.5,
+      3.1
+    ],
+    [
+      46.5,
+      2.9
+    ],
+    [
+      46.5,
+      2.8
+    ],
+    [
+      46.5,
+      2.8
+    ],
+    [
+      46.5,
+      3.1
+    ],
+    [
+      46.5,
+      3.2
+    ],
+    [
+      46.5,
+      3
+    ],
+    [
+      46.5,
+      2.7
+    ],
+    [
+      46.5,
+      2.7
+    ],
+    [
+      46.4,
+      2.8
+    ],
+    [
+      46.5,
+      3.2
+    ],
+    [
+      46.5,
+      3.2
+    ],
+    [
+      46.4,
+      2.8
+    ],
+    [
+      46.4,
+      2.7
+    ],
+    [
+      46.3,
+      2.8
+    ],
+    [
+      46.4,
+      2.7
+    ],
+    [
+      46.4,
+      2.9
+    ],
+    [
+      46.3,
+      3.1
+    ],
+    [
+      46.3,
+      2.8
+    ],
+    [
+      46.3,
+      2.9
+    ],
+    [
+      46.4,
+      2.9
+    ],
+    [
+      46.3,
+      3.4
+    ],
+    [
+      46.3,
+      2.8
+    ],
+    [
+      46.3,
+      2.7
+    ],
+    [
+      46.3,
+      2.8
+    ],
+    [
+      46.3,
+      2.6
+    ],
+    [
+      46.4,
+      3.1
+    ],
+    [
+      46.4,
+      3.2
+    ],
+    [
+      46.4,
+      2.9
+    ],
+    [
+      46.4,
+      3
+    ],
+    [
+      46.3,
+      2.8
+    ],
+    [
+      46.3,
+      2.7
+    ],
+    [
+      46.3,
+      2.8
+    ],
+    [
+      46.3,
+      3
+    ],
+    [
+      46.3,
+      2.9
+    ],
+    [
+      46.3,
+      2.6
+    ],
+    [
+      46.3,
+      3.2
+    ],
+    [
+      46.3,
+      3.4
+    ],
+    [
+      46.3,
+      3
+    ],
+    [
+      46.3,
+      2.9
+    ],
+    [
+      46.3,
+      2.7
+    ],
+    [
+      46.4,
+      2.9
+    ],
+    [
+      46.4,
+      3.1
+    ],
+    [
+      46.3,
+      3.2
+    ],
+    [
+      46.4,
+      2.8
+    ],
+    [
+      46.3,
+      2.8
+    ],
+    [
+      46.3,
+      2.8
+    ],
+    [
+      46.3,
+      2.7
+    ],
+    [
+      46.3,
+      2.9
+    ],
+    [
+      46.3,
+      3
+    ],
+    [
+      46.3,
+      2.9
+    ]
+  ]
 }

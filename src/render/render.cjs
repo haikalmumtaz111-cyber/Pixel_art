@@ -1,84 +1,81 @@
-// Render adegan menjadi frame PNG, lalu gabungkan menjadi MP4 dengan FFmpeg.
-// Pemakaian: node src/render/render.cjs config/train-night-rain.json
+// Render film menjadi frame PNG, lalu gabungkan menjadi MP4 dengan FFmpeg.
+// Pemakaian:
+//   node src/render/render.cjs config/film-night-to-dawn.json                            (seluruh film)
+//   node src/render/render.cjs config/film-night-to-dawn.json --scene s02-inside-train   (satu adegan saja)
 const fs = require('fs');
 const path = require('path');
-const { spawnSync } = require('child_process');
-const { loadConfig, frameFile, FRAME_PATTERN } = require('./config.cjs');
-const { openStudio } = require('./browser.cjs');
+const { loadConfig } = require('./config.cjs');
+const { renderFrames, encodeVideo } = require('./pipeline.cjs');
 
-const FFMPEG = process.env.FFMPEG_PATH || 'ffmpeg';
-
-async function renderFrames(config) {
-  fs.mkdirSync(config.paths.frames, { recursive: true });
-  const studio = await openStudio(config);
-  try {
-    for (let i = 0; i < config.totalFrames; i++) {
-      fs.writeFileSync(frameFile(config, i), await studio.renderFrame(i));
-      if ((i + 1) % 15 === 0 || i + 1 === config.totalFrames) console.log(`  frame ${i + 1}/${config.totalFrames}`);
-    }
-    return studio.browserVersion;
-  } finally {
-    await studio.close();
+function parseArgs(argv) {
+  const args = { config: undefined, scene: null };
+  for (let i = 0; i < argv.length; i++) {
+    if (argv[i] === '--scene') args.scene = argv[++i];
+    else if (!args.config) args.config = argv[i];
   }
+  return args;
 }
 
-// Perbesar dengan nearest neighbor (piksel tetap kotak tajam), lalu encode H.264.
-function ffmpegArgs(config) {
-  const { outputWidth, outputHeight, fps, totalFrames, encoding } = config;
-  return [
-    '-y', '-v', 'error',
-    '-framerate', String(fps),
-    '-start_number', '0',
-    '-i', path.join(config.paths.frames, FRAME_PATTERN),
-    '-frames:v', String(totalFrames),
-    '-vf', `scale=${outputWidth}:${outputHeight}:flags=neighbor:out_color_matrix=bt709:out_range=tv,format=${encoding.pixelFormat}`,
-    '-c:v', encoding.codec,
-    '-preset', encoding.preset,
-    '-crf', String(encoding.crf),
-    '-tune', 'animation',
-    '-colorspace', 'bt709', '-color_primaries', 'bt709', '-color_trc', 'bt709', '-color_range', 'tv',
-    '-r', String(fps),
-    '-movflags', '+faststart',
-    config.paths.video
-  ];
-}
-
-function encodeVideo(config) {
-  fs.mkdirSync(path.dirname(config.paths.video), { recursive: true });
-  const args = ffmpegArgs(config);
-  const result = spawnSync(FFMPEG, args, { encoding: 'utf8' });
-  if (result.error) throw new Error(`FFmpeg tidak bisa dijalankan: ${result.error.message}`);
-  if (result.status !== 0) throw new Error(`FFmpeg gagal:\n${result.stderr}`);
-  return [FFMPEG, ...args].join(' ');
+// Tentukan frame yang dirender dan lokasi hasilnya (seluruh film atau satu adegan).
+function planJob(config, sceneId) {
+  if (!sceneId) {
+    return { label: 'seluruh film', first: 0, count: config.totalFrames, framesDir: config.paths.frames, video: config.paths.video, reportName: config.name, sceneId: null };
+  }
+  const scene = config.timeline.scenes.find((s) => s.id === sceneId);
+  if (!scene) throw new Error(`Adegan "${sceneId}" tidak ada. Pilihan: ${config.timeline.scenes.map((s) => s.id).join(', ')}`);
+  return {
+    label: `adegan ${scene.id} saja, tanpa transisi (frame ${scene.startFrame}-${scene.endFrame})`,
+    sceneId: scene.id,
+    first: scene.startFrame,
+    count: scene.durationFrames,
+    framesDir: `${config.paths.frames}--${scene.id}`,
+    video: path.join(config.paths.root, 'output', 'scenes', `${config.name}--${scene.id}.mp4`),
+    reportName: `${config.name}--${scene.id}`
+  };
 }
 
 async function main() {
-  const config = loadConfig(process.argv[2]);
-  console.log(`Render "${config.title}" (${config.width}x${config.height} -> ${config.outputWidth}x${config.outputHeight}, ${config.fps} FPS, ${config.totalFrames} frame)`);
+  const args = parseArgs(process.argv.slice(2));
+  const config = loadConfig(args.config);
+  const job = planJob(config, args.scene);
+  console.log(`Render "${config.title}", ${job.label}: ${job.count} frame, ${config.width}x${config.height} -> ${config.outputWidth}x${config.outputHeight}, ${config.fps} FPS`);
 
   const start = Date.now();
-  const chromiumVersion = await renderFrames(config);
+  const result = await renderFrames(config, {
+    first: job.first,
+    count: job.count,
+    framesDir: job.framesDir,
+    sceneId: job.sceneId,
+    onProgress: (done, total) => {
+      if (done % 30 === 0 || done === total) console.log(`  frame ${done}/${total}`);
+    }
+  });
   const renderSeconds = (Date.now() - start) / 1000;
   console.log(`Frame selesai dalam ${renderSeconds.toFixed(1)} detik. Menggabungkan jadi MP4...`);
 
   const encodeStart = Date.now();
-  const command = encodeVideo(config);
+  const command = encodeVideo(config, { framesDir: job.framesDir, count: job.count, video: job.video });
   const encodeSeconds = (Date.now() - encodeStart) / 1000;
 
   fs.mkdirSync(config.paths.reports, { recursive: true });
+  const rel = (p) => p.replaceAll(config.paths.root + path.sep, '');
   const info = {
-    name: config.name,
+    name: job.reportName,
     renderedAt: new Date().toISOString(),
-    totalFrames: config.totalFrames,
+    firstFrame: job.first,
+    totalFrames: job.count,
     renderSeconds,
     encodeSeconds,
-    chromiumVersion,
-    ffmpegCommand: command.replaceAll(config.paths.root + path.sep, '')
+    chromiumVersion: result.chromiumVersion,
+    jsErrors: result.jsErrors,
+    video: rel(job.video),
+    ffmpegCommand: rel(command),
+    segments: result.segments
   };
-  fs.writeFileSync(path.join(config.paths.reports, `${config.name}-render.json`), JSON.stringify(info, null, 2) + '\n');
+  fs.writeFileSync(path.join(config.paths.reports, `${job.reportName}-render.json`), JSON.stringify(info, null, 2) + '\n');
 
-  const size = fs.statSync(config.paths.video).size;
-  console.log(`Video jadi: ${path.relative(config.paths.root, config.paths.video)} (${(size / 1024 / 1024).toFixed(2)} MB)`);
+  const size = fs.statSync(job.video).size;
+  console.log(`Video jadi: ${rel(job.video)} (${(size / 1024 / 1024).toFixed(2)} MB)`);
 }
 
 main().catch((error) => {

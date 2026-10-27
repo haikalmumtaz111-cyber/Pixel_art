@@ -1,0 +1,141 @@
+{
+  "name": "film-night-to-dawn",
+  "title": "Kereta Malam Menuju Fajar",
+  "seed": 1927,
+  "width": 480,
+  "height": 270,
+  "outputWidth": 1920,
+  "outputHeight": 1080,
+  "fps": 30,
+  "durationSeconds": 15,
+  "output": {
+    "framesDir": "output/frames/film-night-to-dawn",
+    "video": "output/video/film-night-to-dawn.mp4",
+    "reportDir": "output/reports"
+  },
+  "encoding": {
+    "codec": "libx264",
+    "preset": "slow",
+    "crf": 16,
+    "pixelFormat": "yuv420p",
+    "profile": "high",
+    "level": "4.1"
+  },
+  "validation": { "trainVisibleFrames": [60, 445] },
+
+  "assets": {
+    "traveler": { "type": "character", "character": "traveler" },
+    "train": {
+      "type": "steam-train",
+      "railY": 212,
+      "motion": { "startX": 600, "speed": 90 },
+      "traveler": { "character": "traveler", "coach": 0, "window": 3 }
+    },
+    "countryside": {
+      "type": "countryside",
+      "train": "train",
+      "railY": 212,
+      "rain": {
+        "slant": -0.45,
+        "far": { "count": 170, "speed": 250, "length": 4, "parallax": 0.45 },
+        "near": { "count": 110, "speed": 420, "length": 9, "parallax": 1.15 },
+        "splashes": 48
+      },
+      "smoke": { "interval": 0.08, "life": 1.9, "wind": 30 }
+    },
+    "interior": { "type": "coach-interior", "train": "train" }
+  },
+
+  "environment": {
+    "dawn": [[0, 0], [288, 0], [440, 1, "inOutSine"]],
+    "rain": [[0, 1], [300, 1], [415, 0.04, "inOutSine"]],
+    "clouds": [[0, 0], [300, 0], [430, 1, "inOutSine"]],
+    "fog": [[0, 0], [318, 0], [400, 0.85, "inOutSine"]],
+    "lights": [[0, 1], [320, 1], [440, 0.3, "inOutSine"]],
+    "sun": [[0, 0], [300, 0], [449, 1, "outCubic"]]
+  },
+
+  "cameraTracks": {
+    "dawn-run": {
+      "type": "speed",
+      "refFrame": 150,
+      "framing": -40,
+      "speedKeys": [[150, 1], [318, 1], [378, 0, "inOutSine"]],
+      "liftKeys": [[150, 36], [300, 36], [384, 0, "inOutCubic"]]
+    }
+  },
+
+  "timeline": {
+    "scenes": [
+      {
+        "id": "s01-night-train",
+        "name": "Night Train",
+        "module": "night-train",
+        "startFrame": 0,
+        "endFrame": 149,
+        "durationFrames": 150,
+        "assets": ["countryside", "train", "traveler"],
+        "characters": { "traveler": { "appearance": "silhouette", "coach": 0, "window": 3 } },
+        "camera": {
+          "type": "follow",
+          "keys": [[0, 286], [66, 372, "inOutCubic"], [112, 372], [140, 377, "inOutCubic"]],
+          "focusWindow": { "coach": 0, "window": 3 },
+          "centerByZoom": 4
+        },
+        "environment": { "effects": ["rain", "smoke", "headlight", "light-spill"] },
+        "transitionOut": {
+          "type": "portal",
+          "to": "s02-inside-train",
+          "startFrame": 132,
+          "endFrame": 167,
+          "params": { "zoom": 72, "easing": "inOutCubic", "mix": [0.2, 0.42] }
+        }
+      },
+      {
+        "id": "s02-inside-train",
+        "name": "Inside the Train",
+        "module": "inside-train",
+        "startFrame": 150,
+        "endFrame": 299,
+        "durationFrames": 150,
+        "assets": ["interior", "countryside", "train", "traveler"],
+        "characters": {
+          "traveler": {
+            "appearance": "seated",
+            "seat": { "x": 200, "y": 202 },
+            "lookKeys": [[150, 0], [176, 0], [188, 0.45, "inOutSine"], [204, 0.45], [216, 0, "inOutSine"], [232, 0], [264, 1, "inOutSine"]],
+            "motion": { "blinkEverySeconds": 2.2 }
+          }
+        },
+        "camera": {
+          "type": "interior",
+          "panKeys": [[150, 27], [248, 20, "inOutSine"], [284, -34, "inOutCubic"]],
+          "focusWindow": "A",
+          "centerByZoom": 3,
+          "windowView": { "track": "dawn-run", "effects": ["rain", "smoke", "light-spill"] }
+        },
+        "environment": { "effects": ["rain-on-glass", "lamp-flicker", "vibration"] },
+        "transitionOut": {
+          "type": "portal",
+          "to": "s03-journey-to-dawn",
+          "startFrame": 282,
+          "endFrame": 317,
+          "params": { "zoom": 7.2, "easing": "inOutCubic", "mix": [0, 0] }
+        }
+      },
+      {
+        "id": "s03-journey-to-dawn",
+        "name": "Journey to Dawn",
+        "module": "journey-to-dawn",
+        "startFrame": 300,
+        "endFrame": 449,
+        "durationFrames": 150,
+        "assets": ["countryside", "train"],
+        "characters": {},
+        "camera": { "track": "dawn-run" },
+        "environment": { "effects": ["rain", "smoke", "headlight", "light-spill", "dawn-sky", "sunrise", "clouds-opening", "valley-fog"] },
+        "transitionOut": null
+      }
+    ]
+  }
+}
