@@ -1,0 +1,19 @@
+{
+  "name": "pixel-history-studio",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Studio animasi pixel art berbasis kode untuk film sejarah bergaya retro.",
+  "scripts": {
+    "check": "node src/render/check-env.cjs",
+    "render": "node src/render/render.cjs config/train-night-rain.json",
+    "validate": "node src/render/validate.cjs config/train-night-rain.json",
+    "build": "npm run render && npm run validate",
+    "preview": "node src/render/preview.cjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "playwright": "1.63.0"
+  }
+}

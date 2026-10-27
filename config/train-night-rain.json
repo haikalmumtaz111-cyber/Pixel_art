@@ -1,0 +1,35 @@
+{
+  "name": "train-night-rain",
+  "title": "Kereta Malam di Tengah Hujan",
+  "sceneModule": "train-night-rain",
+  "seed": 1927,
+  "width": 480,
+  "height": 270,
+  "outputWidth": 1920,
+  "outputHeight": 1080,
+  "fps": 30,
+  "durationSeconds": 5,
+  "output": {
+    "framesDir": "output/frames/train-night-rain",
+    "video": "output/video/train-night-rain.mp4",
+    "reportDir": "output/reports"
+  },
+  "encoding": {
+    "codec": "libx264",
+    "preset": "slow",
+    "crf": 16,
+    "pixelFormat": "yuv420p"
+  },
+  "sceneParams": {
+    "railY": 212,
+    "train": { "startX": 600, "speed": 90 },
+    "camera": { "frameStart": 286, "frameEnd": 372, "settleSeconds": 2.2 },
+    "rain": {
+      "slant": -0.45,
+      "far": { "count": 170, "speed": 250, "length": 4, "parallax": 0.45 },
+      "near": { "count": 110, "speed": 420, "length": 9, "parallax": 1.15 },
+      "splashes": 48
+    },
+    "smoke": { "interval": 0.08, "life": 1.9, "wind": 30 }
+  }
+}
