@@ -162,6 +162,7 @@ Pixel art dibesarkan tanpa blur, jadi satu piksel art selalu berukuran bulat di 
   `"validation": { "consistency": [{ "asset": "bu-ani", "frames": [30, 100] }] }`
 - Jalankan `npm run test:negative -- --project <id>` untuk memastikan validator menolak kesalahan di proyek baru.
 - Jalankan `npm run test:regression` dan `npm run test:projects` untuk memastikan proyek lama tidak berubah.
+- Setelah proyek baru disetujui pemilik, rekam baseline pertamanya dengan `npm run baseline -- --project <id> --version tahap-<n> ...` supaya ikut dijaga uji regresi. Langkahnya di [`BASELINES.md`](BASELINES.md).
 
 ## Menambah aset baru (butuh kode, tetapi tidak menyentuh mesin)
 

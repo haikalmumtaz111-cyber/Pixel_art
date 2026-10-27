@@ -1,6 +1,6 @@
 # Lab Zoom: Perbandingan Pendekatan Grid Piksel
 
-Dibuat otomatis oleh `npm run test:zoom` pada 2026-10-27T12:28:04.117Z. Setiap mode dirender dengan pola kalibrasi
+Dibuat otomatis oleh `npm run test:zoom` pada 2026-10-27T15:54:48.280Z. Setiap mode dirender dengan pola kalibrasi
 "identity" (setiap piksel art punya warna unik), lalu ukuran dan posisi piksel art dibaca dari gambar 1920x1080.
 Dua lapisan dipakai (latar jauh parallax 0,5 dan pita dekat parallax 1) supaya pengaruh parallax ikut teruji.
 

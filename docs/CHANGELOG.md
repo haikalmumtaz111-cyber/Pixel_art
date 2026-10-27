@@ -1,5 +1,35 @@
 # Riwayat Perubahan
 
+## Pengelolaan baseline setelah Tahap 4 (branch `baseline-versioning-b-tahap-4`, menunggu persetujuan)
+
+Bukan tahap baru. Hasil render, mesin (0.4.0), aset, konfigurasi, dan MP4 tidak berubah. Panduan: [`BASELINES.md`](BASELINES.md).
+
+### Baru
+
+- **Versi baseline per proyek** di `tests/baselines/registry.json`. Nama versi = kondisi `main` setelah tahap itu di-merge. SHA-256 setiap file baseline dikunci, versi resmi ditunjuk `official`, versi lain tersimpan sebagai referensi historis.
+- **Baseline resmi Project B `tahap-4`** (`tests/baselines/old-town-morning.tahap-4.json`), direkam dari render ulang `main@a1fd4a1`. MP4-nya identik byte demi byte dengan MP4 yang di-merge di PR #4. Dibanding `tahap-3`: tepat 124 frame berubah (85-130, 262-339), 236 identik, 0 di luar rentang terdeklarasi.
+- `npm run baseline`: menampilkan versi baseline, atau merekam versi baru setelah persetujuan pemilik. Menolak render basi, kode render yang berbeda dari commit sumber, MP4 yang berbeda dari MP4 di commit sumber, frame berubah tanpa deklarasi, dan penimpaan versi atau file yang sudah ada.
+- `npm run test:regression -- --project <id> --baseline <versi>`: membandingkan dengan versi historis. Lulus hanya bila frame yang berbeda sama persis dengan perubahan yang disetujui sejak versi itu. Laporannya `output/reports/regression-<proyek>-<versi>.md`.
+- Pemeriksaan registry tanpa render di lint (ikut CI) dan regresi: file baseline utuh, tidak ada file liar, versi tersambung, catatan perubahan antar versi sama persis dengan isi file dan punya bukti persetujuan, entri pending menunjuk versi resmi.
+- 8 unit test registry (`tests/engine/baselines.test.js`).
+
+### Diubah
+
+- Entri Project B Tahap 4 di `pending-changes.json` dipindah dari `changes` ke riwayat `resolved` dengan status "disetujui pemilik", tanggal, bukti, dan frame yang benar-benar berubah. Entri pending baru wajib menyebut versi yang dituju (`against`).
+- Uji regresi, uji asap, uji antar-proyek, dan lab zoom membaca baseline resmi lewat registry. Project B kini dicek ketat terhadap `tahap-4`: 360 frame, frame hasil decode, dan file MP4 identik.
+
+### Dipertahankan
+
+- `night-to-dawn.json`, `train-night-rain.json` (versi `tahap-2`, `main@cfed35a`) dan `old-town-morning.json` (versi `tahap-3`, `main@9d7a144`) tidak diubah sedikit pun (SHA-256 sama) dan tetap di tempatnya.
+
+### Bukti
+
+- Render ulang `main@a1fd4a1`: tiga MP4 identik byte demi byte dengan yang di-merge.
+- Setiap frame Project B yang berubah memakai zoom pecahan atau sedang dissolve. 15 frame di dalam rentang deklarasi tetap identik karena zoom-nya bulat atau sangat dekat kelipatan 0,25.
+- Project B dengan `zoomMode: "nearest"` menghasilkan ulang Tahap 3: 360/360 frame identik piksel demi piksel, dan SHA-256 MP4-nya diawali `761c76b535b5f092`, sama dengan `tahap-3`. Di salinan repository, render itu ditolak regresi terhadap `tahap-4` (124 frame berbeda tanpa deklarasi) dan terhadap `tahap-3` (124 frame tidak sesuai baseline resmi).
+- Di salinan repository, lint menolak file baseline yang diubah satu hash, entri pending yang menunjuk versi lama, dan file baseline yang tidak terdaftar.
+- Hasil uji: lint lulus (termasuk 8 pemeriksaan registry), unit test 61/61, validasi A 37/37, B 34/34, prototipe 30/30, uji negatif A 35/35 dan B 36/36, regresi 29/29, regresi B vs `tahap-3` 11/11, uji antar-proyek 18/18, lab zoom 10/10, uji asap 3/3, `build:prototype` lulus.
+
 ## Tahap 4: kamera pixel-perfect (PR #4, branch `tahap-4-pixel-perfect-camera`)
 
 Disetujui pemilik, termasuk perubahan 124 frame Project B, dan di-merge ke `main`. Fokus: memperbaiki V14, yaitu pixel crawling saat kamera zoom dengan nilai tidak bulat. Versi mesin 0.4.0.

@@ -1,5 +1,5 @@
 {
-  "testedAt": "2026-10-27T12:23:06.148Z",
+  "testedAt": "2026-10-27T15:51:08.715Z",
   "project": "old-town-morning",
   "config": "config/old-town-morning.json",
   "includes": [
@@ -109,7 +109,7 @@
       "id": "manifest:status",
       "name": "Render terakhir selesai dengan sukses",
       "pass": true,
-      "detail": "status complete, selesai 2026-10-27T12:11:15.647Z"
+      "detail": "status complete, selesai 2026-10-27T15:37:44.969Z"
     },
     {
       "id": "manifest:fresh",
@@ -393,10 +393,10 @@
     "libraryHash": "2925f4ab08ab5d4f5875307cdff1c7d6f8bede58e456f3ad8c6395ea994da16d",
     "engineVersion": "0.4.0",
     "status": "complete",
-    "startedAt": "2026-10-27T12:10:32.559Z",
-    "finishedAt": "2026-10-27T12:11:15.647Z",
-    "renderSeconds": 25.028,
-    "encodeSeconds": 18.059,
+    "startedAt": "2026-10-27T15:37:14.487Z",
+    "finishedAt": "2026-10-27T15:37:44.969Z",
+    "renderSeconds": 17.225,
+    "encodeSeconds": 13.257,
     "chromiumVersion": "153.0.8010.12",
     "jsErrors": 0,
     "loadedModules": [

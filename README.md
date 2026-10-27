@@ -13,6 +13,8 @@ Studio animasi pixel art berbasis kode. Tujuan jangka panjangnya adalah membuat 
 
 Versi mesin: **0.4.0** (`config/engine.json`), kondisi resmi di `main` sejak Tahap 4 di-merge.
 
+Pengelolaan baseline setelah Tahap 4: baseline regresi kini punya versi per proyek, dan Project B memakai baseline resmi Tahap 4 (`tahap-4`). Dikerjakan di branch `baseline-versioning-b-tahap-4`, PR menunggu persetujuan pemilik. Penjelasan: [`docs/BASELINES.md`](docs/BASELINES.md).
+
 ## Proyek yang tersedia
 
 Semua proyek memakai mesin yang sama (`src/engine/`). Yang membedakan hanya file konfigurasinya di `config/`.
@@ -51,7 +53,7 @@ Bahan pembanding di `output/comparisons/`:
 
 Laporan pengukuran: [`output/reports/zoom-lab.md`](output/reports/zoom-lab.md). Penjelasan teknis: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) bagian penyaji frame.
 
-Perubahan hasil render Project B (124 frame di jendela zoom/dissolve) dicatat di `tests/baselines/pending-changes.json` dan sudah **disetujui pemilik** (27 Oktober 2026). Baseline Project B masih memakai referensi Tahap 3 ditambah entri perubahan terdeklarasi itu, sampai pemilik memberi instruksi untuk memperbarui baseline. Project A dan prototipe Tahap 1 tidak berubah sama sekali.
+Perubahan hasil render Project B (124 frame di jendela zoom/dissolve) **disetujui pemilik** (27 Oktober 2026) dan kini menjadi baseline resmi Project B versi `tahap-4` (`tests/baselines/old-town-morning.tahap-4.json`). Referensi Tahap 3 tetap tersimpan sebagai versi historis `tahap-3`, dan entri perubahan terdeklarasinya dipindah ke riwayat `resolved` di `tests/baselines/pending-changes.json`. Project A dan prototipe Tahap 1 tidak berubah sama sekali.
 
 ## Hasil Tahap 3: *Pagi di Kota Tua*
 
@@ -65,7 +67,7 @@ Potongan suasana pagi di sebuah kota tua fiktif di Indonesia. Tidak ada satu bar
 
 Cuplikan: [`output/reports/old-town-morning-contact-sheet.png`](output/reports/old-town-morning-contact-sheet.png), per adegan `output/reports/old-town-morning-scene-*.png`, dan transisi `output/reports/old-town-morning-transition-*.png`.
 
-Bukti Project A dan prototipe Tahap 1 tidak berubah: [`output/reports/regression.md`](output/reports/regression.md) (piksel setiap frame dan file MP4 identik byte demi byte dengan `main`). Bukti semua proyek memakai mesin yang sama dan tidak saling bergantung: [`output/reports/project-tests.md`](output/reports/project-tests.md).
+Bukti ketiga proyek identik dengan baseline resminya (Project A dan prototipe Tahap 1 dengan `main@cfed35a`, Project B dengan `main@a1fd4a1`): [`output/reports/regression.md`](output/reports/regression.md) (piksel setiap frame dan file MP4 identik byte demi byte). Project B dibanding referensi Tahap 3: [`output/reports/regression-old-town-morning-tahap-3.md`](output/reports/regression-old-town-morning-tahap-3.md). Bukti semua proyek memakai mesin yang sama dan tidak saling bergantung: [`output/reports/project-tests.md`](output/reports/project-tests.md).
 
 ## Cara memakai
 
@@ -95,7 +97,9 @@ Pengujian:
 ```bash
 npm run validate -- --project old-town-morning        # validasi lengkap satu proyek + laporan + lembar kontak
 npm run test:negative -- --project old-town-morning   # kesalahan yang sengaja dibuat harus ditolak
-npm run test:regression                               # Project A dan prototipe identik dengan baseline main
+npm run test:regression                               # semua proyek identik dengan baseline resmi (tests/baselines/registry.json)
+npm run test:regression -- --project old-town-morning --baseline tahap-3   # bandingkan dengan versi baseline historis
+npm run baseline                                      # daftar versi baseline per proyek (versi baru: docs/BASELINES.md)
 npm run test:projects                                 # semua proyek memakai mesin yang sama dan saling terisolasi
 npm run test:zoom                                     # lab zoom: ukur grid piksel kamera di semua mode zoom
 npm run demo:zoom                                     # buat ulang video/gambar pembanding zoom di output/comparisons/
@@ -182,10 +186,10 @@ src/
   render/                       program Node.js: loader proyek, render, validasi, pengujian
 tests/
   engine/                       unit test mesin (node --test)
-  baselines/                    baseline resmi dari main untuk uji regresi + perubahan terdeklarasi (pending-changes.json)
+  baselines/                    baseline regresi per versi (registry.json) + perubahan terdeklarasi dan riwayatnya (pending-changes.json)
   fixtures/                     adegan dan aset uji yang sengaja salah atau palsu, penganalisis lab zoom
 .github/workflows/ci.yml        pemeriksaan otomatis di GitHub (lint, unit test, uji asap, lab zoom)
-docs/                           arsitektur, panduan reusability, riwayat, catatan peningkatan
+docs/                           arsitektur, panduan reusability, versi baseline, riwayat, catatan peningkatan
 output/                         video, laporan, cuplikan, bahan pembanding (comparisons/); frame PNG tidak masuk Git
 ```
 
