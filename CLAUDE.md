@@ -25,3 +25,5 @@ Pemilik proyek adalah pemula yang tidak menulis kode. Komunikasi dalam bahasa In
 ## Progres
 
 - Tahap 1 (selesai): fondasi mesin + prototipe `train-night-rain` (5 detik, 150 frame, 1920x1080, 30 FPS). Validasi 15/15 lulus.
+- Pemeriksaan final Milestone 01: clone bersih + `npm ci` + `npm run build` lulus 15/15, MP4 hasilnya identik byte demi byte dengan yang di Git. Playwright dikunci di 1.63.0 lewat `package-lock.json`.
+- Tahap 2: belum dimulai, menunggu keputusan pemilik.
