@@ -24,22 +24,62 @@ jobs:
       - run: npm run test:engine
       - run: npm run projects
 
+  # Job ini tidak lagi memasang Chromium dan pustaka sistemnya lewat apt (mirror Ubuntu yang lambat pernah membuat
+  # job habis waktu sebelum satu tes pun jalan). Chromium 1.63.0 beserta semua pustakanya sudah ada di image resmi
+  # Playwright dengan versi yang sama dengan package.json, dikunci dengan digest supaya isinya tidak berubah diam-diam.
+  # FFmpeg tetap paket resmi Ubuntu (versi yang sama dengan lingkungan lokal), disimpan di cache GitHub.
   smoke:
     name: Uji asap render dan lab zoom
     needs: checks
     runs-on: ubuntu-24.04
     timeout-minutes: 25
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble@sha256:eff16c30e6f3f4af0a03fa4b706120d5e9b0891c344a27d64559aff5900a4a27
+      # Chromium memakai /dev/shm; bawaan Docker (64 MB) terlalu kecil untuk frame 1920x1080
+      options: --shm-size=2gb
+    env:
+      FFMPEG_CACHE: /var/cache/ci-ffmpeg
+      FFMPEG_EXPECTED: 6.1.1-3ubuntu5
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
+      # Kunci cache memuat digest image: paket deb di cache selalu cocok dengan isi image yang dipakai
+      - name: Cache paket FFmpeg (deb resmi Ubuntu)
+        uses: actions/cache@v4
+        with:
+          path: /var/cache/ci-ffmpeg
+          key: ffmpeg-6.1.1-3ubuntu5-playwright-1.63.0-noble-eff16c30e6f3-v1
+      # Cache ada: pasang dari file deb tanpa jaringan. Cache kosong: unduh dari Ubuntu dengan percobaan ulang dan
+      # batas waktu per unduhan, lalu simpan file deb-nya untuk run berikutnya.
       - name: Pasang FFmpeg
-        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
+        timeout-minutes: 10
+        run: |
+          set -eu
+          from_archive() {
+            mkdir -p "$FFMPEG_CACHE/partial"
+            apt="apt-get -o Acquire::Retries=5 -o Acquire::http::Timeout=30 -o Dir::Cache::Archives=$FFMPEG_CACHE -o APT::Keep-Downloaded-Packages=true"
+            $apt update
+            DEBIAN_FRONTEND=noninteractive $apt install -y --no-install-recommends ffmpeg
+            rm -rf "$FFMPEG_CACHE/partial" "$FFMPEG_CACHE/lock"
+          }
+          if ls "$FFMPEG_CACHE"/*.deb >/dev/null 2>&1; then
+            echo "Memasang FFmpeg dari cache: $(ls "$FFMPEG_CACHE"/*.deb | wc -l) paket deb"
+            dpkg -i "$FFMPEG_CACHE"/*.deb || { echo "::warning::Cache FFmpeg tidak bisa dipasang, unduh ulang dari Ubuntu"; rm -f "$FFMPEG_CACHE"/*.deb; from_archive; }
+          else
+            from_archive
+          fi
+          version="$(ffmpeg -version | head -1)"
+          echo "$version"
+          ffprobe -version | head -1
+          case "$version" in
+            *"$FFMPEG_EXPECTED"*) ;;
+            *) echo "::warning::FFmpeg bukan $FFMPEG_EXPECTED seperti lingkungan lokal. Uji asap tetap membandingkan hash piksel dengan baseline." ;;
+          esac
       - run: npm ci
-      - name: Pasang Chromium untuk Playwright
-        run: npx playwright install --with-deps chromium
+      # Chromium tidak diunduh: Playwright memakai browser bawaan image (PLAYWRIGHT_BROWSERS_PATH=/ms-playwright)
       - run: npm run check
       - run: npm run test:smoke
       - name: Lab zoom (grid piksel kamera)
