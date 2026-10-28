@@ -1,5 +1,14 @@
 # Riwayat Perubahan
 
+## Baseline resmi `character-lab` versi `tahap-5` (PR C, branch `baseline-character-lab-tahap-5`)
+
+Disetujui dan diperintahkan pemilik pada 28 Oktober 2026, menunggu review dan merge. Bukan tahap baru. Hasil render, mesin, aset, konfigurasi, workflow CI, dan MP4 tidak berubah. Panduan: [`BASELINES.md`](BASELINES.md).
+
+- **Baru**: `tests/baselines/character-lab.tahap-5.json` (360 frame, mesin 0.5.0), direkam lewat `npm run baseline` dari render ulang dengan kode `main@e6926d2` (merge PR #9), dan blok `character-lab` di `registry.json` dengan versi resmi `tahap-5` serta teks persetujuan pemilik. MP4-nya identik byte demi byte dengan `output/video/character-lab.mp4` di `e6926d2`.
+- **Perlindungan regresi**: lewat mekanisme yang sudah ada, tanpa mengubah kode uji. `npm run test:regression` dan uji asap CI membaca semua proyek di registry, jadi `character-lab` kini ikut dicocokkan piksel demi piksel.
+- **Dipertahankan**: baseline Project A, Project B (`tahap-3`, `tahap-4`), prototipe, dan `pending-changes.json` tidak berubah (SHA-256 sama). Proyek baru tanpa versi sebelumnya tidak butuh entri pending.
+- **Bukti**: render dari clone `e6926d2` dan dari `main@7e52ae1` identik di 360/360 frame (piksel dan byte PNG), frame hasil decode, dan MP4 (`819e48df...`). `--dry-run` lulus sebelum perekaman. Di salinan repository, palet pagi `character-lab` yang digeser satu nilai (`figureLight` `#f6e6dc` ke `#f6e6dd`) ditolak uji asap (frame 0 dan 120) dan regresi (131 frame berbeda tanpa deklarasi, MP4 berbeda), sedangkan tiga proyek lain tetap lulus. Hasil uji: lint lulus (29 JSON, 10 pemeriksaan registry), unit test 91/91, penjaga baseline 3/3 (vs `main` dan vs `e6926d2`, file baru terdeteksi sebagai tambahan), `build:all` 4/4, `npm test` 13/13 langkah, regresi 38/38 (empat proyek identik piksel dan byte), regresi B vs `tahap-3` 11/11, uji asap 4/4, `build:prototype` lulus, lab zoom 10/10.
+
 ## Fondasi: folder sementara unit test baseline selalu dibersihkan (PR #10, branch `pr-a-bersihkan-folder-uji`)
 
 Disetujui pemilik dan di-merge ke `main` lewat PR #10 (merge commit `3d59391`, 28 Oktober 2026). Bukan tahap baru. Hanya `tests/engine/baselines.test.js` yang berubah; mesin, aset, konfigurasi, baseline, registry, workflow CI, dan MP4 tidak berubah.

@@ -85,6 +85,27 @@
           }
         }
       }
+    },
+    "character-lab": {
+      "official": "tahap-5",
+      "versions": {
+        "tahap-5": {
+          "file": "character-lab.tahap-5.json",
+          "sha256": "940d91b595c09c3c8bcd58e288c4074143fe53e9a2aee11394ba6a465d2a4828",
+          "source": "main@e6926d2",
+          "engineVersion": "0.5.0",
+          "frames": 360,
+          "note": "Demo Tahap 5 (mesin 0.5.0, gerak natural dan pencahayaan karakter), baseline pertama, dirender ulang dari main@e6926d2",
+          "mergedVideo": "identik dengan output/video/character-lab.mp4 di e6926d2",
+          "approval": {
+            "by": "pemilik",
+            "date": "2026-10-28",
+            "evidence": [
+              "Pemilik proyek menyetujui perekaman baseline resmi character-lab versi tahap-5 dari hasil Tahap 5 yang telah di-merge melalui PR #9, setelah audit pasca-merge PR #11 menyatakan seluruh pemeriksaan wajib lulus."
+            ]
+          }
+        }
+      }
     }
   }
 }

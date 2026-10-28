@@ -19,10 +19,11 @@ Kondisi saat ini:
 | `train-night-rain` (prototipe) | `tahap-2` | `train-night-rain.json` | `main@cfed35a` | 0.2.0 | resmi. Piksel PNG sama dengan hasil Tahap 1; MP4 di-encode ulang di Tahap 2 |
 | `old-town-morning` (Project B) | `tahap-3` | `old-town-morning.json` | `main@9d7a144` | 0.3.0 | historis |
 | `old-town-morning` (Project B) | `tahap-4` | `old-town-morning.tahap-4.json` | `main@a1fd4a1` | 0.4.0 | resmi, 124 frame berubah dari `tahap-3` (85-130, 262-339) |
+| `character-lab` (demo Tahap 5) | `tahap-5` | `character-lab.tahap-5.json` | `main@e6926d2` | 0.5.0 | resmi, baseline pertama |
 
 Perintah `npm run baseline` menampilkan tabel ini langsung dari registry.
 
-Proyek demo Tahap 5 `character-lab` belum punya baseline. Tahap 5 sudah disetujui dan di-merge (PR #9), tetapi baseline pertamanya baru direkam lewat `npm run baseline` bila pemilik memerintahkannya. Sampai saat itu uji regresi tidak memeriksanya (uji asap hanya memastikan frame tidak kosong), tetapi validasi lengkap dan uji negatifnya tetap jalan di `npm test`. Tahap 5 tidak mengubah hasil render ketiga proyek lama, jadi tidak ada entri baru di `pending-changes.json`.
+Proyek demo Tahap 5 `character-lab` mendapat baseline pertamanya, versi `tahap-5`, setelah pemilik menyetujui dan memerintahkannya (lihat riwayat di bawah). Sejak itu uji regresi dan uji asap CI juga mencocokkannya dengan baseline. Tahap 5 tidak mengubah hasil render ketiga proyek lama, jadi tidak ada entri baru di `pending-changes.json`.
 
 ## Aturan
 
@@ -116,3 +117,10 @@ Usulan lanjutan dan statusnya: T18 di [`BACKLOG.md`](BACKLOG.md).
 - Baseline `tahap-4` direkam dari render ulang `main@a1fd4a1`. MP4-nya identik byte demi byte dengan `output/video/old-town-morning.mp4` di commit itu.
 - Verifikasi: 124 frame berubah (85-130, 262-339), 236 identik dengan `tahap-3`, 0 di luar rentang. Semua frame yang berubah memakai zoom pecahan atau sedang dissolve. 15 frame di dalam rentang deklarasi tetap identik karena zoom-nya bulat atau sangat dekat kelipatan 0,25 (misalnya 1,24999), sehingga ukuran pikselnya sama dengan cara Tahap 3. Render dengan `zoomMode: "nearest"` menghasilkan ulang Tahap 3 identik untuk 360 frame.
 - Entri pending Tahap 4 dipindah ke `resolved`. Baseline `tahap-3` tetap tersimpan dan bisa dipakai dengan `--baseline tahap-3`.
+
+## Riwayat: `character-lab` Tahap 5
+
+- Pemilik menyetujui dan memerintahkan perekaman baseline resmi `character-lab` versi `tahap-5` pada 28 Oktober 2026, setelah Tahap 5 di-merge lewat PR #9 (`e6926d2`) dan audit pasca-merge PR #11 lulus. Teks persetujuannya tersimpan di `approval` registry.
+- Baseline direkam lewat `npm run baseline` dari render ulang dengan kode render `main@e6926d2`. Kode render di `main` saat perekaman identik dengan commit itu. MP4-nya identik byte demi byte dengan `output/video/character-lab.mp4` di `e6926d2`.
+- Verifikasi sebelum merekam: render dari clone `e6926d2` dan render dari branch kerja identik di 360 dari 360 frame (piksel dan byte PNG), frame hasil decode, dan MP4. `--dry-run` lulus lebih dulu.
+- Proyek ini belum punya versi sebelumnya, jadi tidak ada entri pending. Perubahan visual `character-lab` berikutnya (misalnya perbaikan V27 atau V28) wajib dideklarasikan di `pending-changes.json` terhadap `tahap-5` dan disetujui terpisah.
