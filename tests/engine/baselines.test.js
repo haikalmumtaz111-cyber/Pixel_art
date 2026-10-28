@@ -1,10 +1,12 @@
 // Unit test registry baseline per versi (src/render/baselines.cjs), tanpa render. Memakai folder baseline buatan sendiri.
-import test from 'node:test';
+import test, { after } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
@@ -12,9 +14,34 @@ const B = require('../../src/render/baselines.cjs');
 
 const sha = (text) => crypto.createHash('sha256').update(text).digest('hex');
 
+// Folder sementara milik fixture. Setiap folder dihapus oleh hook t.after() dari tes yang membuatnya; hook itu
+// tetap berjalan walau assertion di tes tersebut gagal. Hook after() di akhir file menjadi jaring pengaman.
+// Pembersih hanya menghapus folder yang tercatat dibuat fixture, tidak pernah folder lain.
+const TEMP_PREFIX = path.join(os.tmpdir(), 'pixel-baselines-');
+const ownedDirs = new Set();
+const createdDirs = [];
+// jalur folder fixture yang sah: tepat satu tingkat di bawah folder sementara sistem dan berawalan pixel-baselines-
+function isFixturePath(dir) {
+  const full = path.resolve(dir);
+  const name = path.basename(full);
+  return path.dirname(full) === path.resolve(os.tmpdir()) && name.startsWith('pixel-baselines-') && name.length > 'pixel-baselines-'.length;
+}
+function removeOwnedDir(dir) {
+  if (!ownedDirs.has(dir) || !isFixturePath(dir)) return false;
+  fs.rmSync(dir, { recursive: true, force: true });
+  ownedDirs.delete(dir);
+  return true;
+}
+after(() => {
+  for (const dir of [...ownedDirs]) removeOwnedDir(dir);
+});
+
 // proyek mini 10 frame: v1 -> v2 mengubah frame 3-5 dengan deklarasi 2-6
-function fixture({ edit } = {}) {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'pixel-baselines-'));
+function fixture(t, { edit } = {}) {
+  const dir = fs.mkdtempSync(TEMP_PREFIX);
+  ownedDirs.add(dir);
+  createdDirs.push(dir);
+  t.after(() => removeOwnedDir(dir));
   const v1 = Array.from({ length: 10 }, (_, i) => `a${i}`);
   const v2 = v1.map((h, i) => (i >= 3 && i <= 5 ? `b${i}` : h));
   const files = { 'mini.json': v1, 'mini.v2.json': v2 };
@@ -61,8 +88,8 @@ test('stringify: JSON valid, rentang frame tetap satu baris', () => {
   assert.match(text, /"frames": \[\[84, 131\], \[255, 345\]\]/);
 });
 
-test('registry yang benar lulus semua pemeriksaan dan memuat versi resmi', () => {
-  const dir = fixture();
+test('registry yang benar lulus semua pemeriksaan dan memuat versi resmi', (t) => {
+  const dir = fixture(t);
   assert.deepEqual(failed(B.verifyRegistry({ dir })), []);
   const official = B.loadBaseline('mini', null, dir);
   assert.equal(official.version, 'v2');
@@ -73,40 +100,40 @@ test('registry yang benar lulus semua pemeriksaan dan memuat versi resmi', () =>
   assert.deepEqual(B.lineage(B.readRegistry(dir).projects.mini), ['v1', 'v2']);
 });
 
-test('isi file baseline yang diubah terdeteksi lewat SHA-256', () => {
-  const dir = fixture({ edit: ({ dir: d }) => fs.appendFileSync(path.join(d, 'mini.json'), ' ') });
+test('isi file baseline yang diubah terdeteksi lewat SHA-256', (t) => {
+  const dir = fixture(t, { edit: ({ dir: d }) => fs.appendFileSync(path.join(d, 'mini.json'), ' ') });
   assert.deepEqual(failed(B.verifyRegistry({ dir })), ['registry:mini:files']);
 });
 
-test('file baseline yang tidak terdaftar ditolak', () => {
-  const dir = fixture({ edit: ({ dir: d }) => fs.writeFileSync(path.join(d, 'liar.json'), '{}') });
+test('file baseline yang tidak terdaftar ditolak', (t) => {
+  const dir = fixture(t, { edit: ({ dir: d }) => fs.writeFileSync(path.join(d, 'liar.json'), '{}') });
   assert.deepEqual(failed(B.verifyRegistry({ dir })), ['registry:files']);
 });
 
-test('catatan perubahan antar versi harus sama persis dengan isi file', () => {
-  const wrongCount = fixture({ edit: ({ registry }) => { registry.projects.mini.versions.v2.changes.changed = [[3, 4]]; } });
+test('catatan perubahan antar versi harus sama persis dengan isi file', (t) => {
+  const wrongCount = fixture(t, { edit: ({ registry }) => { registry.projects.mini.versions.v2.changes.changed = [[3, 4]]; } });
   assert.deepEqual(failed(B.verifyRegistry({ dir: wrongCount })), ['registry:mini:v1->v2']);
-  const outside = fixture({ edit: ({ registry }) => { registry.projects.mini.versions.v2.changes.declared = [[4, 6]]; } });
+  const outside = fixture(t, { edit: ({ registry }) => { registry.projects.mini.versions.v2.changes.declared = [[4, 6]]; } });
   assert.deepEqual(failed(B.verifyRegistry({ dir: outside })), ['registry:mini:v1->v2']);
-  const unapproved = fixture({ edit: ({ registry }) => { delete registry.projects.mini.versions.v2.approval; } });
+  const unapproved = fixture(t, { edit: ({ registry }) => { delete registry.projects.mini.versions.v2.approval; } });
   assert.deepEqual(failed(B.verifyRegistry({ dir: unapproved })), ['registry:mini:v1->v2']);
 });
 
-test('versi yang tidak tersambung ke versi resmi ditolak', () => {
-  const dir = fixture({ edit: ({ registry }) => { delete registry.projects.mini.versions.v2.previous; } });
+test('versi yang tidak tersambung ke versi resmi ditolak', (t) => {
+  const dir = fixture(t, { edit: ({ registry }) => { delete registry.projects.mini.versions.v2.previous; } });
   assert.deepEqual(failed(B.verifyRegistry({ dir })), ['registry:mini:official']);
 });
 
-test('perubahan terdeklarasi hanya berlaku terhadap versi yang disebut', () => {
+test('perubahan terdeklarasi hanya berlaku terhadap versi yang disebut', (t) => {
   const entry = { stage: 'Tahap X', status: 'menunggu persetujuan pemilik', frames: [[1, 2]] };
-  const stale = fixture({ edit: ({ pending }) => { pending.changes.mini = { ...entry, against: 'v1' }; } });
+  const stale = fixture(t, { edit: ({ pending }) => { pending.changes.mini = { ...entry, against: 'v1' }; } });
   assert.deepEqual(failed(B.verifyRegistry({ dir: stale })), ['registry:mini:pending']);
   const registry = B.readRegistry(stale);
   const pending = B.readPending(stale);
   assert.equal(B.pendingFor(pending, registry, 'mini', 'v2'), null);
   assert.equal(B.pendingFor(pending, registry, 'mini', 'v1').stage, 'Tahap X');
   // entri lama tanpa "against" dianggap terhadap versi resmi
-  const legacy = fixture({ edit: ({ pending: p }) => { p.changes.mini = entry; } });
+  const legacy = fixture(t, { edit: ({ pending: p }) => { p.changes.mini = entry; } });
   assert.deepEqual(failed(B.verifyRegistry({ dir: legacy })), []);
   assert.equal(B.pendingFor(B.readPending(legacy), B.readRegistry(legacy), 'mini', 'v2').stage, 'Tahap X');
   assert.equal(B.pendingFor(B.readPending(legacy), B.readRegistry(legacy), 'mini', 'v1'), null);
@@ -167,4 +194,65 @@ test('penjaga: referensi tanpa registry (sebelum ada versi) hanya mengunci file 
   const ref = { 'mini.json': '{"project":"mini"}\n' };
   assert.deepEqual(failed(B.guardAgainst(ref, guardFixture())), []);
   assert.deepEqual(failed(B.guardAgainst(ref, { ...guardFixture(), 'mini.json': 'beda' })), ['guard:files']);
+});
+
+// ---------- pembersihan folder sementara fixture ----------
+// Tes yang sengaja gagal hanya didaftarkan di proses anak (variabel lingkungan di bawah), jadi rangkaian tes biasa
+// tidak pernah gagal karenanya.
+const FAILING_DEMO = 'DEMO_FIXTURE_GAGAL';
+if (process.env.PIXEL_BASELINES_FIXTURE_DEMO === '1') {
+  test(`${FAILING_DEMO}: fixture dipakai lalu assertion sengaja gagal`, (t) => {
+    const dir = fixture(t);
+    process.stdout.write(`FIXTURE_DIR=${dir}\n`);
+    assert.equal('dibersihkan', 'tidak', 'kegagalan yang disengaja di proses anak');
+  });
+}
+
+test('fixture: folder sementara dihapus begitu tes yang memakainya selesai', async (t) => {
+  let dir;
+  await t.test('memakai fixture', (st) => {
+    dir = fixture(st);
+    assert.ok(fs.existsSync(path.join(dir, 'registry.json')));
+  });
+  assert.equal(fs.existsSync(dir), false);
+});
+
+test('fixture: folder tetap dihapus ketika assertion di tesnya gagal (diuji di proses anak)', (t) => {
+  // proses anak menjalankan file ini dengan hanya tes yang sengaja gagal; NODE_TEST_CONTEXT dibuang supaya
+  // keluarannya tidak dikirim ke runner induk
+  const env = { ...process.env, PIXEL_BASELINES_FIXTURE_DEMO: '1' };
+  delete env.NODE_TEST_CONTEXT;
+  const r = spawnSync(process.execPath, [`--test-name-pattern=^${FAILING_DEMO}`, fileURLToPath(import.meta.url)], { env, encoding: 'utf8' });
+  const dir = (r.stdout.match(/FIXTURE_DIR=(\S+)/) || [])[1];
+  // bila pembersihan rusak, folder yang dilaporkan anak tetap dihapus di sini supaya tidak tertinggal
+  t.after(() => {
+    if (dir && isFixturePath(dir)) fs.rmSync(dir, { recursive: true, force: true });
+  });
+  assert.notEqual(r.status, 0, 'tes di proses anak seharusnya gagal');
+  assert.match(`${r.stdout}${r.stderr}`, /kegagalan yang disengaja di proses anak/);
+  assert.ok(dir && isFixturePath(dir), `folder fixture proses anak: ${dir}`);
+  assert.equal(fs.existsSync(dir), false, 'folder fixture harus sudah dihapus walau tesnya gagal');
+});
+
+test('fixture: pembersih hanya menghapus folder yang dibuat fixture', (t) => {
+  assert.equal(removeOwnedDir(os.tmpdir()), false);
+  assert.ok(fs.existsSync(os.tmpdir()));
+  assert.equal(isFixturePath(path.join(os.tmpdir(), 'pixel-baselines-abc')), true);
+  assert.equal(isFixturePath(path.join(os.tmpdir(), 'pixel-baselines-abc', '..', '..', 'etc')), false);
+  assert.equal(isFixturePath(path.join(os.tmpdir(), 'pixel-baselines-')), false);
+  assert.equal(isFixturePath(path.join(os.tmpdir(), 'pixel-smoke-abc')), false);
+  const dir = fixture(t);
+  const inside = path.join(dir, 'mini.json');
+  assert.equal(removeOwnedDir(inside), false);
+  assert.ok(fs.existsSync(inside));
+  assert.equal(removeOwnedDir(dir), true);
+  assert.equal(fs.existsSync(dir), false);
+  assert.equal(removeOwnedDir(dir), false);
+});
+
+// harus tetap menjadi tes terakhir di file ini
+test('fixture: semua folder sementara dari tes sebelumnya sudah dihapus', () => {
+  assert.ok(createdDirs.length >= 11, `${createdDirs.length} folder fixture dibuat`);
+  assert.deepEqual(createdDirs.filter((dir) => fs.existsSync(dir)), []);
+  assert.equal(ownedDirs.size, 0);
 });
