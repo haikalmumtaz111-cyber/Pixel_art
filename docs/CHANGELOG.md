@@ -30,7 +30,13 @@ Bukan tahap baru. Hasil render, mesin (0.4.0), aset, konfigurasi, dan MP4 tidak 
 - Setiap frame Project B yang berubah memakai zoom pecahan atau sedang dissolve. 15 frame di dalam rentang deklarasi tetap identik karena zoom-nya bulat atau sangat dekat kelipatan 0,25.
 - Project B dengan `zoomMode: "nearest"` menghasilkan ulang Tahap 3: 360/360 frame identik piksel demi piksel, dan SHA-256 MP4-nya diawali `761c76b535b5f092`, sama dengan `tahap-3`. Di salinan repository, render itu ditolak regresi terhadap `tahap-4` (124 frame berbeda tanpa deklarasi) dan terhadap `tahap-3` (124 frame tidak sesuai baseline resmi).
 - Di salinan repository, lint menolak file baseline yang diubah satu hash, entri pending yang menunjuk versi lama, dan file baseline yang tidak terdaftar.
-- Hasil uji: lint lulus (termasuk 8 pemeriksaan registry), unit test 61/61, validasi A 37/37, B 34/34, prototipe 30/30, uji negatif A 35/35 dan B 36/36, regresi 29/29, regresi B vs `tahap-3` 11/11, uji antar-proyek 18/18, lab zoom 10/10, uji asap 3/3, `build:prototype` lulus.
+- Hasil uji (clean clone setelah sinkron dengan `main` pasca PR #6): `npm test` 11/11 langkah, lint lulus (termasuk 8 pemeriksaan registry), unit test 65/65, penjaga baseline historis 3/3, validasi A 37/37, B 34/34, prototipe 30/30, uji negatif A 35/35 dan B 36/36, regresi 29/29, regresi B vs `tahap-3` 11/11, uji antar-proyek 18/18, lab zoom 10/10, uji asap 3/3, `build:prototype` lulus.
+
+## CI: uji asap di image resmi Playwright (PR #6, di-merge ke `main`)
+
+- Job "Uji asap render dan lab zoom" berjalan di `mcr.microsoft.com/playwright:v1.63.0-noble`, dikunci digest. Chromium 1.63.0 dan pustakanya sudah ada di image, jadi tidak ada lagi apt untuk Chromium dan tidak ada unduhan browser.
+- FFmpeg tetap paket resmi Ubuntu (6.1.1-3ubuntu5, sama dengan lingkungan lokal), disimpan di cache GitHub. Run berikutnya memasang dari cache tanpa jaringan; saat cache kosong apt memakai percobaan ulang dan batas waktu per unduhan.
+- Batas waktu job dan tes yang dijalankan tidak berubah. Latar belakang: job lama dua kali habis waktu 25 menit di apt sebelum tes jalan (BACKLOG T17).
 
 ## Tahap 4: kamera pixel-perfect (PR #4, branch `tahap-4-pixel-perfect-camera`)
 

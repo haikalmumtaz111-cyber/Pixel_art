@@ -189,7 +189,7 @@ tests/
   engine/                       unit test mesin (node --test)
   baselines/                    baseline regresi per versi (registry.json) + perubahan terdeklarasi dan riwayatnya (pending-changes.json)
   fixtures/                     adegan dan aset uji yang sengaja salah atau palsu, penganalisis lab zoom
-.github/workflows/ci.yml        pemeriksaan otomatis di GitHub (lint, unit test, uji asap, lab zoom)
+.github/workflows/ci.yml        pemeriksaan otomatis di GitHub (lint, penjaga baseline, unit test, uji asap dan lab zoom di container Playwright)
 docs/                           arsitektur, panduan reusability, versi baseline, riwayat, catatan peningkatan
 output/                         video, laporan, cuplikan, bahan pembanding (comparisons/); frame PNG tidak masuk Git
 ```
