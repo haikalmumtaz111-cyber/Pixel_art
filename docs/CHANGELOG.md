@@ -1,5 +1,14 @@
 # Riwayat Perubahan
 
+## Proteksi branch di GitHub (pengaturan pemilik, 28 Oktober 2026)
+
+Bukan perubahan kode, CI, baseline, aset, atau MP4. Pemilik mengaktifkan dua ruleset di pengaturan GitHub; dokumentasi diperbarui agar sesuai hasil audit.
+
+- `Protect main - Pixel History Studio` (ID 26005617), target `main`: wajib PR dengan 0 approval, hanya merge commit, dua check CI wajib ("Lint, unit test, validasi konfigurasi", "Uji asap render dan lab zoom") mode strict, tidak boleh dihapus, tidak boleh force push, tanpa bypass.
+- `Protect historical stages` (ID 26006150), pola `refs/heads/tahap-[1-4]-*`: keempat branch Tahap 1-4 tidak boleh dihapus dan tidak boleh force push, tanpa bypass.
+- Terverifikasi lewat API GitHub: kedua ruleset `active`, aturan efektif muncul di `main` dan keempat branch historis, nama check wajib cocok dengan check run CI. Belum terverifikasi: penolakan push nyata (0 evaluasi rule saat audit).
+- BACKLOG T18 menjadi sebagian selesai. Sisa celah (PR yang mengubah `ci.yml`, push fast-forward ke branch historis, branch Tahap 5 ke atas, uji enforcement) dicatat di T18 dan BASELINES.md. Klaim bahwa penjaga baseline selalu menangkap perubahan diberi batasan di CLAUDE.md, BASELINES.md, dan ARCHITECTURE.
+
 ## Pengelolaan baseline setelah Tahap 4 (PR #5, branch `baseline-versioning-b-tahap-4`)
 
 Disetujui pemilik dan di-merge ke `main` lewat PR #5 (merge commit `d0f3f34`, 28 Oktober 2026). Audit pasca-merge dari clean clone `main` lulus semua pemeriksaan. Bukan tahap baru. Hasil render, mesin (0.4.0), aset, konfigurasi, dan MP4 tidak berubah. Panduan: [`BASELINES.md`](BASELINES.md).
