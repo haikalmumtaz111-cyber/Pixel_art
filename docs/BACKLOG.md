@@ -4,7 +4,7 @@ Daftar keterbatasan yang ditemukan saat meninjau hasil setiap tahap. Semua pengu
 
 Prioritas: **Tinggi** = paling terasa di hasil atau paling berisiko, **Sedang** = layak dikerjakan di tahap berikutnya, **Rendah** = penghalusan.
 
-Kondisi terakhir: Tahap 3 disetujui dan di-merge ke `main` (PR #3). Tahap 4 (kamera pixel-perfect, fokus V14) disetujui pemilik dan di-merge ke `main` (PR #4), termasuk perubahan hasil render Project B. Audit final PR #4 (clean clone) lulus di semua pemeriksaan wajib. Dua temuannya dicatat sebagai V24 dan V25. Setelah Tahap 4, baseline regresi dibuat berversi dan Project B memakai baseline resmi Tahap 4 (PR #5, menunggu persetujuan); audit final PR #5 mencatat T17 dan T18. T17 selesai lewat PR #6 (di-merge ke `main`). Tahap 5 belum dimulai. Butir di bawah adalah kandidat, bukan rencana yang sudah disetujui; pemilik yang memilih isi tahap berikutnya.
+Kondisi terakhir: Tahap 3 disetujui dan di-merge ke `main` (PR #3). Tahap 4 (kamera pixel-perfect, fokus V14) disetujui pemilik dan di-merge ke `main` (PR #4), termasuk perubahan hasil render Project B. Audit final PR #4 (clean clone) lulus di semua pemeriksaan wajib. Dua temuannya dicatat sebagai V24 dan V25. Setelah Tahap 4, baseline regresi dibuat berversi dan Project B memakai baseline resmi Tahap 4 (PR #5, disetujui dan di-merge ke `main`); audit final PR #5 mencatat T17 dan T18. T17 selesai lewat PR #6 (di-merge ke `main`). Tahap 5 belum dimulai. Butir di bawah adalah kandidat, bukan rencana yang sudah disetujui; pemilik yang memilih isi tahap berikutnya.
 
 ## Ringkasan kandidat untuk tahap berikutnya
 

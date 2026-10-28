@@ -1,8 +1,8 @@
 # Riwayat Perubahan
 
-## Pengelolaan baseline setelah Tahap 4 (branch `baseline-versioning-b-tahap-4`, menunggu persetujuan)
+## Pengelolaan baseline setelah Tahap 4 (PR #5, branch `baseline-versioning-b-tahap-4`)
 
-Bukan tahap baru. Hasil render, mesin (0.4.0), aset, konfigurasi, dan MP4 tidak berubah. Panduan: [`BASELINES.md`](BASELINES.md).
+Disetujui pemilik dan di-merge ke `main` lewat PR #5 (merge commit `d0f3f34`, 28 Oktober 2026). Audit pasca-merge dari clean clone `main` lulus semua pemeriksaan. Bukan tahap baru. Hasil render, mesin (0.4.0), aset, konfigurasi, dan MP4 tidak berubah. Panduan: [`BASELINES.md`](BASELINES.md).
 
 ### Baru
 
