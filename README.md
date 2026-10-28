@@ -14,7 +14,7 @@ Studio animasi pixel art berbasis kode. Tujuan jangka panjangnya adalah membuat 
 
 Versi mesin: **0.5.0** (`config/engine.json`, Tahap 5).
 
-Pengelolaan baseline setelah Tahap 4: baseline regresi kini punya versi per proyek, dan Project B memakai baseline resmi Tahap 4 (`tahap-4`). Disetujui pemilik dan di-merge ke `main` lewat PR #5 (`d0f3f34`). Penjelasan: [`docs/BASELINES.md`](docs/BASELINES.md). Setelah Tahap 5, unit test baseline tidak lagi meninggalkan folder sementara (PR #10, `3d59391`).
+Pengelolaan baseline setelah Tahap 4: baseline regresi kini punya versi per proyek, dan Project B memakai baseline resmi Tahap 4 (`tahap-4`). Disetujui pemilik dan di-merge ke `main` lewat PR #5 (`d0f3f34`). Penjelasan: [`docs/BASELINES.md`](docs/BASELINES.md). Setelah Tahap 5, unit test baseline tidak lagi meninggalkan folder sementara (PR #10, `3d59391`), dan demo `character-lab` mendapat baseline resmi `tahap-5` dari `main@e6926d2` atas perintah pemilik (PR C, menunggu review dan merge).
 
 ## Proyek yang tersedia
 
@@ -95,7 +95,7 @@ Potongan suasana pagi di sebuah kota tua fiktif di Indonesia. Tidak ada satu bar
 
 Cuplikan: [`output/reports/old-town-morning-contact-sheet.png`](output/reports/old-town-morning-contact-sheet.png), per adegan `output/reports/old-town-morning-scene-*.png`, dan transisi `output/reports/old-town-morning-transition-*.png`.
 
-Bukti ketiga proyek identik dengan baseline resminya (Project A dan prototipe Tahap 1 dengan `main@cfed35a`, Project B dengan `main@a1fd4a1`): [`output/reports/regression.md`](output/reports/regression.md) (piksel setiap frame dan file MP4 identik byte demi byte). Project B dibanding referensi Tahap 3: [`output/reports/regression-old-town-morning-tahap-3.md`](output/reports/regression-old-town-morning-tahap-3.md). Bukti semua proyek memakai mesin yang sama dan tidak saling bergantung: [`output/reports/project-tests.md`](output/reports/project-tests.md).
+Bukti keempat proyek identik dengan baseline resminya (Project A dan prototipe Tahap 1 dengan `main@cfed35a`, Project B dengan `main@a1fd4a1`, demo `character-lab` dengan `main@e6926d2`): [`output/reports/regression.md`](output/reports/regression.md) (piksel setiap frame dan file MP4 identik byte demi byte). Project B dibanding referensi Tahap 3: [`output/reports/regression-old-town-morning-tahap-3.md`](output/reports/regression-old-town-morning-tahap-3.md). Bukti semua proyek memakai mesin yang sama dan tidak saling bergantung: [`output/reports/project-tests.md`](output/reports/project-tests.md).
 
 ## Cara memakai
 
