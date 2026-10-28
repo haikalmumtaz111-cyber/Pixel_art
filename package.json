@@ -1,6 +1,6 @@
 {
   "name": "pixel-history-studio",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "private": true,
   "type": "module",
   "description": "Studio animasi pixel art berbasis kode untuk film sejarah bergaya retro.",
@@ -25,6 +25,7 @@
     "test:projects": "node src/render/project-tests.cjs",
     "test:zoom": "node src/render/zoom-tests.cjs",
     "demo:zoom": "node src/render/zoom-demo.cjs",
+    "demo:character": "node src/render/character-demo.cjs",
     "test:ci": "npm run lint && npm run test:engine && npm run test:smoke"
   },
   "engines": {

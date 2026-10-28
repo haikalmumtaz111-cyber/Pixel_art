@@ -28,6 +28,7 @@ const GROUPS = [
   ['Transisi tanpa artefak', ['no-flash', 'no-hard-cut', 'boundary:', 'portal:', 'boundary']],
   ['Grid piksel kamera stabil (tanpa crawl)', ['grid-stability']],
   ['Aset konsisten antar adegan', ['consistency:']],
+  ['Gerak karakter: kaki tidak meluncur, tubuh tidak bergetar', ['motion-feet', 'motion-bob']],
   ['Adegan bisa dirender terpisah', ['scene:']],
   ['Mesin bersama, modul proyek terisolasi', ['engine-modules', 'engine-isolation']],
   ['Video berasal dari render terbaru', ['manifest:']],
@@ -215,6 +216,7 @@ async function main() {
       add(await B.transitionBoundaryChecks(studio, config, renderInfo));
       add(await B.sceneIsolationChecks(studio, config));
       add(await B.consistencyChecks(studio, config));
+      add(await B.motionChecks(studio, config));
       if (png.checks[0].pass) {
         console.log('Render ulang seluruh frame dengan urutan terbalik untuk uji determinisme...');
         add(await B.determinismChecks(studio, png.hashes, {}));

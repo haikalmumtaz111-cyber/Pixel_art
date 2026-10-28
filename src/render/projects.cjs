@@ -134,7 +134,7 @@ function buildProject(raw, file, { strict = true, engine = loadEngine(), include
   const encoding = { ...engine.rendering.encoding, ...(raw.encoding || {}) };
   if (strict && issues.length) throw new Error(`Konfigurasi proyek tidak valid:\n- ${issues.join('\n- ')}`);
 
-  const ctx = { engine, catalog: engine.catalog.types, assets: raw.assets || {}, totalFrames, fps: raw.fps, root: ROOT, upscale: rendering.upscale };
+  const ctx = { engine, catalog: engine.catalog.types, assets: raw.assets || {}, environment: raw.environment || {}, totalFrames, fps: raw.fps, root: ROOT, upscale: rendering.upscale };
   const { timeline, issues: timelineIssues } = issues.length ? { timeline: { scenes: [], transitions: [] }, issues: [] } : normalizeTimeline(raw, ctx);
   issues.push(...timelineIssues);
   if (strict && issues.length) throw new Error(`Konfigurasi proyek tidak valid:\n- ${issues.join('\n- ')}`);

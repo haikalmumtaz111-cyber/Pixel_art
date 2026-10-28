@@ -50,6 +50,7 @@ function checkStepValue(value, label, ctx, issues, ok, expected) {
 }
 
 // Satu parameter menurut spesifikasi katalog: { type, min, max, enum, assetType, required }.
+// type "environmentTrack" = nama track di bagian environment proyek (nilainya dibaca aset dari fc.env).
 function checkParam(value, spec, label, ctx, issues) {
   const t = spec.type;
   const fail = (msg) => issues.push(`${label}: ${msg}`);
@@ -61,6 +62,10 @@ function checkParam(value, spec, label, ctx, issues) {
   if (t === 'object' && (typeof value !== 'object' || value === null || Array.isArray(value))) return fail('harus objek');
   if (t === 'array' && !Array.isArray(value)) return fail('harus daftar');
   if (t === 'paletteKey' && typeof value !== 'string') return fail('harus nama warna di palet');
+  if (t === 'environmentTrack') {
+    if (typeof value !== 'string') return fail('harus nama track lingkungan');
+    if (!Object.prototype.hasOwnProperty.call(ctx.environment || {}, value)) return fail(`track lingkungan "${value}" tidak ada di bagian environment`);
+  }
   if (t === 'asset') {
     if (!ctx.assets[value]) return fail(`aset "${value}" tidak ditemukan`);
     if (spec.assetType && ctx.assets[value].type !== spec.assetType) return fail(`aset "${value}" harus berjenis ${spec.assetType}`);

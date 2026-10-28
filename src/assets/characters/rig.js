@@ -8,9 +8,19 @@
 // Ditambah kedip, napas, dan tengok kepala (headTurn: -1 menoleh ke belakang, 0 samping, 1 ke kamera).
 // Karakter baru cukup dibuat lewat data (warna, topi, rambut, tinggi, aksesori), tanpa menyalin kode ini.
 // Karakter digambar menghadap kanan; menghadap kiri memakai "flip" entitas (cermin otomatis).
-import { rect, pixel } from '../../engine/pixel.js';
+//
+// Tahap 5 menambah dua pilihan yang tidak mengubah karakter lama (bawaannya tetap cara Tahap 3):
+//   motion: "natural"  sendi siku dan lutut, pose lengan, siklus jalan 8 fase yang telapaknya menempel di tanah,
+//                      ayunan tangan sinkron dengan langkah (gait.js). Bawaan "classic" = gerak Tahap 3 persis.
+//   light: "<awalan>"  warna karakter mengikuti palet pencahayaan lingkungan, plus cahaya tepi dari arah
+//                      lightDirection atau track lingkungan lightTrack (lighting.js). Tanpa "light", warna tetap
+//                      seperti yang ditulis.
+// Keduanya boleh ditulis di aset atau ditimpa per entitas lewat params.
+import { rect, pixel, withView } from '../../engine/pixel.js';
 import { hash } from '../../engine/random.js';
-import { mod } from '../../engine/math.js';
+import { mod, lerp } from '../../engine/math.js';
+import { walkPose, twoBone, armFromAngles, armAngles, raiseArm } from './gait.js';
+import { createGrader, createSpriteBuffer, flushLit, lightFromPalette, lightSide } from './lighting.js';
 
 const BOX_W = 26;
 
@@ -32,7 +42,8 @@ const DEFAULTS = {
   pants: '#4a3a2c', pantsShade: '#33281f', sarong: null, sarongPattern: null,
   shoes: '#2a1d14', hatColor: '#1b1716', hatShade: '#0f0c0b',
   accessoryColor: '#8a6a3a', accessoryShade: '#5e4524',
-  strideLength: 26, seed: 1
+  strideLength: 26, seed: 1,
+  motion: 'classic', light: null, lightDirection: 0, lightTrack: null, frontArm: 'auto', backArm: 'auto', armSwing: 1
 };
 
 // Garis tebal piksel dari (x0, y0) ke (x1, y1): tiap baris satu persegi selebar w.
@@ -224,11 +235,8 @@ export function createRigCharacter(def) {
     drawAccessory(ctx, hand, hipY, gesture);
   }
 
-  function drawSeated(ctx, { breath, turn, blink, gesture, pedal }) {
-    const footY = boxH;
-    const hipY = footY - Math.round(legLen * 0.55);
-    const shoulderY = hipY - torsoLen - breath;
-    const headTop = shoulderY - 9;
+  // Kaki saat duduk: mengikuti pedal (mengayuh) atau paha mendatar dan betis turun (bangku).
+  function drawSeatedLegs(ctx, hipY, footY, pedal) {
     const hx = cx - 1;
     if (pedal) {
       // dua kaki mengikuti posisi pedal
@@ -246,6 +254,14 @@ export function createRigCharacter(def) {
       limb(ctx, kneeX, hipY, kneeX + 1, footY - 2, legW, c.sarong || c.pants);
       rect(ctx, kneeX, footY - 2, 5, 2, c.shoes);
     }
+  }
+
+  function drawSeated(ctx, { breath, turn, blink, gesture, pedal }) {
+    const footY = boxH;
+    const hipY = footY - Math.round(legLen * 0.55);
+    const shoulderY = hipY - torsoLen - breath;
+    const headTop = shoulderY - 9;
+    drawSeatedLegs(ctx, hipY, footY, pedal);
     drawArm(ctx, cx - 1, shoulderY + 1, cx + 3, hipY - 3, false);
     drawTorso(ctx, shoulderY, hipY + 1);
     drawHead(ctx, headTop, turn, blink);
@@ -254,52 +270,283 @@ export function createRigCharacter(def) {
     drawAccessory(ctx, hand, hipY, gesture);
   }
 
+  // Pedal sepeda: dua titik berseberangan pada lingkaran engkol, mengikuti putaran roda.
+  function pedalsOf(e, p) {
+    // phaseOffset = jarak titik entitas ini ke titik sepeda, agar pedal kaki sama dengan pedal sepeda
+    const angle = ((e.worldX + (p.phaseOffset ?? 0)) * (e.flip ? -1 : 1)) / (p.wheelRadius ?? 8);
+    const crank = { x: cx + (p.crankX ?? 3), y: boxH - (p.crankDrop ?? 2) };
+    const r = p.crankRadius ?? 3;
+    const at = (a) => ({ x: Math.round(crank.x + Math.cos(a) * r), y: Math.round(crank.y + Math.sin(a) * r) });
+    return { front: at(angle), back: at(angle + Math.PI) };
+  }
+
+  // Gerak Tahap 3 (bawaan, motion "classic"). Isinya sengaja tidak diubah: proyek lama tetap identik piksel.
+  function drawClassic(ctx, e, { time, turn, gesture, blink, breath }) {
+    if (e.state === 'walk') {
+      // langkah dihitung dari jarak tempuh, jadi kaki tidak meluncur saat kecepatan berubah
+      const dir = e.flip ? -1 : 1;
+      const phase = mod(Math.floor((e.worldX * dir * 8) / c.strideLength), 8);
+      drawStanding(ctx, {
+        front: { dx: WALK.frontFoot[phase], lift: WALK.frontLift[phase] },
+        back: { dx: WALK.backFoot[phase], lift: WALK.backLift[phase] },
+        bob: WALK.bob[phase], frontHand: WALK.frontHand[phase], backHand: WALK.backHand[phase],
+        breath: 0, turn, blink, gesture
+      });
+    } else if (e.state === 'seated') {
+      drawSeated(ctx, { breath, turn, blink, gesture });
+    } else if (e.state === 'sweep') {
+      const swing = 0.5 + 0.5 * Math.sin(time * 5);
+      drawStanding(ctx, {
+        front: { dx: 2, lift: 0 }, back: { dx: -2, lift: 0 }, bob: 0,
+        frontHand: 2 + Math.round(swing * 2), backHand: 0, breath: 0, turn, blink, gesture: 0.1 * swing
+      });
+    } else if (e.state === 'cycle') {
+      drawSeated(ctx, { breath: 0, turn, blink, gesture: 0, pedal: pedalsOf(e, e.params) });
+    } else {
+      const standing = e.state === 'stand';
+      drawStanding(ctx, {
+        front: { dx: 1, lift: 0 }, back: { dx: -1, lift: 0 }, bob: 0,
+        frontHand: 1, backHand: -1, breath: standing ? 0 : breath, turn, blink, gesture: e.state === 'gesture' || gesture > 0 ? gesture : 0
+      });
+    }
+  }
+
+  // ---------- gerak natural (Tahap 5, motion "natural") ----------
+  const span = legLen - 1; // kaki lurus: pinggul sampai pergelangan
+  const armLen = torsoLen - 3; // bahu sampai tangan, sama dengan lengan Tahap 3
+  const upperArm = Math.round(armLen / 2);
+  const foreArm = armLen - upperArm;
+  const hipX = cx - Math.floor(legW / 2);
+  const pt = (q) => ({ x: Math.round(q.x), y: Math.round(q.y) });
+
+  // Ruas tubuh setebal w dari a ke b (titik bulat). Ruas tegak digambar per baris, ruas mendatar per kolom,
+  // jadi ketebalannya tetap w di arah mana pun dan siku yang menekuk tidak bolong.
+  function stroke(ctx, a, b, w, color) {
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
+    if (Math.abs(dy) >= Math.abs(dx)) {
+      const n = Math.abs(dy);
+      for (let i = 0; i <= n; i++) rect(ctx, Math.round(a.x + (n ? (dx * i) / n : 0)), a.y + i * Math.sign(dy), w, 1, color);
+    } else {
+      const n = Math.abs(dx);
+      for (let i = 0; i <= n; i++) rect(ctx, a.x + i * Math.sign(dx), Math.round(a.y + (dy * i) / n), 1, w, color);
+    }
+  }
+
+  // Lengan dengan siku: spec = { angle, bend } (sudut) atau { target } (tangan menuju titik, siku ke bawah/belakang).
+  function naturalArm(ctx, shoulder, spec, front, { hand: drawHand = true } = {}) {
+    let elbow;
+    let hand;
+    if (spec.target) ({ joint: elbow, end: hand } = twoBone(shoulder, spec.target, upperArm, foreArm, 1));
+    else ({ elbow, hand } = armFromAngles(shoulder, upperArm, foreArm, spec.angle, spec.bend));
+    const S = pt(shoulder);
+    const E = pt(elbow);
+    const H = pt(hand);
+    const sleeve = front ? c.shirt : c.shirtShade;
+    const fore = c.sleeves === 'long' ? sleeve : front ? c.skin : c.skinShade;
+    if (front) {
+      // garis bayangan di sisi belakang/bawah lengan depan, supaya lengan terbaca di depan badan
+      const off = (a, b) => (Math.abs(b.y - a.y) >= Math.abs(b.x - a.x) ? { x: -1, y: 0 } : { x: 0, y: 2 });
+      const shade = (a, b, color) => {
+        const o = off(a, b);
+        stroke(ctx, { x: a.x + o.x, y: a.y + o.y }, { x: b.x + o.x, y: b.y + o.y }, 1, color);
+      };
+      shade(S, E, c.shirtShade);
+      shade(E, H, c.sleeves === 'long' ? c.shirtShade : c.skinShade);
+    }
+    stroke(ctx, S, E, 2, sleeve);
+    stroke(ctx, E, H, 2, fore);
+    if (drawHand) rect(ctx, H.x, H.y, 2, 2, front ? c.skin : c.skinShade);
+    return H;
+  }
+
+  // Kaki dengan lutut yang menekuk ke depan (dua tulang sama panjang). Kain sarung memakai bentuk Tahap 3.
+  function drawNaturalLegs(ctx, hipY, footY, front, back) {
+    if (c.sarong) {
+      drawLegs(ctx, hipY, footY, front, back);
+      return;
+    }
+    const hip = { x: hipX, y: hipY };
+    for (const [f, color, shoe] of [[back, c.pantsShade, '#1b130d'], [front, c.pants, c.shoes]]) {
+      const ankle = { x: hipX + f.dx, y: footY - 1 - f.lift };
+      const knee = pt(twoBone(hip, ankle, span / 2, span / 2, -1).joint);
+      stroke(ctx, hip, knee, legW, color);
+      stroke(ctx, knee, ankle, legW, color);
+      rect(ctx, ankle.x - 1, footY - 1 - f.lift, 4, 2, shoe);
+    }
+  }
+
+  // Pose lengan dari parameter: "auto" memilih menurut aksesori.
+  function armKind(p, which) {
+    const kind = p[which] ?? c[which];
+    if (kind && kind !== 'auto') return kind;
+    if (which === 'frontArm') return c.accessory === 'basket' || c.accessory === 'newspaper' ? 'carry' : 'swing';
+    return c.accessory === 'parcel' ? 'hang' : 'swing';
+  }
+
+  function drawBasket(ctx, hand) {
+    const x = hand.x - 3;
+    const y = hand.y + 2;
+    rect(ctx, x, y, 8, 6, c.accessoryColor);
+    for (let i = 0; i < 8; i += 2) pixel(ctx, x + i, y + 1 + ((i >> 1) & 1) * 2, c.accessoryShade);
+    rect(ctx, x, y + 5, 8, 1, c.accessoryShade);
+    rect(ctx, x + 1, y - 2, 6, 2, '#d8b45a');
+  }
+
+  // Berdiri dan berjalan. swing = ayunan lengan dekat (-1..1), 0 saat diam.
+  function drawNaturalStanding(ctx, p, { front, back, drop, breath, turn, blink, gesture, swing }) {
+    const footY = boxH;
+    const hipY = footY - legLen + drop;
+    const shoulderY = hipY - torsoLen - breath;
+    const headTop = shoulderY - 9;
+    const amp = 30 * (p.armSwing ?? c.armSwing);
+    const frontKind = armKind(p, 'frontArm');
+    const backKind = armKind(p, 'backArm');
+    const backHand = naturalArm(ctx, { x: cx - 1, y: shoulderY + 1 }, armAngles(backKind, -swing, amp), false);
+    // bungkusan dijinjing tangan jauh, di balik badan
+    if (c.accessory === 'parcel') {
+      rect(ctx, backHand.x - 4, backHand.y + 1, 6, 5, c.accessoryColor);
+      rect(ctx, backHand.x - 4, backHand.y + 3, 6, 1, c.accessoryShade);
+    }
+    drawNaturalLegs(ctx, hipY, footY, front, back);
+    drawTorso(ctx, shoulderY, hipY + 1);
+    drawHead(ctx, headTop, turn, blink);
+    let spec = armAngles(frontKind, swing, amp);
+    if (gesture > 0) spec = raiseArm(spec, gesture);
+    const shoulder = { x: cx + 1, y: shoulderY + 1 };
+    // bakul digambar sebelum lengan, supaya tangan terlihat memegang bibirnya
+    if (c.accessory === 'basket') drawBasket(ctx, pt(armFromAngles(shoulder, upperArm, foreArm, spec.angle, spec.bend).hand));
+    const hand = naturalArm(ctx, shoulder, spec, true);
+    if (c.accessory === 'bag' || c.accessory === 'broom' || c.accessory === 'newspaper') drawAccessory(ctx, hand, hipY, 0);
+  }
+
+  // Duduk dan mengayuh: kaki seperti Tahap 3, lengan bersiku menuju titik tujuan (pangkuan, koran, setang).
+  function drawNaturalSeated(ctx, { breath, turn, blink, gesture, pedal }) {
+    const footY = boxH;
+    const hipY = footY - Math.round(legLen * 0.55);
+    const shoulderY = hipY - torsoLen - breath;
+    const headTop = shoulderY - 9;
+    drawSeatedLegs(ctx, hipY, footY, pedal);
+    const backTarget = pedal ? { x: cx + 7, y: shoulderY + 4 } : { x: cx + 3, y: hipY - 3 };
+    naturalArm(ctx, { x: cx - 1, y: shoulderY + 1 }, { target: backTarget }, false);
+    drawTorso(ctx, shoulderY, hipY + 1);
+    drawHead(ctx, headTop, turn, blink);
+    const target = pedal ? { x: cx + 8, y: shoulderY + 4 } : { x: cx + 5, y: Math.round(hipY - 3 - gesture * 6) };
+    const hand = naturalArm(ctx, { x: cx + 1, y: shoulderY + 1 }, { target }, true);
+    drawAccessory(ctx, hand, hipY, gesture);
+  }
+
+  // Menyapu: kedua tangan memegang gagang sapu yang bergerak maju-mundur.
+  function drawNaturalSweep(ctx, { time, turn, blink }) {
+    const swing = 0.5 + 0.5 * Math.sin(time * 5);
+    const footY = boxH;
+    const hipY = footY - legLen + 1;
+    const shoulderY = hipY - torsoLen;
+    const headTop = shoulderY - 9;
+    const top = { x: cx + 3 + Math.round(swing * 2), y: shoulderY + 5 };
+    const tip = { x: cx + 6 + Math.round(swing * 6), y: footY - 3 };
+    const low = pt({ x: lerp(top.x, tip.x, 0.4), y: lerp(top.y, tip.y, 0.4) });
+    naturalArm(ctx, { x: cx - 1, y: shoulderY + 1 }, { target: low }, false, { hand: false });
+    drawNaturalLegs(ctx, hipY, footY, { dx: 3, lift: 0 }, { dx: -3, lift: 0 });
+    drawTorso(ctx, shoulderY, hipY + 1);
+    drawHead(ctx, headTop, turn, blink);
+    if (c.accessory === 'broom') {
+      const n = Math.max(Math.abs(tip.x - top.x), Math.abs(tip.y - top.y));
+      for (let i = 0; i <= n; i++) pixel(ctx, Math.round(lerp(top.x, tip.x, i / n)), Math.round(lerp(top.y, tip.y, i / n)), c.accessoryShade);
+      rect(ctx, tip.x - 2, tip.y + 1, 6, 2, c.accessoryColor);
+    }
+    // tangan jauh terlihat di depan badan, menggenggam gagang di bawah tangan dekat
+    rect(ctx, low.x, low.y, 2, 2, c.skinShade);
+    naturalArm(ctx, { x: cx + 1, y: shoulderY + 1 }, { target: top }, true);
+  }
+
+  function drawNatural(ctx, e, { time, turn, gesture, blink, breath }) {
+    const p = e.params;
+    if (e.state === 'walk') {
+      const g = walkPose(e.worldX, e.flip ? -1 : 1, { legLen, strideLength: c.strideLength, speed: e.speedX, scale: e.scale });
+      drawNaturalStanding(ctx, p, { front: g.front, back: g.back, drop: g.drop, breath: 0, turn, blink, gesture, swing: g.swing });
+    } else if (e.state === 'seated') {
+      drawNaturalSeated(ctx, { breath, turn, blink, gesture });
+    } else if (e.state === 'sweep') {
+      drawNaturalSweep(ctx, { time, turn, blink });
+    } else if (e.state === 'cycle') {
+      drawNaturalSeated(ctx, { breath: 0, turn, blink, gesture: 0, pedal: pedalsOf(e, p) });
+    } else {
+      const standing = e.state === 'stand';
+      drawNaturalStanding(ctx, p, {
+        front: { dx: 1, lift: 0 }, back: { dx: -1, lift: 0 }, drop: 0, breath: standing ? 0 : breath, turn, blink,
+        gesture: e.state === 'gesture' || gesture > 0 ? gesture : 0, swing: 0
+      });
+    }
+  }
+
+  // ---------- pencahayaan (Tahap 5, light) ----------
+  const buffer = createSpriteBuffer(BOX_W, boxH, 12);
+  const graders = new WeakMap();
+  const NO_PALETTE = {};
+  // pewarna per palet aktif dan awalan cahaya; palet dari tangga palet adalah objek yang sama per anak tangga
+  function graderFor(pal, prefix) {
+    const key = pal || NO_PALETTE;
+    if (!graders.has(key)) graders.set(key, new Map());
+    const byPrefix = graders.get(key);
+    if (!byPrefix.has(prefix)) byPrefix.set(prefix, createGrader(lightFromPalette(pal, prefix)));
+    return byPrefix.get(prefix);
+  }
+  const identity = () => [c.shirt, c.sarong || c.pants, c.hat === 'none' ? c.hair : c.hatColor].filter(Boolean);
+
   return {
     defaultState: 'idle',
-    identityColors: () => [c.shirt, c.sarong || c.pants, c.hat === 'none' ? c.hair : c.hatColor].filter(Boolean),
+    // fc (opsional) = konteks frame: karakter yang diberi cahaya punya warna identitas sesuai palet frame itu
+    identityColors: (fc) => (c.light && fc && fc.pal ? identity().map((hex) => graderFor(fc.pal, c.light).color(hex)) : identity()),
     size: () => ({ w: BOX_W, h: boxH }),
 
-    draw(ctx, e) {
+    // Data gerak untuk pemeriksaan otomatis (tanpa menggambar), hanya saat berjalan:
+    // telapak yang sedang menapak (x = kolom dunia, step = nomor langkah) dan turunnya pinggul (bob).
+    // Gerak klasik ikut dilaporkan supaya selisihnya bisa diukur, tetapi hanya gerak natural di skala 1 yang
+    // dijanjikan tidak meluncur (strict).
+    motionProbe(e) {
+      if (e.state !== 'walk') return null;
+      const dir = e.flip ? -1 : 1;
+      const x0 = Math.round(e.worldX);
+      const s = e.scale || 1;
+      if ((e.params.motion ?? c.motion) === 'natural') {
+        const g = walkPose(e.worldX, dir, { legLen, strideLength: c.strideLength, speed: e.speedX, scale: s });
+        const feet = [['front', g.front], ['back', g.back]].filter(([, f]) => f.planted).map(([foot, f]) => ({ foot, step: f.step, x: x0 + dir * f.dx * s }));
+        return { mode: 'natural', strict: s === 1, feet, bob: g.drop };
+      }
+      const k = Math.floor((e.worldX * dir * 8) / c.strideLength);
+      const phase = mod(k, 8);
+      const cycle = Math.floor(k / 8);
+      const feet = [];
+      if (WALK.frontLift[phase] === 0 && phase <= 4) feet.push({ foot: 'front', step: cycle, x: x0 + dir * WALK.frontFoot[phase] * s });
+      if (WALK.backLift[phase] === 0) feet.push({ foot: 'back', step: phase >= 4 ? cycle : cycle - 1, x: x0 + dir * WALK.backFoot[phase] * s });
+      return { mode: 'classic', strict: false, feet, bob: WALK.bob[phase] };
+    },
+
+    draw(ctx, e, fc) {
       const p = e.params;
       const time = e.time;
-      const turn = p.headTurn ?? 0;
-      const gesture = Math.max(0, Math.min(1, p.gesture ?? 0));
-      const blink = blinking(time);
-      // napas pelan: bahu naik 1 piksel setengah waktu
-      const breath = Math.sin((time / (p.breathSeconds ?? 3.4)) * Math.PI * 2) > 0.2 ? 1 : 0;
-
-      if (e.state === 'walk') {
-        // langkah dihitung dari jarak tempuh, jadi kaki tidak meluncur saat kecepatan berubah
-        const dir = e.flip ? -1 : 1;
-        const phase = mod(Math.floor((e.worldX * dir * 8) / c.strideLength), 8);
-        drawStanding(ctx, {
-          front: { dx: WALK.frontFoot[phase], lift: WALK.frontLift[phase] },
-          back: { dx: WALK.backFoot[phase], lift: WALK.backLift[phase] },
-          bob: WALK.bob[phase], frontHand: WALK.frontHand[phase], backHand: WALK.backHand[phase],
-          breath: 0, turn, blink, gesture
-        });
-      } else if (e.state === 'seated') {
-        drawSeated(ctx, { breath, turn, blink, gesture });
-      } else if (e.state === 'sweep') {
-        const swing = 0.5 + 0.5 * Math.sin(time * 5);
-        drawStanding(ctx, {
-          front: { dx: 2, lift: 0 }, back: { dx: -2, lift: 0 }, bob: 0,
-          frontHand: 2 + Math.round(swing * 2), backHand: 0, breath: 0, turn, blink, gesture: 0.1 * swing
-        });
-      } else if (e.state === 'cycle') {
-        // phaseOffset = jarak titik entitas ini ke titik sepeda, agar pedal kaki sama dengan pedal sepeda
-        const angle = ((e.worldX + (p.phaseOffset ?? 0)) * (e.flip ? -1 : 1)) / (p.wheelRadius ?? 8);
-        const crank = { x: cx + (p.crankX ?? 3), y: boxH - (p.crankDrop ?? 2) };
-        const r = p.crankRadius ?? 3;
-        const at = (a) => ({ x: Math.round(crank.x + Math.cos(a) * r), y: Math.round(crank.y + Math.sin(a) * r) });
-        drawSeated(ctx, { breath: 0, turn, blink, gesture: 0, pedal: { front: at(angle), back: at(angle + Math.PI) } });
-      } else {
-        const standing = e.state === 'stand';
-        drawStanding(ctx, {
-          front: { dx: 1, lift: 0 }, back: { dx: -1, lift: 0 }, bob: 0,
-          frontHand: 1, backHand: -1, breath: standing ? 0 : breath, turn, blink, gesture: e.state === 'gesture' || gesture > 0 ? gesture : 0
-        });
+      const pose = {
+        time,
+        turn: p.headTurn ?? 0,
+        gesture: Math.max(0, Math.min(1, p.gesture ?? 0)),
+        blink: blinking(time),
+        // napas pelan: bahu naik 1 piksel setengah waktu
+        breath: Math.sin((time / (p.breathSeconds ?? 3.4)) * Math.PI * 2) > 0.2 ? 1 : 0
+      };
+      const body = (target) => ((p.motion ?? c.motion) === 'natural' ? drawNatural(target, e, pose) : drawClassic(target, e, pose));
+      const light = p.light ?? c.light;
+      if (!light) {
+        body(ctx);
+        return;
       }
+      // digambar dulu dengan warna dasar ke penyangga, lalu diwarnai cahaya palet frame ini
+      buffer.clear();
+      withView(buffer.ctx, buffer.view, () => body(buffer.ctx));
+      // arah cahaya: params/paramTracks entitas, lalu track lingkungan (lightTrack), lalu nilai tetap aset
+      const track = p.lightTrack ?? c.lightTrack;
+      const direction = p.lightDirection ?? (track && fc && fc.env ? fc.env[track] ?? 0 : c.lightDirection);
+      flushLit(buffer, ctx, graderFor(fc && fc.pal, light), lightSide(direction, e.flip));
     }
   };
 }

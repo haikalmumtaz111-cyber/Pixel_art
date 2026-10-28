@@ -182,6 +182,83 @@ async function main() {
       }), /lebih kecil dari batas 0/);
     });
 
+    // ---------- karakter rig: gerak dan cahaya (Tahap 5) ----------
+    const rigAsset = Object.keys(raw.assets || {}).find((k) => raw.assets[k].type === 'rig-character');
+    const rigCast = composed ? Object.keys(raw.cast || {}).find((k) => raw.assets[raw.cast[k].asset]?.type === 'rig-character') : null;
+
+    await test('Mode gerak karakter salah ketik', () => {
+      if (!rigAsset) return { skipped: 'tidak ada karakter rig' };
+      return expectIssue(variant((r) => { r.assets[rigAsset].motion = 'melayang'; }), /motion: nilai "melayang" bukan salah satu dari: classic, natural/);
+    });
+
+    await test('Pose lengan karakter tidak dikenal', () => {
+      if (!rigAsset) return { skipped: 'tidak ada karakter rig' };
+      return expectIssue(variant((r) => { r.assets[rigAsset].frontArm = 'terbang'; }), /frontArm: nilai "terbang" bukan salah satu dari/);
+    });
+
+    await test('Palet adegan belum punya warna cahaya karakter', () => {
+      if (!rigCast) return { skipped: 'tidak ada pemeran karakter rig' };
+      return expectIssue(variant((r) => {
+        r.cast[rigCast].params = { ...(r.cast[rigCast].params || {}), light: 'cahayaHantu' };
+      }), /belum punya warna: .*cahayaHantuLight, cahayaHantuLift, cahayaHantuRim/);
+    });
+
+    await test('Arah cahaya karakter di luar batas', () => {
+      if (!rigCast) return { skipped: 'tidak ada pemeran karakter rig' };
+      return expectIssue(variant((r) => {
+        r.cast[rigCast].paramTracks = { ...(r.cast[rigCast].paramTracks || {}), lightDirection: [[0, 0], [10, 3]] };
+      }), /lightDirection key 1: nilai 3 di luar batas -1\.\.1/);
+    });
+
+    await test('Track arah cahaya karakter tidak ada', () => {
+      if (!rigAsset) return { skipped: 'tidak ada karakter rig' };
+      return expectIssue(variant((r) => { r.assets[rigAsset].lightTrack = 'matahari-hantu'; }), /track lingkungan "matahari-hantu" tidak ada di bagian environment/);
+    });
+
+    // Kode gerak natural sengaja dirusak di salinan repository; pemeriksaan gerak validator harus menangkapnya,
+    // sedangkan kode asli lolos (kontrol).
+    const naturalWalkers = composed && Object.values(raw.cast || {}).some((c) => {
+      const a = raw.assets[c.asset];
+      const walks = c.state === 'walk' || (Array.isArray(c.state) && c.state.some((k) => k[1] === 'walk'));
+      return a?.type === 'rig-character' && walks && (c.params?.motion ?? a.motion) === 'natural';
+    });
+    const brokenMotion = async (file, from, to, id) => {
+      const real = await openStudio(config);
+      let control;
+      try {
+        control = (await B.motionChecks(real, config)).find((c) => c.id === id);
+      } finally {
+        await real.close();
+      }
+      const sandbox = makeSandbox('pixel-gerak-rusak-');
+      try {
+        const target = path.join(sandbox.dir, file);
+        const code = fs.readFileSync(target, 'utf8');
+        if (!code.includes(from)) throw new Error(`kode yang mau dirusak tidak ditemukan di ${file}`);
+        fs.writeFileSync(target, code.replace(from, to));
+        const sconfig = sandbox.require('src/render/projects.cjs').loadProject(config.id);
+        const studio = await sandbox.require('src/render/browser.cjs').openStudio(sconfig);
+        try {
+          const verdict = expectFail(await sandbox.require('src/render/browser-checks.cjs').motionChecks(studio, sconfig), [id]);
+          return { detected: verdict.detected && control.pass, detail: `${verdict.detail} | kontrol kode asli: ${control.pass ? 'lolos' : 'gagal'}` };
+        } finally {
+          await studio.close();
+        }
+      } finally {
+        sandbox.cleanup();
+      }
+    };
+
+    await test('Kaki meluncur saat berjalan (telapak ikut terseret tubuh)', () => {
+      if (!naturalWalkers) return { skipped: 'proyek tanpa karakter berjalan dengan gerak natural' };
+      return brokenMotion('src/assets/characters/gait.js', '  let foot = plant;\n', '  let foot = plant + (d - (step + offset) * cycle) * 0.5;\n', 'motion-feet');
+    });
+
+    await test('Tubuh bergetar saat berjalan (pinggul bolak-balik tiap frame)', () => {
+      if (!naturalWalkers) return { skipped: 'proyek tanpa karakter berjalan dengan gerak natural' };
+      return brokenMotion('src/assets/characters/gait.js', '  return Math.cos(4 * Math.PI * u) >= 0.5 ? depth : 0;\n', '  return Math.floor(u * 64) % 2;\n', 'motion-bob');
+    });
+
     await test('Skala entitas bukan bilangan bulat (grid piksel rusak)', () => {
       if (!composed) return { skipped: 'proyek tanpa adegan tersusun' };
       const id = Object.keys(raw.cast || {})[0];
@@ -394,7 +471,8 @@ async function main() {
           });
         } else {
           // pemeran diganti "kembaran" berbaju lain di adegan terakhir
-          const castId = Object.keys(raw.cast || {}).find((k) => raw.cast[k].asset === rule.asset);
+          // pemeran di adegan terakhir yang memakai aset itu (satu aset boleh dipakai beberapa pemeran)
+          const castId = (last.cast || []).find((k) => raw.cast?.[k]?.asset === rule.asset);
           if (!castId || !last.cast?.includes(castId)) return { skipped: 'aset tidak dipakai pemeran di adegan terakhir' };
           other = variant((r) => {
             r.assets[`${rule.asset}-b`] = { ...clone(r.assets[rule.asset]), shirt: '#3a6a9a', shirtShade: '#2a4a7a', pants: '#8a8a8a', hatColor: '#c03a3a', hair: '#c03a3a' };

@@ -69,6 +69,19 @@ export function createComposedScene({ film, scene, assets, environment }) {
   const palette = createLighting(film, scene.lighting || film.lighting);
 
   return {
+    // palet aktif pada frame tertentu (dipakai pengujian, misalnya warna identitas aset yang diterangi palet)
+    paletteAt: (frame) => palette(environment.at(frame)),
+    // keadaan entitas yang tampil pada frame tertentu, tanpa menggambar (dipakai pengujian gerak)
+    entitiesAt(frame) {
+      const out = [];
+      for (const layer of layers) {
+        for (const { entity } of byLayer.get(layer.id)) {
+          const st = entity.stateAt(frame, frame / fps);
+          if (st.visible) out.push({ id: entity.id, asset: entity.asset, state: { ...st, scale: entity.scale } });
+        }
+      }
+      return out;
+    },
     render(ctx, shot) {
       const { frame, time } = shot;
       const env = environment.at(frame);
@@ -99,7 +112,7 @@ export function createComposedScene({ film, scene, assets, environment }) {
           const local = st.flip
             ? { x0: (right - width) / s, x1: right / s, y0: -top / s, y1: (height - top) / s }
             : { x0: -left / s, x1: (width - left) / s, y0: -top / s, y1: (height - top) / s };
-          withView(ctx, view, () => entity.asset.draw(ctx, { ...st, size, local, layer: { id: layer.id, ox, oy } }, fc));
+          withView(ctx, view, () => entity.asset.draw(ctx, { ...st, size, local, scale: s, layer: { id: layer.id, ox, oy } }, fc));
         }
       }
       return { zoom, lensApplied: true };
