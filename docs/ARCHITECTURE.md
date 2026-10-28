@@ -12,7 +12,7 @@ Dokumen ini menjelaskan cara mesin animasi bekerja sejak Tahap 3 (mesin reusable
 | Jenis kamera | `keys`, `follow-entity`, `follow`, `speed`, ditambah lensa `scene.lens` untuk adegan jenis apa pun |
 | Mode zoom (`rendering.zoomMode`) | `anchored` (bawaan), `steps`, `nearest` (cara Tahap 3) |
 | Transisi | `cut`, `dissolve`, `portal` |
-| Baseline regresi | `tests/baselines/`: Project A dan prototipe dari `main@cfed35a`, Project B dari `main@9d7a144` (referensi Tahap 3). Baseline tidak boleh diubah tanpa persetujuan pemilik; perubahan yang disengaja dicatat di `tests/baselines/pending-changes.json`. Perubahan 124 frame Project B di Tahap 4 sudah disetujui pemilik; entrinya dipertahankan sampai baseline B diperbarui atas instruksi pemilik |
+| Baseline regresi | Versi per proyek di `tests/baselines/registry.json` ([`BASELINES.md`](BASELINES.md)). Resmi: Project A dan prototipe `tahap-2` (`main@cfed35a`), Project B `tahap-4` (`main@a1fd4a1`, perubahan 124 frame Tahap 4 yang disetujui pemilik). Historis: Project B `tahap-3` (`main@9d7a144`). File baseline tidak pernah diubah; perubahan yang disengaja dicatat di `tests/baselines/pending-changes.json` dan versi baru dibuat lewat `npm run baseline` setelah pemilik menyetujui |
 | Keterbatasan yang diketahui | [`BACKLOG.md`](BACKLOG.md), termasuk V23 (dua ukuran piksel di zoom pecahan), V24 (warna baru dari lapisan semi-transparan), V25 (batas antar lapisan memotong piksel art), dan T13 (deteksi tokoh "pop") |
 
 ## Gambaran besar
@@ -258,7 +258,9 @@ Adegan kustom mengambil aset lewat `assets.pick(scene.assets, type)`. Project A 
 | `manifest.cjs` | "struk" render: status `rendering` / `complete` / `failed` / `frames-only`, sidik jari konfigurasi, mesin, pustaka aset, frame, dan MP4 |
 | `validate.cjs`, `checks.cjs`, `browser-checks.cjs` | validasi generik + laporan + lembar kontak |
 | `negative-tests.cjs` | pengujian negatif per proyek |
-| `regression.cjs`, `fingerprint.cjs` | uji regresi terhadap baseline resmi `tests/baselines/` |
+| `regression.cjs`, `fingerprint.cjs` | uji regresi terhadap versi baseline resmi (atau historis dengan `--baseline <versi>`) |
+| `baselines.cjs`, `baseline.cjs` | registry versi baseline dan pemeriksaannya; `npm run baseline` untuk melihat dan merekam versi baru |
+| `baseline-guard.cjs` | penjaga baseline historis terhadap referensi tepercaya di Git (`npm run test:baseline-guard`) |
 | `project-tests.cjs`, `sandbox.cjs` | uji antar-proyek (mesin bersama, isolasi di salinan repository) |
 | `smoke.cjs`, `lint.cjs` | pemeriksaan ringan untuk CI |
 | `zoom-tests.cjs` | lab zoom: mengukur semua mode zoom dengan pola kalibrasi, plus penerapan pada Project A |
@@ -275,12 +277,13 @@ Setiap frame dihitung dari waktu global `time = frame / fps` dan `seed` proyek. 
 
 | Perintah | Isi | Butuh render? |
 |----------|-----|---------------|
-| `npm run lint` | sintaks JS, JSON, determinisme, kemurnian mesin inti | tidak |
+| `npm run lint` | sintaks JS, JSON, determinisme, kemurnian mesin inti, file baseline cocok dengan registry | tidak |
+| `npm run test:baseline-guard` | file baseline lama, versi registry, dan riwayat persetujuan sama dengan `origin/main` | tidak |
 | `npm run test:engine` | unit test `tests/engine/*.test.js`: track, easing, PRNG, jadwal setengah terbuka, entitas (urutan bebas), kamera, registry, palet, loader dan skema | tidak |
 | `npm run test:smoke` | render beberapa frame per proyek, cocokkan dengan baseline | tidak (render kecil) |
 | `npm run validate -- --project <id>` | validasi lengkap satu proyek (video, frame, transisi, adegan terpisah, konsistensi aset, modul terisolasi, determinisme, manifest) | ya |
 | `npm run test:negative -- --project <id>` | kesalahan yang disengaja harus ditolak | ya |
-| `npm run test:regression` | Project A dan prototipe identik dengan baseline `main` | ya |
+| `npm run test:regression` | setiap proyek identik dengan versi baseline resminya; `--project <id> --baseline <versi>` untuk versi historis | ya |
 | `npm run test:projects` | mesin bersama, file konfigurasi terpisah, isolasi dua arah | ya |
 | `npm run test:zoom` | lab zoom: 10 skenario (zoom bulat dan pecahan, geser horizontal/vertikal/diagonal, zoom masuk/keluar) x 4 pendekatan, plus Project A dengan lensa zoom | tidak (render kecil) |
 | `npm test` | semua di atas | ya |
@@ -295,4 +298,5 @@ Teknik penting:
 - **Determinisme**: seluruh frame dirender ulang di browser baru dengan urutan terbalik lalu dibandingkan per byte. MP4 di-encode ulang dan dibandingkan SHA-256-nya.
 - **Grid piksel kamera**: setiap frame mencatat mode zoom, nilai zoom, dan geseran lapisannya di manifest render. Validator menghitung ulang ukuran setiap kolom/baris dunia dan menolak crawl (ukuran berubah padahal zoom tetap) serta piksel bolak-balik.
 - **Lab zoom**: pola kalibrasi `calibration-grid` gaya `identity` memberi setiap piksel art warna unik (kolom, baris, lapisan), jadi ukuran, posisi, dan warna campuran bisa dibaca langsung dari gambar 1920x1080. Polanya opak, jadi efek lapisan semi-transparan (V24) dan potongan di batas lapisan yang tumpang tindih (V25) belum diukur di lab.
-- **Perubahan terdeklarasi**: regresi membandingkan setiap proyek yang punya baseline. Frame di dalam rentang `tests/baselines/pending-changes.json` boleh berbeda tetapi dilaporkan "menunggu persetujuan"; frame di luar rentang wajib identik.
+- **Perubahan terdeklarasi**: regresi membandingkan setiap proyek dengan versi baseline resminya. Frame di dalam rentang entri `tests/baselines/pending-changes.json` yang menunjuk versi itu (`against`) boleh berbeda tetapi dilaporkan "menunggu persetujuan"; frame di luar rentang wajib identik.
+- **Versi baseline**: `tests/baselines/registry.json` mencatat SHA-256 setiap file baseline dan perubahan antar versi beserta bukti persetujuan. Lint dan regresi menolak file yang tidak cocok dengan hash registry, file yang tidak terdaftar, catatan perubahan yang tidak sama persis dengan isi file, dan entri pending yang menunjuk versi lama. Karena lint hanya melihat folder yang sama, `npm run test:baseline-guard` membandingkan file baseline lama, versi registry, dan riwayat `resolved` dengan `origin/main` (di CI: cabang tujuan PR), sehingga file yang diubah bersama hash registry-nya tetap tertangkap. Detail dan batasnya: [`BASELINES.md`](BASELINES.md).

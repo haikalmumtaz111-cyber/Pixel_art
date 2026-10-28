@@ -1,60 +1,87 @@
 {
-  "testedAt": "2026-10-27T12:29:19.914Z",
+  "testedAt": "2026-10-27T23:36:14.173Z",
   "allPass": true,
-  "verdict": "TIDAK ADA REGRESI TAK TERDUGA (ada perubahan terdeklarasi yang menunggu persetujuan)",
-  "passed": 22,
-  "total": 22,
-  "pending": {
-    "old-town-morning": {
-      "stage": "Tahap 4",
-      "backlog": "V14",
-      "status": "menunggu persetujuan pemilik",
-      "reason": "Zoom kamera pecahan memakai grid piksel terkunci (zoomMode anchored) agar garis tidak merayap, dan dither transisi dissolve diselaraskan dengan grid art adegan tujuan. Rentang diambil dari konfigurasi: push-in adegan 1 (zoom berubah frame 84-119) + dissolve (108-131), dan pullback adegan 3 (zoom berubah frame 255-345).",
-      "frames": [
-        [
-          84,
-          131
-        ],
-        [
-          255,
-          345
-        ]
-      ],
-      "compatibility": "rendering.zoomMode \"nearest\" menghasilkan ulang Tahap 3 identik untuk semua frame"
-    }
-  },
+  "verdict": "TIDAK ADA REGRESI",
+  "passed": 29,
+  "total": 29,
+  "pending": {},
   "baselines": [
     {
       "project": "night-to-dawn",
-      "source": {
-        "branch": "main",
-        "commit": "cfed35a",
-        "note": "Baseline resmi sebelum pengembangan Tahap 3"
-      }
+      "version": "tahap-2",
+      "official": true,
+      "source": "main@cfed35a",
+      "engineVersion": "0.2.0"
     },
     {
       "project": "old-town-morning",
-      "source": {
-        "branch": "main",
-        "commit": "9d7a144",
-        "note": "Referensi resmi Project B hasil Tahap 3, diambil sebelum pengembangan Tahap 4"
-      }
+      "version": "tahap-4",
+      "official": true,
+      "source": "main@a1fd4a1",
+      "engineVersion": "0.4.0"
     },
     {
       "project": "train-night-rain",
-      "source": {
-        "branch": "main",
-        "commit": "cfed35a",
-        "note": "Baseline resmi sebelum pengembangan Tahap 3"
-      }
+      "version": "tahap-2",
+      "official": true,
+      "source": "main@cfed35a",
+      "engineVersion": "0.2.0"
     }
   ],
   "checks": [
     {
+      "id": "registry:files",
+      "name": "Semua file baseline terdaftar di registry",
+      "pass": true,
+      "detail": "4 file baseline terdaftar"
+    },
+    {
+      "id": "registry:night-to-dawn:files",
+      "name": "night-to-dawn: file baseline cocok dengan SHA-256 di registry",
+      "pass": true,
+      "detail": "1 versi (tahap-2), isi file sama dengan hash di registry"
+    },
+    {
+      "id": "registry:night-to-dawn:official",
+      "name": "night-to-dawn: versi resmi dan riwayat versi tersambung",
+      "pass": true,
+      "detail": "resmi tahap-2; riwayat tahap-2"
+    },
+    {
+      "id": "registry:old-town-morning:files",
+      "name": "old-town-morning: file baseline cocok dengan SHA-256 di registry",
+      "pass": true,
+      "detail": "2 versi (tahap-3, tahap-4), isi file sama dengan hash di registry"
+    },
+    {
+      "id": "registry:old-town-morning:official",
+      "name": "old-town-morning: versi resmi dan riwayat versi tersambung",
+      "pass": true,
+      "detail": "resmi tahap-4; riwayat tahap-3 -> tahap-4"
+    },
+    {
+      "id": "registry:old-town-morning:tahap-3->tahap-4",
+      "name": "old-town-morning: perubahan tahap-3 -> tahap-4 sama persis dengan catatan persetujuan",
+      "pass": true,
+      "detail": "124 frame berubah (85-130, 262-339), 236 identik; catatan 124 frame (85-130, 262-339); semua di rentang terdeklarasi 84-131, 255-345"
+    },
+    {
+      "id": "registry:train-night-rain:files",
+      "name": "train-night-rain: file baseline cocok dengan SHA-256 di registry",
+      "pass": true,
+      "detail": "1 versi (tahap-2), isi file sama dengan hash di registry"
+    },
+    {
+      "id": "registry:train-night-rain:official",
+      "name": "train-night-rain: versi resmi dan riwayat versi tersambung",
+      "pass": true,
+      "detail": "resmi tahap-2; riwayat tahap-2"
+    },
+    {
       "id": "night-to-dawn:manifest",
       "name": "night-to-dawn: hasil render terbaru dan sukses",
       "pass": true,
-      "detail": "status complete, selesai 2026-10-27T12:09:44.180Z | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest"
+      "detail": "status complete, selesai 2026-10-27T23:28:36.236Z | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest"
     },
     {
       "id": "night-to-dawn:frames",
@@ -96,7 +123,7 @@
       "id": "old-town-morning:manifest",
       "name": "old-town-morning: hasil render terbaru dan sukses",
       "pass": true,
-      "detail": "status complete, selesai 2026-10-27T12:11:15.647Z | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest"
+      "detail": "status complete, selesai 2026-10-27T23:30:01.655Z | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest"
     },
     {
       "id": "old-town-morning:frames",
@@ -112,15 +139,9 @@
     },
     {
       "id": "old-town-morning:pixels",
-      "name": "old-town-morning: piksel identik di luar perubahan terdeklarasi",
+      "name": "old-town-morning: piksel setiap frame identik",
       "pass": true,
-      "detail": "236 frame identik; 124 frame berubah di rentang terdeklarasi (85-130, 262-339)"
-    },
-    {
-      "id": "old-town-morning:pending",
-      "name": "old-town-morning: perubahan Tahap 4 (V14) menunggu persetujuan pemilik",
-      "pass": true,
-      "detail": "124 frame berubah, alasan: Zoom kamera pecahan memakai grid piksel terkunci (zoomMode anchored) agar garis tidak merayap, dan dither transisi dissolve diselaraskan dengan grid art adegan tujuan. Rentang diambil dari konfigurasi: push-in adegan 1 (zoom berubah frame 84-119) + dissolve (108-131), dan pullback adegan 3 (zoom berubah frame 255-345)."
+      "detail": "360 frame identik piksel demi piksel"
     },
     {
       "id": "old-town-morning:video-format",
@@ -130,21 +151,21 @@
     },
     {
       "id": "old-town-morning:decoded",
-      "name": "old-town-morning: frame hasil decode (informasi, kompresi H.264)",
+      "name": "old-town-morning: frame hasil decode identik",
       "pass": true,
-      "detail": "323 frame hasil decode berbeda (184 di luar rentang terdeklarasi, karena encoder H.264 memakai frame sekitar sebagai acuan); sumber PNG di luar rentang identik"
+      "detail": "360 frame identik"
     },
     {
       "id": "old-town-morning:sha256",
-      "name": "old-town-morning: file MP4 identik, atau berbeda hanya karena perubahan terdeklarasi",
+      "name": "old-town-morning: file MP4 identik byte demi byte",
       "pass": true,
-      "detail": "756f7d874738ddb1... (baseline 761c76b535b5f092...), berbeda karena frame terdeklarasi berubah"
+      "detail": "756f7d874738ddb1... (baseline 756f7d874738ddb1...)"
     },
     {
       "id": "train-night-rain:manifest",
       "name": "train-night-rain: hasil render terbaru dan sukses",
       "pass": true,
-      "detail": "status complete, selesai 2026-10-27T12:28:17.235Z | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest"
+      "detail": "status complete, selesai 2026-10-27T23:31:35.471Z | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest"
     },
     {
       "id": "train-night-rain:frames",

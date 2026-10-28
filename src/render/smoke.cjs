@@ -1,15 +1,16 @@
 // Uji asap (smoke test) yang ringan untuk CI: setiap proyek dirender di beberapa frame saja
 // (awal, tengah, akhir, dan satu frame transisi), tanpa membuat MP4.
 // - frame harus berukuran benar dan tidak kosong
-// - proyek yang punya baseline (tests/baselines) harus identik piksel demi piksel di frame tersebut
+// - proyek yang punya baseline resmi (tests/baselines/registry.json) harus identik piksel demi piksel di frame tersebut
 // Pemakaian: npm run test:smoke
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const { ROOT, listProjects, loadProject } = require('./projects.cjs');
+const { listProjects, loadProject } = require('./projects.cjs');
 const { renderFrames } = require('./pipeline.cjs');
 const { md5List } = require('./fingerprint.cjs');
 const { frameFile } = require('./config.cjs');
+const B = require('./baselines.cjs');
 
 async function main() {
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'pixel-smoke-'));
@@ -19,12 +20,12 @@ async function main() {
       const config = loadProject(p.id);
       const total = config.totalFrames;
       const frames = [...new Set([0, Math.floor(total / 2), total - 1, ...config.timeline.transitions.map((t) => t.startFrame + Math.floor(t.durationFrames / 2))])].sort((a, b) => a - b);
-      const baselineFile = path.join(ROOT, 'tests', 'baselines', `${p.id}.json`);
-      const baseline = fs.existsSync(baselineFile) ? JSON.parse(fs.readFileSync(baselineFile, 'utf8')) : null;
-      // frame yang masuk perubahan terdeklarasi (tests/baselines/pending-changes.json) tidak dicocokkan dengan baseline
-      const pendingFile = path.join(ROOT, 'tests', 'baselines', 'pending-changes.json');
-      const declared = fs.existsSync(pendingFile) ? (JSON.parse(fs.readFileSync(pendingFile, 'utf8')).changes?.[p.id]?.frames || []) : [];
-      const isDeclared = (f) => declared.some(([a, b]) => f >= a && f <= b);
+      // baseline resmi dari tests/baselines/registry.json
+      const official = B.loadBaseline(p.id);
+      const baseline = official ? official.data : null;
+      // frame yang masuk perubahan terdeklarasi terhadap versi resmi (tests/baselines/pending-changes.json) tidak dicocokkan
+      const declared = official ? (B.pendingFor(B.readPending(), B.readRegistry(), p.id, official.version)?.frames || []) : [];
+      const isDeclared = (f) => B.inRanges(declared, f);
       const dir = path.join(temp, p.id);
       const problems = [];
       for (const f of frames) {
@@ -41,7 +42,7 @@ async function main() {
       const ok = problems.length === 0;
       if (!ok) failed++;
       const skipped = frames.filter(isDeclared);
-      const note = baseline ? `, identik dengan baseline${skipped.length ? ` (frame ${skipped.join(', ')} masuk perubahan terdeklarasi, tidak dicocokkan)` : ''}` : '';
+      const note = baseline ? `, identik dengan baseline ${official.version}${skipped.length ? ` (frame ${skipped.join(', ')} masuk perubahan terdeklarasi, tidak dicocokkan)` : ''}` : '';
       console.log(`${ok ? 'LULUS' : 'GAGAL'}  ${p.id}: frame ${frames.join(', ')} ${ok ? `dirender ${config.frameSize.width}x${config.frameSize.height}${note}` : problems.join('; ')}`);
     }
   } finally {

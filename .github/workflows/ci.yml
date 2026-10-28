@@ -21,6 +21,15 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run lint
+      # Pembanding tepercaya untuk baseline historis: cabang tujuan PR, atau commit main sebelum push.
+      # Isinya tidak bisa diubah oleh perubahan yang sedang diuji, jadi file baseline lama yang diubah bersama
+      # hash registry-nya tetap tertangkap (lint hanya membandingkan file dengan registry di folder yang sama).
+      - name: Baseline historis tidak berubah dibanding main
+        env:
+          GUARD_REF: ${{ github.event_name == 'pull_request' && github.base_ref || github.event.before }}
+        run: |
+          git fetch --no-tags --depth=1 origin "$GUARD_REF"
+          npm run test:baseline-guard -- --ref FETCH_HEAD
       - run: npm run test:engine
       - run: npm run projects
 

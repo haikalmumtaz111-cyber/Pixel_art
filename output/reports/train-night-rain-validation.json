@@ -1,5 +1,5 @@
 {
-  "testedAt": "2026-10-27T12:28:37.199Z",
+  "testedAt": "2026-10-27T23:33:50.806Z",
   "project": "train-night-rain",
   "config": "config/train-night-rain.json",
   "includes": [],
@@ -101,7 +101,7 @@
       "id": "manifest:status",
       "name": "Render terakhir selesai dengan sukses",
       "pass": true,
-      "detail": "status complete, selesai 2026-10-27T12:28:17.235Z"
+      "detail": "status complete, selesai 2026-10-27T23:31:35.471Z"
     },
     {
       "id": "manifest:fresh",
@@ -311,10 +311,10 @@
     "libraryHash": "2925f4ab08ab5d4f5875307cdff1c7d6f8bede58e456f3ad8c6395ea994da16d",
     "engineVersion": "0.4.0",
     "status": "complete",
-    "startedAt": "2026-10-27T12:28:04.511Z",
-    "finishedAt": "2026-10-27T12:28:17.235Z",
-    "renderSeconds": 3.891,
-    "encodeSeconds": 8.832,
+    "startedAt": "2026-10-27T23:31:25.246Z",
+    "finishedAt": "2026-10-27T23:31:35.471Z",
+    "renderSeconds": 3.032,
+    "encodeSeconds": 7.193,
     "chromiumVersion": "153.0.8010.12",
     "jsErrors": 0,
     "loadedModules": [

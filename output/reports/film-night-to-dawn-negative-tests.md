@@ -1,7 +1,7 @@
 # Pengujian Negatif: Kereta Malam Menuju Fajar
 
 Setiap baris adalah hasil yang SENGAJA dibuat salah. Pengujian lulus bila validator menolaknya (TERDETEKSI).
-Dibuat otomatis oleh `npm run test:negative -- --project night-to-dawn` pada 2026-10-27T12:24:37.356Z.
+Dibuat otomatis oleh `npm run test:negative -- --project night-to-dawn` pada 2026-10-27T23:34:53.797Z.
 
 | No | Kesalahan yang disengaja | Hasil | Detail |
 |----|--------------------------|-------|--------|

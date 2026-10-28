@@ -20,6 +20,7 @@ const { loadProject } = require('./projects.cjs');
 const { renderFrames } = require('./pipeline.cjs');
 const { md5List } = require('./fingerprint.cjs');
 const { frameFile } = require('./config.cjs');
+const { loadBaseline } = require('./baselines.cjs');
 const os = require('os');
 
 const FPS = 30;
@@ -215,7 +216,7 @@ function summarize(perScenario) {
 // - frame dengan zoom 1 harus identik dengan baseline resmi Project A (setelah diperkecil 4x nearest)
 // - zoom pecahan dengan mode anchored tidak boleh merayap, mode nearest sebagai pembanding
 async function projectAChecks() {
-  const baseline = JSON.parse(fs.readFileSync(path.join(ROOT, 'tests', 'baselines', 'night-to-dawn.json'), 'utf8'));
+  const baseline = loadBaseline('night-to-dawn').data;
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'pixel-zoom-a-'));
   const out = {};
   try {

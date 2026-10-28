@@ -1,13 +1,25 @@
 {
-  "note": "Perubahan hasil render yang disengaja terhadap baseline resmi. Baseline-nya sendiri TIDAK diubah. Setiap perubahan di sini menunggu persetujuan pemilik; frame di luar rentang yang dideklarasikan tetap wajib identik.",
-  "changes": {
-    "old-town-morning": {
+  "note": "Perubahan hasil render yang disengaja terhadap baseline resmi. Baseline-nya sendiri TIDAK diubah. \"changes\" = perubahan aktif per proyek yang menunggu persetujuan pemilik, terikat ke versi baseline lewat \"against\"; frame di luar rentang yang dideklarasikan tetap wajib identik. \"resolved\" = riwayat perubahan yang sudah disetujui pemilik dan dijadikan versi baseline baru (lewat npm run baseline). Riwayat tidak dihapus. Panduan: docs/BASELINES.md",
+  "changes": {},
+  "resolved": [
+    {
+      "project": "old-town-morning",
       "stage": "Tahap 4",
       "backlog": "V14",
-      "status": "menunggu persetujuan pemilik",
+      "status": "disetujui pemilik",
       "reason": "Zoom kamera pecahan memakai grid piksel terkunci (zoomMode anchored) agar garis tidak merayap, dan dither transisi dissolve diselaraskan dengan grid art adegan tujuan. Rentang diambil dari konfigurasi: push-in adegan 1 (zoom berubah frame 84-119) + dissolve (108-131), dan pullback adegan 3 (zoom berubah frame 255-345).",
       "frames": [[84, 131], [255, 345]],
-      "compatibility": "rendering.zoomMode \"nearest\" menghasilkan ulang Tahap 3 identik untuk semua frame"
+      "compatibility": "rendering.zoomMode \"nearest\" menghasilkan ulang Tahap 3 identik untuk semua frame",
+      "against": "tahap-3",
+      "approvedAt": "2026-10-27",
+      "resolvedBy": "baseline old-town-morning versi tahap-4",
+      "changedFrames": [[85, 130], [262, 339]],
+      "changedCount": 124,
+      "evidence": [
+        "PR #4 (Tahap 4, termasuk perubahan 124 frame Project B) di-merge ke main oleh pemilik pada 2026-10-27T15:13:23Z, merge commit a1fd4a1",
+        "Commit 5f709da mencatat persetujuan pemilik atas Tahap 4 dan perubahan 124 frame Project B (27 Oktober 2026)",
+        "Instruksi pemilik 27 Oktober 2026: buat baseline resmi Project B Tahap 4 dari hasil render yang sudah di-merge dan disetujui"
+      ]
     }
-  }
+  ]
 }
