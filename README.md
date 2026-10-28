@@ -10,8 +10,9 @@ Studio animasi pixel art berbasis kode. Tujuan jangka panjangnya adalah membuat 
 | 2 | Sistem multi-adegan + film 15 detik *Kereta Malam Menuju Fajar* | Selesai, di-merge ke `main` (PR #2) |
 | 3 | Mesin reusable untuk banyak proyek + film 12 detik *Pagi di Kota Tua* | Selesai, disetujui, di-merge ke `main` (PR #3) |
 | 4 | Kamera pixel-perfect: zoom tanpa piksel merayap (V14) | Selesai, disetujui, di-merge ke `main` (PR #4) |
+| 5 | Gerak dan pencahayaan karakter (V15, V16) + demo *Lab Karakter* | Selesai di branch `tahap-5-character-animation`, menunggu persetujuan pemilik |
 
-Versi mesin: **0.4.0** (`config/engine.json`), kondisi resmi di `main` sejak Tahap 4 di-merge.
+Versi mesin: **0.5.0** di branch Tahap 5 (`config/engine.json`). Kondisi resmi di `main`: 0.4.0 (Tahap 4).
 
 Pengelolaan baseline setelah Tahap 4: baseline regresi kini punya versi per proyek, dan Project B memakai baseline resmi Tahap 4 (`tahap-4`). Disetujui pemilik dan di-merge ke `main` lewat PR #5 (`d0f3f34`). Penjelasan: [`docs/BASELINES.md`](docs/BASELINES.md).
 
@@ -24,8 +25,35 @@ Semua proyek memakai mesin yang sama (`src/engine/`). Yang membedakan hanya file
 | `old-town-morning` | *Pagi di Kota Tua* (Project B, Tahap 3) | 12 detik, 360 frame | [`output/video/old-town-morning.mp4`](output/video/old-town-morning.mp4) | [`output/reports/old-town-morning-validation.md`](output/reports/old-town-morning-validation.md) |
 | `night-to-dawn` | *Kereta Malam Menuju Fajar* (Project A, Tahap 2) | 15 detik, 450 frame | [`output/video/film-night-to-dawn.mp4`](output/video/film-night-to-dawn.mp4) | [`output/reports/film-night-to-dawn-validation.md`](output/reports/film-night-to-dawn-validation.md) |
 | `train-night-rain` | *Kereta Malam di Tengah Hujan* (prototipe Tahap 1) | 5 detik, 150 frame | [`output/video/train-night-rain.mp4`](output/video/train-night-rain.mp4) | [`output/reports/train-night-rain-validation.md`](output/reports/train-night-rain-validation.md) |
+| `character-lab` | *Lab Karakter: Gerak dan Cahaya* (demo Tahap 5) | 12 detik, 360 frame | [`output/video/character-lab.mp4`](output/video/character-lab.mp4) | [`output/reports/character-lab-validation.md`](output/reports/character-lab-validation.md) |
 
 Semua video: 1920 x 1080, 30 FPS, H.264 High level 4.1, yuv420p, faststart, tanpa audio. Dunia digambar di 480 x 270 lalu diperbesar nearest neighbor, jadi pikselnya tetap tajam.
+
+## Hasil Tahap 5: gerak dan pencahayaan karakter (menunggu persetujuan)
+
+Dua kekurangan karakter rig dari Tahap 3 diperbaiki, keduanya **opsional per karakter**, sehingga ketiga film lama tetap identik piksel dan byte dengan baseline resminya:
+
+- **Gerak natural (V16)**, `"motion": "natural"`: siku dan lutut menekuk, pose lengan (`swing`, `hang`, `carry`, `behind`), ayunan tangan yang selalu berlawanan dengan kaki di sisinya, dan siklus jalan 8 fase yang telapaknya menempel di tanah. Duduk, menoleh, isyarat, menyapu (dua tangan di gagang), dan mengayuh (siku menuju setang) tetap ada.
+- **Pencahayaan karakter (V15)**, `"light": "<awalan>"`: warna karakter mengikuti palet pencahayaan pagi, siang, sore, dan malam, berubah di frame yang sama dengan bangunan dan langit, ditambah cahaya tepi dari arah matahari yang tetap benar walau karakter menghadap kiri.
+
+| Ukuran (demo `character-lab`, seluruh film) | Gerak klasik (Tahap 3-4) | Gerak natural (Tahap 5) |
+|---------------------------------------------|--------------------------|-------------------------|
+| Langkah yang telapaknya meluncur | 98 dari 98 | 0 dari 97 |
+| Telapak meluncur rata-rata per langkah | 5,4 piksel art | 0 |
+| Pinggul bolak-balik dalam 1 frame (getar) | - | 0 |
+
+Proyek demo *Lab Karakter* (12 detik) disusun hanya dari konfigurasi (`config/character-lab.json`) dan aset yang sudah ada: 01 langkah dan ayunan tangan (pagi, zoom 2), 02 pose lengan: melambai, membaca koran, menyapu, tangan di belakang, mengayuh (siang, zoom 1,5), 03 siang ke sore, 04 sore ke malam dengan lampu dan jendela menyala.
+
+Bahan pembanding (`npm run demo:character`), "sebelum" = proyek yang sama dengan gerak klasik dan warna tetap:
+
+| File | Isi |
+|------|-----|
+| [`output/comparisons/v15-v16-sebelum-sesudah.mp4`](output/comparisons/v15-v16-sebelum-sesudah.mp4) | atas layar penuh, bawah potongan 1:1 yang mengikuti tokoh; kiri sebelum, kanan sesudah |
+| [`output/comparisons/v16-langkah.png`](output/comparisons/v16-langkah.png) | 8 frame berurutan Pak Darto berjalan, sebelum dan sesudah |
+| [`output/comparisons/v15-cahaya.png`](output/comparisons/v15-cahaya.png) | tokoh yang sama di pagi, siang, sore, malam, sebelum dan sesudah |
+| [`output/reports/character-demo.md`](output/reports/character-demo.md) | angka ukur gerak dan warna identitas per waktu |
+
+Project B belum memakai fitur ini (BACKLOG V26). Menerapkannya akan mengubah hampir semua frame Project B, jadi butuh deklarasi perubahan dan persetujuan terpisah. Cara memakai: [`docs/REUSABILITY_GUIDE.md`](docs/REUSABILITY_GUIDE.md) bagian karakter.
 
 ## Hasil Tahap 4: kamera pixel-perfect
 
@@ -104,6 +132,7 @@ npm run test:baseline-guard                           # baseline historis harus 
 npm run test:projects                                 # semua proyek memakai mesin yang sama dan saling terisolasi
 npm run test:zoom                                     # lab zoom: ukur grid piksel kamera di semua mode zoom
 npm run demo:zoom                                     # buat ulang video/gambar pembanding zoom di output/comparisons/
+npm run demo:character                                # buat ulang pembanding gerak dan cahaya karakter (Tahap 5)
 npm run test:engine                                   # unit test mesin (tanpa browser)
 npm run lint                                          # cek sintaks, JSON, determinisme, kemurnian mesin
 npm test                                              # semua pengujian di atas (setelah build:all)
@@ -164,6 +193,7 @@ Penjelasan teknis: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). Riwayat perub
 config/
   engine.json                   konfigurasi global mesin (jenis transisi, easing, kamera, encoding, batas validasi)
   old-town-morning.json         Project B, dipecah ke folder old-town-morning/ (palet, aset, set, pemeran, adegan)
+  character-lab.json            demo Tahap 5 (gerak dan cahaya karakter), dipecah ke folder character-lab/
   film-night-to-dawn.json       Project A (film kereta Tahap 2)
   train-night-rain.json         prototipe Tahap 1
 src/
@@ -182,6 +212,8 @@ src/
     common/                     langit, bukit, awan, burung, partikel, berkas cahaya, font piksel
     town/                       ruko, siluet kota, jalan, lampu, warung, bangku, pohon, sepeda
     characters/rig.js           karakter rig reusable (jalan, duduk, menoleh, isyarat, menyapu, mengayuh)
+    characters/gait.js          gerak natural Tahap 5: siklus jalan, lutut dan siku, pose lengan (fungsi murni)
+    characters/lighting.js      pencahayaan karakter Tahap 5: warna dari palet, cahaya tepi, penyangga piksel
     registry.js, train.js, countryside.js, interior.js, ...   aset film kereta Tahap 1-2
   scenes/                       adegan kustom film kereta (Tahap 1-2)
   render/                       program Node.js: loader proyek, render, validasi, pengujian
@@ -198,7 +230,7 @@ output/                         video, laporan, cuplikan, bahan pembanding (comp
 
 - Belum ada audio atau musik (di luar cakupan sampai sekarang).
 - Saat kamera zoom dengan nilai tidak bulat (misalnya 1,1), satu frame berisi dua ukuran piksel berdampingan (4 dan 5 piksel layar). Sejak Tahap 4 polanya menempel pada gambar sehingga tidak merayap; keseragaman penuh hanya di zoom kelipatan 0,25 (V23).
-- Warna karakter belum ikut berubah bersama palet pencahayaan pagi.
+- Fitur gerak natural dan pencahayaan karakter Tahap 5 baru dipakai demo `character-lab`. Project B masih memakai gerak klasik dan warna tetap sampai pemilik memutuskan (V26). Batas lainnya: V27 (gerak) dan V28 (cahaya: belum ada bayangan dan cahaya lampu lokal).
 - Determinisme dijamin di lingkungan yang sama (versi Chromium dan FFmpeg yang sama).
 - CI di GitHub hanya menjalankan pemeriksaan ringan. Render penuh dan pengujian lengkap dijalankan lokal atau di sesi Claude Code.
 - `main` dan branch Tahap 1-4 dilindungi ruleset GitHub (lihat [`docs/BASELINES.md`](docs/BASELINES.md)). Konfigurasinya aktif, tetapi penolakan push nyata belum diuji, dan PR yang mengubah workflow CI tetap perlu ditinjau manual (BACKLOG T18).

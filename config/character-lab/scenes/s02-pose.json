@@ -1,0 +1,12 @@
+{
+  "id": "s02-pose",
+  "name": "Pose lengan: melambai, membaca, tangan di belakang, mengayuh (siang)",
+  "module": "compose",
+  "stage": "lab-street",
+  "start": 4,
+  "end": 7.5,
+  "cast": ["pak-tua", "bu-sari", "penyapu", "kakek", "anak-sekolah", "sepeda", "pengayuh"],
+  "lighting": { "from": "siang", "to": "siang", "track": "sunSide" },
+  "camera": { "type": "keys", "x": [[0, 280]], "y": [[0, 40]], "zoom": [[0, 1.5]] },
+  "transitionOut": { "type": "dissolve", "start": 7.1, "duration": 0.8, "params": { "easing": "linear" } }
+}

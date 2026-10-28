@@ -22,6 +22,8 @@ Kondisi saat ini:
 
 Perintah `npm run baseline` menampilkan tabel ini langsung dari registry.
 
+Proyek demo Tahap 5 `character-lab` belum punya baseline. Sesuai aturan proyek baru, baseline pertamanya direkam lewat `npm run baseline` setelah proyeknya disetujui pemilik dan di-merge. Sampai saat itu uji regresi tidak memeriksanya (uji asap hanya memastikan frame tidak kosong), tetapi validasi lengkap dan uji negatifnya tetap jalan di `npm test`. Tahap 5 tidak mengubah hasil render ketiga proyek lama, jadi tidak ada entri baru di `pending-changes.json`.
+
 ## Aturan
 
 1. **Nama versi** = kondisi `main` setelah tahap itu di-merge: `tahap-2`, `tahap-3`, `tahap-4`, dan seterusnya. Project A dan prototipe direkam dari `main@cfed35a` (akhir Tahap 2), jadi versinya `tahap-2`.

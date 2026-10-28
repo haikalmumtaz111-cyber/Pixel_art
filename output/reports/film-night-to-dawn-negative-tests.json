@@ -1,5 +1,5 @@
 {
-  "testedAt": "2026-10-27T23:34:53.797Z",
+  "testedAt": "2026-10-28T04:35:12.009Z",
   "project": "night-to-dawn",
   "allDetected": true,
   "detected": 35,
@@ -98,7 +98,7 @@
     {
       "name": "Proyek yang tidak ada",
       "detected": true,
-      "detail": "exit 1: RENDER GAGAL: Proyek \"proyek-hantu\" tidak ditemukan. Proyek yang tersedia: /   - night-to-dawn        Kereta Malam Menuju Fajar (15 detik, 30 FPS)"
+      "detail": "exit 1: RENDER GAGAL: Proyek \"proyek-hantu\" tidak ditemukan. Proyek yang tersedia: /   - character-lab        Lab Karakter: Gerak dan Cahaya (12 detik, 30 FPS)"
     },
     {
       "name": "Adegan yang tidak ada",

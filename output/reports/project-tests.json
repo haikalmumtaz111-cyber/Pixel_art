@@ -1,9 +1,27 @@
 {
-  "testedAt": "2026-10-27T23:36:19.326Z",
+  "testedAt": "2026-10-28T04:36:27.586Z",
   "allPass": true,
-  "passed": 18,
-  "total": 18,
+  "passed": 22,
+  "total": 22,
   "engineFiles": {
+    "character-lab": [
+      "/src/engine/camera.js",
+      "/src/engine/composer.js",
+      "/src/engine/entities.js",
+      "/src/engine/environment.js",
+      "/src/engine/film.js",
+      "/src/engine/math.js",
+      "/src/engine/palette.js",
+      "/src/engine/pixel-grid.js",
+      "/src/engine/pixel.js",
+      "/src/engine/presenter.js",
+      "/src/engine/random.js",
+      "/src/engine/registry.js",
+      "/src/engine/runtime.js",
+      "/src/engine/schedule.js",
+      "/src/engine/tracks.js",
+      "/src/engine/transitions.js"
+    ],
     "night-to-dawn": [
       "/src/engine/camera.js",
       "/src/engine/composer.js",
@@ -64,7 +82,13 @@
       "id": "projects",
       "name": "Proyek terdaftar",
       "pass": true,
-      "detail": "3 proyek: night-to-dawn, old-town-morning, train-night-rain"
+      "detail": "4 proyek: character-lab, night-to-dawn, old-town-morning, train-night-rain"
+    },
+    {
+      "id": "config:character-lab",
+      "name": "Konfigurasi character-lab valid",
+      "pass": true,
+      "detail": "4 adegan, 360 frame, 24 aset"
     },
     {
       "id": "config:night-to-dawn",
@@ -88,13 +112,31 @@
       "id": "engine-config",
       "name": "Semua proyek memakai satu konfigurasi mesin",
       "pass": true,
-      "detail": "Pixel History Studio 0.4.0"
+      "detail": "Pixel History Studio 0.5.0"
     },
     {
       "id": "config-files",
       "name": "File konfigurasi proyek tidak saling berbagi",
       "pass": true,
-      "detail": "night-to-dawn: 1 file, old-town-morning: 8 file, train-night-rain: 1 file"
+      "detail": "character-lab: 9 file, night-to-dawn: 1 file, old-town-morning: 8 file, train-night-rain: 1 file"
+    },
+    {
+      "id": "assets:character-lab",
+      "name": "Semua aset character-lab bisa dibuat",
+      "pass": true,
+      "detail": "24/24 aset (gradient-sky, cloud-field, ridge, skyline, tree, shophouse, street-lamp, kiosk, bench, street, bicycle, birds, rig-character)"
+    },
+    {
+      "id": "asset-refs:character-lab",
+      "name": "Referensi aset character-lab utuh",
+      "pass": true,
+      "detail": "s01-langkah (17), s02-pose (22), s03-sore (22), s04-malam (22)"
+    },
+    {
+      "id": "scenes:character-lab",
+      "name": "Setiap adegan character-lab bisa dirender terpisah",
+      "pass": true,
+      "detail": "4 adegan dirender sendiri-sendiri tanpa error"
     },
     {
       "id": "assets:night-to-dawn",
@@ -154,7 +196,7 @@
       "id": "shared-engine",
       "name": "Semua proyek memuat file mesin inti yang sama",
       "pass": true,
-      "detail": "3 proyek x 16 file src/engine: camera.js, composer.js, entities.js, environment.js, film.js, math.js, palette.js, pixel-grid.js, pixel.js, presenter.js, random.js, registry.js, runtime.js, schedule.js, tracks.js, transitions.js"
+      "detail": "4 proyek x 16 file src/engine: camera.js, composer.js, entities.js, environment.js, film.js, math.js, palette.js, pixel-grid.js, pixel.js, presenter.js, random.js, registry.js, runtime.js, schedule.js, tracks.js, transitions.js"
     },
     {
       "id": "isolation:old-town-morning->night-to-dawn",

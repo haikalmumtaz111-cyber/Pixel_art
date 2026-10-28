@@ -1,6 +1,6 @@
 # Panduan Reusability
 
-Berlaku untuk mesin versi 0.4.0 (Tahap 4: kamera pixel-perfect, di `main` lewat PR #4). Kontrak teknis lengkapnya ada di [`ARCHITECTURE.md`](ARCHITECTURE.md).
+Berlaku untuk mesin versi 0.5.0 (Tahap 5: gerak dan pencahayaan karakter, branch `tahap-5-character-animation`, menunggu persetujuan pemilik). Kontrak teknis lengkapnya ada di [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
 ## Bagaimana cara membuat proyek animasi baru menggunakan engine ini?
 
@@ -135,6 +135,8 @@ Yang bisa diatur tanpa kode:
 | transisi antar adegan | `transitionOut: { "type": "dissolve", "start": 3.6, "duration": 0.8 }` (`cut`, `dissolve`, `portal`) |
 | karakter berjalan, duduk, menyapu, mengayuh | `state`: `walk`, `seated`, `sweep`, `cycle`, `idle`, `stand`, `gesture`, atau keyframe `[[0, "idle"], [90, "walk"]]` |
 | menoleh, melambai | `paramTracks: { "headTurn": [[...]], "gesture": [[...]] }` (-1 menoleh ke belakang, 1 ke kamera) |
+| gerak karakter lebih natural (siku, lutut, kaki menempel di tanah) | `"motion": "natural"` di aset karakter atau di `params` entitas (lihat bagian karakter di bawah) |
+| warna karakter ikut pagi, siang, sore, malam | `"light": "figure"` di aset karakter + warna `figureLight`, `figureLift`, `figureRim` di setiap palet (lihat bagian karakter di bawah) |
 | benda ikut benda lain (pengendara di sepeda) | `"parent": "sepeda"` + `position` relatif |
 | toko buka, lampu padam | `state: [[0, "closed"], [96, "open"]]`, `color: [[0, "on"], [70, "off"]]` |
 | kamera pan, push-in, pullback | `camera: { "type": "keys", "x": [...], "y": [...], "zoom": [...] }` (zoom butuh `rendering.upscale: "browser"`, lihat bagian zoom di bawah) |
@@ -183,7 +185,64 @@ Karakter rig (`rig-character`) adalah satu kerangka yang bisa dipakai berulang. 
 }
 ```
 
-Pilihan: `build` (`slim`, `regular`, `stout`), `sleeves`, `hairStyle` (`short`, `bun`, `long`), `hat` (`none`, `peci`, `caping`, `kerudung`), `accessory` (`none`, `basket`, `parcel`, `bag`, `broom`, `newspaper`), warna kulit/rambut/baju/celana/sarung/motif, `strideLength`. Gerak yang tersedia: idle (napas, kedip), jalan (siklus 8 fase yang dihitung dari jarak tempuh, jadi kaki tidak "meluncur"), menoleh, duduk, berdiri, isyarat tangan, menyapu, dan mengayuh sepeda.
+Pilihan: `build` (`slim`, `regular`, `stout`), `sleeves`, `hairStyle` (`short`, `bun`, `long`), `hat` (`none`, `peci`, `caping`, `kerudung`), `accessory` (`none`, `basket`, `parcel`, `bag`, `broom`, `newspaper`), warna kulit/rambut/baju/celana/sarung/motif, `strideLength`. Gerak yang tersedia: idle (napas, kedip), jalan (siklus 8 fase dari jarak tempuh), menoleh, duduk, berdiri, isyarat tangan, menyapu, dan mengayuh sepeda.
+
+### Gerak natural (Tahap 5)
+
+Karakter lama memakai gerak Tahap 3 (`"motion": "classic"`, bawaan). Gerak itu sengaja tidak diubah supaya film lama tetap identik. Untuk karakter baru, tulis `"motion": "natural"`:
+
+```json
+"pak-guru": { "type": "rig-character", "motion": "natural", "frontArm": "auto", "backArm": "auto", "armSwing": 1, ... }
+```
+
+| Yang berubah | Klasik (Tahap 3) | Natural (Tahap 5) |
+|--------------|------------------|-------------------|
+| Siklus jalan | 8 fase dari tabel tetap; telapak ikut bergeser bersama tubuh (rata-rata 5,4 piksel art per langkah di demo) | tetap 8 fase, tetapi telapak yang menapak dihitung dari posisi dunianya: diam di tanah selama satu langkah |
+| Lengan | lurus, ayunan kecil (sekitar 5 piksel) | lengan atas dan lengan bawah dengan siku, siku makin menekuk saat terayun ke depan |
+| Kaki | lutut sederhana | lutut menekuk ke depan (dua tulang), kaki melayang mengikuti lengkung |
+| Ayunan tangan dan langkah | sinkron lewat tabel | dihitung dari fase yang sama: lengan selalu berlawanan dengan kaki di sisinya |
+| Naik-turun tubuh | 1 piksel, 4 kali per langkah | paling banyak 1 piksel di sekitar kontak; dimatikan bila terlalu cepat sehingga tidak muncul sebagai getar 1 frame |
+
+Pose lengan (`frontArm` untuk lengan dekat, `backArm` untuk lengan jauh):
+
+| Nilai | Arti |
+|-------|------|
+| `auto` (bawaan) | dipilih dari aksesori: `basket` dan `newspaper` membuat lengan dekat `carry`, `parcel` membuat lengan jauh `hang`, sisanya `swing` |
+| `swing` | bandul saat berjalan, menggantung saat diam |
+| `hang` | menggantung, hanya bergoyang sedikit (misalnya menjinjing bungkusan) |
+| `carry` | lengan bawah mendatar ke depan (membawa bakul, memegang koran) |
+| `behind` | tangan di belakang badan (berjalan santai) |
+
+`armSwing` (0..2) memperbesar atau memperkecil ayunan. Isyarat (`gesture`) di mode natural mengangkat lengan dengan siku menekuk, duduk dan mengayuh memakai siku menuju pangkuan, koran, atau setang, dan menyapu memakai dua tangan di gagang sapu. Langkah dibatasi 45% panjang kaki: bila `strideLength` terlalu panjang untuk karakter pendek, siklusnya memendek (langkah lebih rapat), bukan kakinya yang meluncur.
+
+Pilihan bisa ditimpa per entitas lewat `params`, misalnya satu pemeran tetap klasik: `"params": { "motion": "classic" }`.
+
+### Warna karakter mengikuti cahaya (Tahap 5)
+
+Warna karakter tetap ditulis hex seperti biasa. Tambahkan `"light": "<awalan>"` di aset karakter, lalu tulis tiga warna di setiap palet yang dipakai adegan tempat karakter itu tampil:
+
+```json
+"palettes": {
+  "pagi":  { "...": "...", "figureLight": "#f6e6dc", "figureLift": "#0a0a18", "figureRim": "#3c2a10" },
+  "siang": { "extends": "pagi", "figureLight": "#ffffff", "figureLift": "#000000", "figureRim": "#262420" },
+  "sore":  { "extends": "pagi", "figureLight": "#f2c49a", "figureLift": "#1a0c1e", "figureRim": "#5a2c0c" },
+  "malam": { "extends": "pagi", "figureLight": "#7482b0", "figureLift": "#0c1026", "figureRim": "#26346a" }
+}
+```
+
+| Warna | Arti | Netral |
+|-------|------|--------|
+| `<awalan>Light` | cahaya yang mengenai karakter, dikalikan dengan warna dasar | `#ffffff` |
+| `<awalan>Lift` | cahaya sekitar yang mengangkat bagian gelap | `#000000` |
+| `<awalan>Rim` | cahaya tepi di sisi yang menghadap sumber cahaya, ditambahkan | `#000000` |
+
+Karena ketiganya warna palet biasa, `lighting: { from, to, track }` mencampurnya bertahap seperti warna bangunan dan langit, jadi karakter berubah di frame yang sama dengan lingkungannya. Pagi ke siang, siang ke sore, sore ke malam cukup ditulis sebagai `lighting` per adegan (contoh: `config/character-lab/`).
+
+Arah cahaya tepi: `"lightDirection"` (-1 dari kiri dunia, 1 dari kanan, sekitar 0 dari atas), atau `"lightTrack": "<track lingkungan>"` supaya seluruh pemeran membaca arah matahari dari satu track `environment`. Karakter yang menghadap kiri (`flip`) tetap disinari dari sisi dunia yang sama. Tanpa `light`, warna karakter tetap persis seperti yang ditulis.
+
+Validator menolak palet yang belum punya ketiga warna itu, `lightDirection` di luar -1..1, `lightTrack` yang tidak ada di `environment`, dan `motion`/pose lengan yang salah ketik. Aturan `validation.consistency` tetap bisa dipakai untuk karakter yang diterangi: warna identitasnya dihitung dari palet frame yang diperiksa.
+
+Contoh lengkap: proyek demo `character-lab` (`config/character-lab.json`), dan perbandingan sebelum/sesudah lewat `npm run demo:character`.
 
 ## Yang tidak perlu dan tidak boleh disentuh
 

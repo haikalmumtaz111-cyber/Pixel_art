@@ -1,5 +1,5 @@
 {
-  "testedAt": "2026-10-27T23:33:33.490Z",
+  "testedAt": "2026-10-28T04:33:13.537Z",
   "project": "old-town-morning",
   "config": "config/old-town-morning.json",
   "includes": [
@@ -12,8 +12,8 @@
     "config/old-town-morning/scenes/s03-town-awakens.json"
   ],
   "allPass": true,
-  "passed": 34,
-  "total": 34,
+  "passed": 36,
+  "total": 36,
   "groups": [
     {
       "title": "Jumlah frame tepat",
@@ -64,6 +64,10 @@
       "pass": true
     },
     {
+      "title": "Gerak karakter: kaki tidak meluncur, tubuh tidak bergetar",
+      "pass": true
+    },
+    {
       "title": "Adegan bisa dirender terpisah",
       "pass": true
     },
@@ -109,7 +113,7 @@
       "id": "manifest:status",
       "name": "Render terakhir selesai dengan sukses",
       "pass": true,
-      "detail": "status complete, selesai 2026-10-27T23:30:01.655Z"
+      "detail": "status complete, selesai 2026-10-28T04:30:03.558Z"
     },
     {
       "id": "manifest:fresh",
@@ -241,7 +245,7 @@
       "id": "engine-isolation",
       "name": "Tidak ada modul proyek lain yang ikut terunduh",
       "pass": true,
-      "detail": "25 file JS terunduh (/src/engine/: 16, /src/assets/: 9, /src/scenes/: 0)"
+      "detail": "27 file JS terunduh (/src/engine/: 16, /src/assets/: 11, /src/scenes/: 0)"
     },
     {
       "id": "boundary:s01-old-town-morning->s02-morning-walk",
@@ -278,6 +282,18 @@
       "name": "Warna identitas pak-darto konsisten",
       "pass": true,
       "detail": "warna #ece6d6, #5a4a3a, #1c1a1e ditemukan persis di frame 160, 330"
+    },
+    {
+      "id": "motion-feet",
+      "name": "Kaki yang menapak tidak meluncur",
+      "pass": true,
+      "detail": "tidak ada karakter bergerak natural yang berjalan | gerak klasik (tidak diwajibkan): 46 langkah, meluncur rata-rata 6.4 px, maks 10 px"
+    },
+    {
+      "id": "motion-bob",
+      "name": "Tubuh tidak bergetar saat berjalan",
+      "pass": true,
+      "detail": "tidak ada karakter bergerak natural yang berjalan"
     },
     {
       "id": "determinism",
@@ -358,9 +374,9 @@
   ],
   "engine": {
     "name": "Pixel History Studio",
-    "version": "0.4.0",
-    "engineHash": "7f37881be8af508cc4165fcd196fd2cb8395b25373d9e2132e79594d747ea4aa",
-    "libraryHash": "2925f4ab08ab5d4f5875307cdff1c7d6f8bede58e456f3ad8c6395ea994da16d",
+    "version": "0.5.0",
+    "engineHash": "9420c042aa03f0b9884c05bc2726b3d666a76eb0a483a4b7adbfdc7b25de6427",
+    "libraryHash": "2a6000361daf6301ff19bf87c8c18df6df5d39b6be48ca4e19134c0258f77fa6",
     "modules": [
       "/src/assets/common/environment.js",
       "/src/assets/town/buildings.js",
@@ -372,7 +388,7 @@
     ]
   },
   "environment": {
-    "os": "Linux 6.18.44-fc-v165 (linux/x64)",
+    "os": "Linux 6.18.44-fc-v180 (linux/x64)",
     "node": "v22.22.0",
     "chromium": "153.0.8010.12",
     "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
@@ -388,15 +404,15 @@
       "scene": null
     },
     "configFile": "config/old-town-morning.json",
-    "inputsHash": "d34c244fd5274e6581eb009c1c09edb45cfedef5d286e5792141402de3b96ba0",
-    "engineHash": "7f37881be8af508cc4165fcd196fd2cb8395b25373d9e2132e79594d747ea4aa",
-    "libraryHash": "2925f4ab08ab5d4f5875307cdff1c7d6f8bede58e456f3ad8c6395ea994da16d",
-    "engineVersion": "0.4.0",
+    "inputsHash": "beb042f26c77c7d77eedc1d6ae47bf6c419764ff15d41d5bfd0f5ecbdefe4ef5",
+    "engineHash": "9420c042aa03f0b9884c05bc2726b3d666a76eb0a483a4b7adbfdc7b25de6427",
+    "libraryHash": "2a6000361daf6301ff19bf87c8c18df6df5d39b6be48ca4e19134c0258f77fa6",
+    "engineVersion": "0.5.0",
     "status": "complete",
-    "startedAt": "2026-10-27T23:29:21.480Z",
-    "finishedAt": "2026-10-27T23:30:01.655Z",
-    "renderSeconds": 22.528,
-    "encodeSeconds": 17.646,
+    "startedAt": "2026-10-28T04:29:32.347Z",
+    "finishedAt": "2026-10-28T04:30:03.558Z",
+    "renderSeconds": 17.567,
+    "encodeSeconds": 13.644,
     "chromiumVersion": "153.0.8010.12",
     "jsErrors": 0,
     "loadedModules": [

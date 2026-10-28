@@ -1,11 +1,11 @@
 {
-  "testedAt": "2026-10-27T23:33:50.806Z",
+  "testedAt": "2026-10-28T04:38:05.845Z",
   "project": "train-night-rain",
   "config": "config/train-night-rain.json",
   "includes": [],
   "allPass": true,
-  "passed": 30,
-  "total": 30,
+  "passed": 32,
+  "total": 32,
   "groups": [
     {
       "title": "Jumlah frame tepat",
@@ -56,6 +56,10 @@
       "pass": false
     },
     {
+      "title": "Gerak karakter: kaki tidak meluncur, tubuh tidak bergetar",
+      "pass": true
+    },
+    {
       "title": "Adegan bisa dirender terpisah",
       "pass": true
     },
@@ -101,7 +105,7 @@
       "id": "manifest:status",
       "name": "Render terakhir selesai dengan sukses",
       "pass": true,
-      "detail": "status complete, selesai 2026-10-27T23:31:35.471Z"
+      "detail": "status complete, selesai 2026-10-28T04:37:51.819Z"
     },
     {
       "id": "manifest:fresh",
@@ -248,6 +252,18 @@
       "detail": "frame 0, 75, 149 identik dengan film utuh"
     },
     {
+      "id": "motion-feet",
+      "name": "Kaki yang menapak tidak meluncur",
+      "pass": true,
+      "detail": "tidak ada karakter bergerak natural yang berjalan"
+    },
+    {
+      "id": "motion-bob",
+      "name": "Tubuh tidak bergetar saat berjalan",
+      "pass": true,
+      "detail": "tidak ada karakter bergerak natural yang berjalan"
+    },
+    {
       "id": "determinism",
       "name": "Rendering deterministik (render ulang identik, urutan terbalik)",
       "pass": true,
@@ -282,15 +298,15 @@
   ],
   "engine": {
     "name": "Pixel History Studio",
-    "version": "0.4.0",
-    "engineHash": "7f37881be8af508cc4165fcd196fd2cb8395b25373d9e2132e79594d747ea4aa",
-    "libraryHash": "2925f4ab08ab5d4f5875307cdff1c7d6f8bede58e456f3ad8c6395ea994da16d",
+    "version": "0.5.0",
+    "engineHash": "9420c042aa03f0b9884c05bc2726b3d666a76eb0a483a4b7adbfdc7b25de6427",
+    "libraryHash": "2a6000361daf6301ff19bf87c8c18df6df5d39b6be48ca4e19134c0258f77fa6",
     "modules": [
       "/src/scenes/train-night-rain.js"
     ]
   },
   "environment": {
-    "os": "Linux 6.18.44-fc-v165 (linux/x64)",
+    "os": "Linux 6.18.44-fc-v180 (linux/x64)",
     "node": "v22.22.0",
     "chromium": "153.0.8010.12",
     "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
@@ -306,15 +322,15 @@
       "scene": null
     },
     "configFile": "config/train-night-rain.json",
-    "inputsHash": "60a204f31eff0f9c66badc9c4b1665d8ede42bca0d0ef37d7d43f191a109de91",
-    "engineHash": "7f37881be8af508cc4165fcd196fd2cb8395b25373d9e2132e79594d747ea4aa",
-    "libraryHash": "2925f4ab08ab5d4f5875307cdff1c7d6f8bede58e456f3ad8c6395ea994da16d",
-    "engineVersion": "0.4.0",
+    "inputsHash": "82c0c07ad1a8b3e24423dce9b774535ad1419655727db422cdb05f3ea452dac2",
+    "engineHash": "9420c042aa03f0b9884c05bc2726b3d666a76eb0a483a4b7adbfdc7b25de6427",
+    "libraryHash": "2a6000361daf6301ff19bf87c8c18df6df5d39b6be48ca4e19134c0258f77fa6",
+    "engineVersion": "0.5.0",
     "status": "complete",
-    "startedAt": "2026-10-27T23:31:25.246Z",
-    "finishedAt": "2026-10-27T23:31:35.471Z",
-    "renderSeconds": 3.032,
-    "encodeSeconds": 7.193,
+    "startedAt": "2026-10-28T04:37:42.604Z",
+    "finishedAt": "2026-10-28T04:37:51.819Z",
+    "renderSeconds": 2.6,
+    "encodeSeconds": 6.614,
     "chromiumVersion": "153.0.8010.12",
     "jsErrors": 0,
     "loadedModules": [

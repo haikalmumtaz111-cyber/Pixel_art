@@ -1,0 +1,49 @@
+{
+  "darto-pagi": {
+    "asset": "pak-darto", "layer": "sidewalk", "anchor": "bottom-center",
+    "position": [170, 211], "motion": { "x": [[0, 170], [131, 310]] }, "state": "walk"
+  },
+  "sumi-pagi": {
+    "asset": "mbok-sumi", "layer": "sidewalk", "anchor": "bottom-center",
+    "position": [372, 206], "motion": { "x": [[0, 372], [131, 262]] }, "state": "walk", "flip": true
+  },
+  "penyapu": {
+    "asset": "penyapu", "layer": "sidewalk", "anchor": "bottom-center", "position": [506, 204], "state": "sweep"
+  },
+  "pak-tua": {
+    "asset": "pak-tua", "layer": "sidewalk", "anchor": "bottom-center", "position": [440, 208], "state": "seated", "z": 1,
+    "paramTracks": { "gesture": [[0, 0.6], [359, 0.6]], "headTurn": [[0, 0], [150, 0], [158, 0.9, "inOutSine"], [184, 0.9], [192, 0, "inOutSine"]] }
+  },
+  "bu-sari": {
+    "asset": "bu-sari", "layer": "sidewalk", "anchor": "bottom-center", "position": [578, 207],
+    "state": [[0, "idle"], [140, "gesture"], [226, "idle"], [300, "gesture"]],
+    "paramTracks": {
+      "gesture": [[140, 0], [154, 0.9, "inOutSine"], [170, 0.9], [176, 0.35, "inOutSine"], [182, 0.9], [188, 0.35], [194, 0.9], [210, 0, "inOutSine"], [300, 0], [312, 0.9, "inOutSine"], [324, 0.4], [330, 0.9], [342, 0, "inOutSine"]],
+      "headTurn": [[0, 0], [140, 0], [148, 0.9, "inOutSine"], [208, 0.9], [216, 0, "inOutSine"]]
+    }
+  },
+  "kakek": {
+    "asset": "kakek", "layer": "sidewalk", "anchor": "bottom-center",
+    "position": [376, 210], "motion": { "x": [[108, 376], [359, 556]] }, "state": "walk"
+  },
+  "anak-sekolah": {
+    "asset": "anak-sekolah", "layer": "sidewalk", "anchor": "bottom-center",
+    "position": [720, 213], "motion": { "x": [[108, 720], [359, 330]] }, "state": "walk", "flip": true
+  },
+  "sepeda": {
+    "asset": "bicycle", "layer": "road", "anchor": "bottom-center",
+    "position": [250, 244], "motion": { "x": [[108, 250], [224, 760]] }
+  },
+  "pengayuh": {
+    "asset": "pengayuh", "layer": "road", "anchor": "bottom-center", "parent": "sepeda",
+    "position": [-3, -7], "state": "cycle", "z": 1, "params": { "phaseOffset": 3 }
+  },
+  "darto-sore": {
+    "asset": "pak-darto", "layer": "sidewalk", "anchor": "bottom-center",
+    "position": [300, 211], "motion": { "x": [[225, 300], [359, 443]] }, "state": "walk"
+  },
+  "sumi-sore": {
+    "asset": "mbok-sumi", "layer": "sidewalk", "anchor": "bottom-center",
+    "position": [712, 206], "motion": { "x": [[225, 712], [359, 600]] }, "state": "walk", "flip": true
+  }
+}

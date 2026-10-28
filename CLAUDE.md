@@ -14,7 +14,7 @@ Pemilik proyek adalah sutradara kreatif yang masih awam pemrograman. Semua kode 
 - Kerjakan perubahan di branch tahap (misalnya `tahap-2-multi-scene`), jangan langsung di `main`. Buat pull request, tapi jangan merge tanpa persetujuan pemilik.
 - Minta persetujuan sebelum instalasi sistem, perubahan di luar folder proyek, atau menghapus file.
 - Jangan mengklaim berhasil sebelum `npm run build:all` dan `npm test` lulus, dan hasilnya sudah dilihat secara visual (lembar cuplikan di `output/reports/`).
-- Jangan mengorbankan kemampuan tahap sebelumnya. `npm run test:regression` harus lulus: setiap proyek identik piksel dan byte dengan versi baseline resminya di `tests/baselines/registry.json` (Project A dan prototipe Tahap 1: `tahap-2`, Project B: `tahap-4`). `npm run build:prototype` harus tetap lulus.
+- Jangan mengorbankan kemampuan tahap sebelumnya. `npm run test:regression` harus lulus: setiap proyek identik piksel dan byte dengan versi baseline resminya di `tests/baselines/registry.json` (Project A dan prototipe Tahap 1: `tahap-2`, Project B: `tahap-4`; demo `character-lab` belum punya baseline). `npm run build:prototype` harus tetap lulus.
 - Baseline tidak boleh diubah untuk menyembunyikan perubahan. File baseline tidak pernah diubah, ditimpa, atau dihapus. Ada dua lapis pemeriksaan: lint mencocokkan SHA-256 setiap file dengan registry (menangkap perubahan file yang tidak ikut mengubah registry), dan `npm run test:baseline-guard` membandingkan file baseline, versi registry, dan riwayat `resolved` dengan `origin/main` (menangkap file yang diubah bersama hash registry-nya, selama langkah penjaga di `.github/workflows/ci.yml` tidak ikut diubah). Keduanya jalan di CI dan di `npm test`. Perubahan pada `ci.yml`, file baseline lama, atau `registry.json` di PR wajib dijelaskan karena lapis terakhirnya tinjauan diff PR. Perubahan hasil render yang disengaja dicatat di `tests/baselines/pending-changes.json` → `changes.<proyek>` (`against` = versi resmi, rentang frame + alasan, status "menunggu persetujuan pemilik"); frame di luar rentang tetap wajib identik. Setelah pemilik menyetujui dan memerintahkan pembaruan baseline, buat versi baru dengan `npm run baseline` di branch khusus; entri pending pindah ke riwayat `resolved`, tidak dihapus. Langkah lengkap di `docs/BASELINES.md`.
 - `main` dilindungi ruleset GitHub "Protect main - Pixel History Studio" (ID 26005617, diaktifkan pemilik 28 Oktober 2026): wajib lewat PR, hanya merge commit, dua check CI wajib lulus ("Lint, unit test, validasi konfigurasi" dan "Uji asap render dan lab zoom") dengan branch PR harus up to date dengan `main`, tidak boleh dihapus atau force push, tanpa bypass. Selaraskan branch PR dengan merge commit dari `main`, jangan rebase atau force push. Branch `tahap-1` sampai `tahap-4` dikunci dari penghapusan dan force push oleh ruleset "Protect historical stages" (ID 26006150, pola `refs/heads/tahap-[1-4]-*`); branch Tahap 5 ke atas belum tercakup. Konfigurasi ini terbaca dari API GitHub, tetapi penolakan push nyata belum pernah diuji (BACKLOG T18).
 
@@ -28,13 +28,14 @@ Pemilik proyek adalah sutradara kreatif yang masih awam pemrograman. Semua kode 
 - Jenis aset baru didaftarkan di `src/assets/catalog.json` (modul, skema parameter, status, kunci palet). Daftar transisi, easing, dan kamera ada di `config/engine.json`.
 - Proyek baru cukup berupa file `config/<proyek>.json` (boleh `$include`). Lihat `docs/REUSABILITY_GUIDE.md`.
 - Adegan kustom mengambil aset lewat `assets.pick(scene.assets, type)`. Adegan tersusun (`"module": "compose"`) memakai stage, cast, dan entitas. Jangan membuat ulang kereta atau karakter di dalam adegan.
+- Karakter rig: gerak `"motion": "classic"` (bawaan) adalah gerak Tahap 3 dan tidak boleh diubah, karena Project B bergantung padanya. Perbaikan gerak masuk ke `"motion": "natural"` (`src/assets/characters/gait.js`), warna yang mengikuti palet lewat `"light": "<awalan>"` (`lighting.js`). Lihat `docs/ARCHITECTURE.md` bagian karakter rig.
 - Zoom kamera hanya di `rendering.upscale: "browser"`. Mode bawaan `rendering.zoomMode: "anchored"` (grid piksel menempel pada gambar per lapisan, tidak merayap). Adegan kustom yang punya banyak lapisan parallax menggambar setiap lapisan lewat `shot.surface.layer(geseranX, geseranY)` saat `shot.surface.wantsLayers(zoom)`. `nearest` = cara Tahap 3 (untuk kompatibilitas), `steps` = zoom dibulatkan.
 - Kontrak entitas, aset, adegan, transisi, dan penyaji frame dijelaskan di `docs/ARCHITECTURE.md`.
 - Komentar kode dalam bahasa Indonesia.
 
 ## Perintah
 
-Semua perintah proyek memakai `--project <id>` (`old-town-morning`, `night-to-dawn`, `train-night-rain`). Tanpa proyek, daftar proyek ditampilkan.
+Semua perintah proyek memakai `--project <id>` (`old-town-morning`, `night-to-dawn`, `train-night-rain`, `character-lab`). Tanpa proyek, daftar proyek ditampilkan.
 
 - `npm run check`: cek Node.js, Playwright, Chromium, FFmpeg, FFprobe, dan daftar proyek
 - `npm run projects`: daftar proyek, adegan, lokasi video, status render
@@ -48,6 +49,7 @@ Semua perintah proyek memakai `--project <id>` (`old-town-morning`, `night-to-da
 - `npm run test:baseline-guard [-- --ref <branch | commit>]`: baseline historis di `tests/baselines/` harus sama dengan referensi tepercaya (bawaan `origin/main`)
 - `npm run baseline`: daftar versi baseline. Dengan `--project <id> --version tahap-<n> --source main@<commit> --approved-at <tanggal> --evidence "..." [--dry-run]`: rekam versi baru setelah persetujuan pemilik
 - `npm run demo:zoom`: buat ulang bahan pembanding zoom di `output/comparisons/`
+- `npm run demo:character`: buat ulang bahan pembanding gerak dan cahaya karakter Tahap 5 (`output/comparisons/v15-*`, `v16-*`, laporan `output/reports/character-demo.md`)
 - `npm run build:prototype`: render, uji, dan cek regresi prototipe Tahap 1
 
 ## Progres
@@ -60,7 +62,8 @@ Semua perintah proyek memakai `--project <id>` (`old-town-morning`, `night-to-da
 - CI (PR #6, di-merge ke `main` lewat `9fbd38d`): job uji asap berjalan di image resmi Playwright 1.63.0 (dikunci digest) dan memasang FFmpeg paket resmi Ubuntu 6.1.1-3ubuntu5 dari cache GitHub, tanpa apt untuk Chromium. Tes yang dijalankan tidak berubah. Dibuat setelah job lama dua kali habis waktu di apt (BACKLOG T17).
 - Proteksi branch (pengaturan GitHub oleh pemilik, 28 Oktober 2026, bukan kode): ruleset `main` (26005617) dan branch Tahap 1-4 (26006150) aktif. Konfigurasi terverifikasi lewat API GitHub; enforcement belum diuji dengan push nyata. BACKLOG T18 sebagian selesai.
 - Bahan peningkatan berikutnya tercatat di `docs/BACKLOG.md` (V1-V25, T1-T18, dengan prioritas dan ringkasan kandidat).
-- Tahap 5: belum dimulai, menunggu keputusan pemilik. Jangan memulainya tanpa perintah.
+- Tahap 5 (dimulai atas perintah pemilik, 28 Oktober 2026, branch `tahap-5-character-animation`, menunggu persetujuan dan merge): gerak dan pencahayaan karakter, fokus V15 dan V16. Mesin 0.5.0. Rig `motion: "natural"` (siku dan lutut, pose lengan, siklus jalan 8 fase yang telapaknya menempel di tanah, ayunan tangan sinkron) dan `light: "<awalan>"` (warna dari palet pencahayaan, cahaya tepi, arah dari `lightDirection` atau `lightTrack`). Keduanya opsional, jadi Project A, Project B, dan prototipe tidak berubah. Komposer menyediakan `paletteAt` dan `entitiesAt`; validator memeriksa warna identitas per frame dan gerak karakter (`motion-feet`, `motion-bob`). Proyek demo baru `character-lab` (12 detik, 360 frame, belum punya baseline) dan pembanding `npm run demo:character`. Menerapkan fitur ini ke Project B (V26) butuh deklarasi perubahan dan persetujuan terpisah. Hasil uji di branch: `npm test` 13/13 langkah, unit test 86/86, validasi demo 38/38, A 39/39, B 36/36, prototipe 32/32, uji negatif demo 42/42, A 35/35, B 41/41, regresi 29/29 (A, B, prototipe identik piksel dan byte), uji antar-proyek 22/22, lab zoom 10/10, `build:prototype` lulus. Demo: 0 dari 97 langkah natural meluncur, gerak klasik 98 dari 98 (rata-rata 5,4 piksel art).
+- Tahap 6: belum dimulai. Jangan memulainya tanpa perintah pemilik.
 
 ## Cara melanjutkan di sesi baru
 

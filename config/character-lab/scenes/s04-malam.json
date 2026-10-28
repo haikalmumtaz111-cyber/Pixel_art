@@ -1,0 +1,12 @@
+{
+  "id": "s04-malam",
+  "name": "Sore ke malam",
+  "module": "compose",
+  "stage": "lab-street",
+  "start": 9.6,
+  "end": 12,
+  "cast": ["darto-sore", "sumi-sore", "pak-tua", "bu-sari", "penyapu", "kakek", "anak-sekolah"],
+  "lighting": { "from": "sore", "to": "malam", "track": "malam" },
+  "camera": { "type": "keys", "x": [[0, 250]], "y": [[0, 0]] },
+  "transitionOut": null
+}
