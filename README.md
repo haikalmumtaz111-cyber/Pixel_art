@@ -201,5 +201,6 @@ output/                         video, laporan, cuplikan, bahan pembanding (comp
 - Warna karakter belum ikut berubah bersama palet pencahayaan pagi.
 - Determinisme dijamin di lingkungan yang sama (versi Chromium dan FFmpeg yang sama).
 - CI di GitHub hanya menjalankan pemeriksaan ringan. Render penuh dan pengujian lengkap dijalankan lokal atau di sesi Claude Code.
+- `main` dan branch Tahap 1-4 dilindungi ruleset GitHub (lihat [`docs/BASELINES.md`](docs/BASELINES.md)). Konfigurasinya aktif, tetapi penolakan push nyata belum diuji, dan PR yang mengubah workflow CI tetap perlu ditinjau manual (BACKLOG T18).
 
 Daftar lengkap beserta prioritas dan ide perbaikannya ada di [`docs/BACKLOG.md`](docs/BACKLOG.md).

@@ -27,7 +27,7 @@ Perintah `npm run baseline` menampilkan tabel ini langsung dari registry.
 1. **Nama versi** = kondisi `main` setelah tahap itu di-merge: `tahap-2`, `tahap-3`, `tahap-4`, dan seterusnya. Project A dan prototipe direkam dari `main@cfed35a` (akhir Tahap 2), jadi versinya `tahap-2`.
 2. **File baseline tidak pernah diubah, ditimpa, atau dihapus.** Versi baru selalu file baru. Pemeriksaannya dua lapis:
    - `npm run lint` mencocokkan SHA-256 setiap file dengan `registry.json`. Ini menangkap file yang diubah, dihapus, atau ditambah tanpa ikut memperbarui registry. Lint **tidak** menangkap file yang diubah bersama hash-nya di registry, karena keduanya ada di folder yang sama. Untuk Project B, perubahan seperti itu masih tertangkap lewat rantai versi `tahap-3` -> `tahap-4`; untuk proyek yang baru punya satu versi tidak ada pembandingnya.
-   - `npm run test:baseline-guard` menutup celah itu dengan membandingkan isi folder dengan referensi tepercaya di Git (bawaan `origin/main`): setiap file baseline di referensi harus tetap ada dan identik byte demi byte, setiap versi di registry referensi harus tetap ada dengan isi terkunci yang sama (`file`, `sha256`, `source`, `engineVersion`, `frames`, `previous`, `changes`, `approval`), dan setiap riwayat `resolved` harus tetap ada tanpa diubah. Versi baru dan perpindahan versi resmi tetap diperbolehkan.
+   - `npm run test:baseline-guard` menangkap celah itu dengan membandingkan isi folder dengan referensi tepercaya di Git (bawaan `origin/main`): setiap file baseline di referensi harus tetap ada dan identik byte demi byte, setiap versi di registry referensi harus tetap ada dengan isi terkunci yang sama (`file`, `sha256`, `source`, `engineVersion`, `frames`, `previous`, `changes`, `approval`), dan setiap riwayat `resolved` harus tetap ada tanpa diubah. Versi baru dan perpindahan versi resmi tetap diperbolehkan. Penjaga hanya bekerja selama langkahnya di CI tetap ada; lihat batas di bagian pemeriksaan otomatis.
 3. **Versi baru hanya dibuat setelah pemilik menyetujui** perubahan hasil render, dan hanya lewat `npm run baseline` (bukan menyunting JSON dengan tangan).
 4. **Perubahan yang menunggu persetujuan** dicatat di `pending-changes.json` → `changes.<proyek>` dengan `against` = versi resmi saat itu. Entri yang menunjuk versi lain ditolak lint.
 5. **Riwayat tidak dihapus.** Setelah disetujui, entri pending dipindah ke `resolved` lengkap dengan tanggal, bukti, dan daftar frame yang benar-benar berubah.
@@ -93,7 +93,20 @@ Perbandingan dengan versi historis lulus hanya bila frame yang berbeda **sama pe
 
 Kode: `src/render/baselines.cjs` (registry, pemeriksaannya, dan aturan penjaga), `src/render/baseline.cjs` (`npm run baseline`), `src/render/baseline-guard.cjs` (`npm run test:baseline-guard`), `src/render/regression.cjs`. Unit test: `tests/engine/baselines.test.js`.
 
-**Batas yang diketahui.** Penjaga di CI dijalankan oleh `.github/workflows/ci.yml`, dan file itu bisa diubah oleh PR yang sama. Jadi lapis terakhirnya tetap tinjauan diff PR: perubahan pada file baseline lama, `registry.json`, atau langkah penjaga di `ci.yml` harus terlihat jelas dan dijelaskan. Pemilik bisa menambah lapis lagi lewat branch protection GitHub (wajib PR dan wajib check CI lulus untuk `main`); lihat T18 di [`BACKLOG.md`](BACKLOG.md).
+**Batas yang diketahui.** Penjaga di CI dijalankan oleh `.github/workflows/ci.yml`, dan file itu bisa diubah oleh PR yang sama. PR yang menghapus atau melemahkan langkah penjaga tetap menghasilkan check "Lint, unit test, validasi konfigurasi" yang lulus. Jadi lapis terakhirnya tetap tinjauan diff PR: perubahan pada file baseline lama, `registry.json`, atau `ci.yml` harus terlihat jelas dan dijelaskan.
+
+**Proteksi branch di GitHub (pengaturan pemilik, 28 Oktober 2026).** Konfigurasi yang terbaca dari API GitHub:
+
+| Ruleset | ID | Target | Aturan |
+|---------|----|--------|--------|
+| Protect main - Pixel History Studio | 26005617 | `main` (`~DEFAULT_BRANCH`) | wajib PR (0 approval), hanya merge commit, dua check CI wajib ("Lint, unit test, validasi konfigurasi", "Uji asap render dan lab zoom") dengan mode strict (branch PR harus up to date), tidak boleh dihapus, tidak boleh force push, tanpa bypass |
+| Protect historical stages | 26006150 | `refs/heads/tahap-[1-4]-*` (empat branch Tahap 1-4) | tidak boleh dihapus, tidak boleh force push, tanpa bypass |
+
+- **Terbukti:** kedua ruleset berstatus `active`; API aturan efektif menampilkan aturan itu untuk `main` dan keempat branch historis (dan tidak untuk branch lain); nama dan aplikasi check wajib cocok dengan check run CI di `main`.
+- **Belum terbukti:** penolakan push nyata. Saat diaudit, API mencatat 0 evaluasi rule karena belum ada push ke branch yang dilindungi sejak ruleset dibuat.
+- **Tidak dicakup ruleset:** PR yang mengubah `ci.yml` (lihat batas di atas), push fast-forward ke branch historis (branch itu tidak dibekukan, hanya tidak bisa dihapus atau ditulis ulang), dan branch Tahap 5 ke atas.
+
+Usulan lanjutan dan statusnya: T18 di [`BACKLOG.md`](BACKLOG.md).
 
 ## Riwayat: Project B Tahap 4
 
