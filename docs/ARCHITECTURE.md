@@ -1,20 +1,20 @@
 # Arsitektur Pixel History Studio
 
-Dokumen ini menjelaskan cara mesin animasi bekerja sejak Tahap 3 (mesin reusable untuk banyak proyek). Panduan praktis membuat proyek baru ada di [`REUSABILITY_GUIDE.md`](REUSABILITY_GUIDE.md).
+Dokumen ini menjelaskan cara mesin animasi bekerja sejak Tahap 3 (mesin reusable untuk banyak proyek), termasuk kamera pixel-perfect Tahap 4 dan gerak serta pencahayaan karakter Tahap 5. Panduan praktis membuat proyek baru ada di [`REUSABILITY_GUIDE.md`](REUSABILITY_GUIDE.md).
 
 ## Status saat ini
 
 | Hal | Kondisi |
 |-----|---------|
-| Versi mesin | 0.4.0 (`config/engine.json`), di `main` lewat PR #4 (Tahap 4, kamera pixel-perfect). Tahap 3 (0.3.0) masuk lewat PR #3 |
-| Proyek | `night-to-dawn` (Project A, adegan kustom), `old-town-morning` (Project B, adegan tersusun), `train-night-rain` (prototipe Tahap 1, format satu adegan) |
-| Katalog aset | 20 jenis di `src/assets/catalog.json` (4 aset gaya Tahap 2 + 16 aset entitas, termasuk pola kalibrasi `calibration-grid`) |
+| Versi mesin | 0.5.0 (`config/engine.json`) di branch `tahap-5-character-animation` (Tahap 5, gerak dan pencahayaan karakter, menunggu persetujuan pemilik). Di `main`: 0.4.0 (Tahap 4, PR #4). Tahap 3 (0.3.0) masuk lewat PR #3 |
+| Proyek | `night-to-dawn` (Project A, adegan kustom), `old-town-morning` (Project B, adegan tersusun), `train-night-rain` (prototipe Tahap 1, format satu adegan), `character-lab` (demo Tahap 5, adegan tersusun, belum punya baseline) |
+| Katalog aset | 20 jenis di `src/assets/catalog.json` (4 aset gaya Tahap 2 + 16 aset entitas, termasuk pola kalibrasi `calibration-grid`). Tahap 5 tidak menambah jenis; `rig-character` mendapat pilihan `motion`, pose lengan, dan `light` |
 | Jenis kamera | `keys`, `follow-entity`, `follow`, `speed`, ditambah lensa `scene.lens` untuk adegan jenis apa pun |
 | Mode zoom (`rendering.zoomMode`) | `anchored` (bawaan), `steps`, `nearest` (cara Tahap 3) |
 | Transisi | `cut`, `dissolve`, `portal` |
 | Baseline regresi | Versi per proyek di `tests/baselines/registry.json` ([`BASELINES.md`](BASELINES.md)). Resmi: Project A dan prototipe `tahap-2` (`main@cfed35a`), Project B `tahap-4` (`main@a1fd4a1`, perubahan 124 frame Tahap 4 yang disetujui pemilik). Historis: Project B `tahap-3` (`main@9d7a144`). File baseline tidak pernah diubah; perubahan yang disengaja dicatat di `tests/baselines/pending-changes.json` dan versi baru dibuat lewat `npm run baseline` setelah pemilik menyetujui |
 | Proteksi branch | Ruleset GitHub aktif untuk `main` (26005617: wajib PR, hanya merge commit, dua check CI wajib, tidak boleh dihapus atau force push) dan branch `tahap-1` sampai `tahap-4` (26006150: tidak boleh dihapus atau force push). Konfigurasi terverifikasi lewat API GitHub; penolakan push nyata belum diuji. Detail: [`BASELINES.md`](BASELINES.md), BACKLOG T18 |
-| Keterbatasan yang diketahui | [`BACKLOG.md`](BACKLOG.md), termasuk V23 (dua ukuran piksel di zoom pecahan), V24 (warna baru dari lapisan semi-transparan), V25 (batas antar lapisan memotong piksel art), dan T13 (deteksi tokoh "pop") |
+| Keterbatasan yang diketahui | [`BACKLOG.md`](BACKLOG.md), termasuk V23 (dua ukuran piksel di zoom pecahan), V24 (warna baru dari lapisan semi-transparan), V25 (batas antar lapisan memotong piksel art), V26-V28 (batas gerak dan cahaya karakter Tahap 5), T13 (deteksi tokoh "pop"), dan T19 (cakupan pemeriksaan gerak) |
 
 ## Gambaran besar
 
@@ -143,6 +143,45 @@ Adegan dengan `"module": "compose"` dibangun sepenuhnya dari data, tanpa kode:
 
 Lapisan digambar dari jauh ke dekat. Setiap lapisan bergeser `kamera x parallax` (dibulatkan ke piksel). Di dalam lapisan, entitas diurutkan menurut `z`, lalu posisi y bila `sortByY`, lalu urutan definisi.
 
+## Karakter rig (`src/assets/characters/`)
+
+Satu aset `rig-character` untuk semua warga: tubuh disusun dari bagian (kaki, badan, lengan, kepala, rambut, topi, aksesori) lalu diberi pose menurut status (`idle`, `stand`, `walk`, `seated`, `gesture`, `cycle`, `sweep`) dan parameter animasi (`headTurn`, `gesture`). Tahap 5 menambah dua pilihan yang tidak mengubah karakter lama:
+
+| Pilihan | Bawaan | Isi |
+|---------|--------|-----|
+| `motion` | `classic` = gerak Tahap 3, tidak diubah satu panggilan gambar pun (Project B tetap identik piksel dan byte) | `natural` = gerak Tahap 5 (`gait.js`) |
+| `light` | tidak ada = warna tetap seperti ditulis | `"<awalan>"` = warna mengikuti palet pencahayaan (`lighting.js`) |
+| `frontArm`, `backArm`, `armSwing` | `auto`, `auto`, 1 | pose lengan dekat/jauh dan besar ayunan (hanya `natural`) |
+| `lightDirection`, `lightTrack` | 0 | arah cahaya tepi: angka -1..1 (bisa `paramTracks`) atau nama track `environment` |
+
+Semua pilihan bisa ditulis di aset atau ditimpa per entitas lewat `params`.
+
+### Gerak natural (`gait.js`, fungsi murni)
+
+- **Siklus jalan 8 fase** (kontak, tumpu, lewat, dorong, dua kali). Fase dihitung dari jarak tempuh (`worldX x arah`), sama seperti Tahap 3, jadi kecepatan yang berubah tidak membuat kaki meluncur.
+- **Telapak menempel di tanah.** Tabel Tahap 3 menggeser telapak 8 piksel per setengah siklus, padahal tubuh maju `strideLength / 2` (15 piksel untuk Pak Darto), jadi telapak ikut terseret. Versi natural menghitung titik tapak setiap langkah di dunia (`(langkah + offset) x siklus + jangkauan`), lalu posisi lokalnya dibulatkan dari posisi dunia: `dx = arah x (round(arah x tapak) - round(worldX))`. Selama menapak, kolom dunia telapak tidak berubah sama sekali. Kaki yang melayang bergerak dari titik tapak lama ke titik tapak baru dengan `smoothstep` dan lengkung `sin`, jadi di dunia telapak tidak pernah mundur.
+- **Jangkauan langkah** = `strideLength / 4`, dibatasi 45% panjang kaki. Bila dibatasi, siklus memendek (langkah lebih rapat).
+- **Lutut dan siku** = dua tulang (`twoBone`): lutut menekuk ke depan, siku ke belakang/bawah. Lengan saat berjalan memakai sudut (`armFromAngles`): lengan atas berayun ±30 derajat x `armSwing`, siku menekuk 10 derajat di belakang sampai 44 derajat di depan. Duduk, mengayuh, dan menyapu memakai target tangan (pangkuan/koran, setang, gagang sapu).
+- **Sinkron**: ayunan lengan dekat = `-cos(2 pi u)` dari fase yang sama dengan kaki. Saat kaki dekat menapak di depan (fase 0), lengan dekat di belakang; setengah siklus kemudian sebaliknya.
+- **Naik-turun tubuh**: pinggul turun paling banyak 1 piksel (60% dari turunnya pinggul secara geometri) di sepertiga langkah sekitar kontak. Bila jendela itu kurang dari 2 frame (karakter sangat cepat, dari `speedX`), pinggul tidak diturunkan, supaya tidak muncul sebagai getar 1 frame.
+- **Skala entitas**: komposer meneruskan `scale` ke aset; gait menghitung dalam satuan lokal. Di skala 1 telapak menapak tepat di piksel dunia yang sama; di skala lebih dari 1 sisa pembulatannya paling banyak skala-1 piksel dunia (V27).
+
+### Pencahayaan karakter (`lighting.js`)
+
+Bila `light` diisi, palet adegan wajib punya `<awalan>Light`, `<awalan>Lift`, `<awalan>Rim` (diperiksa validator lewat jenis parameter `paletteKey` dengan akhiran). Karakter digambar dulu dengan warna dasar ke **penyangga piksel** (objek JavaScript biasa yang meniru `fillRect`, `fillStyle`, `pixelView`), lalu setiap piksel diwarnai:
+
+- warna = `screen(warna dasar x Light, Lift)`, dibulatkan per kanal;
+- piksel siluet yang tetangganya di sisi cahaya kosong mendapat tambahan `Rim` (cahaya tepi). Sisinya = `sign(lightDirection) x (flip ? -1 : 1)`, atau atas bila |arah| < 1/3;
+- hasilnya ditulis ke kanvas sebagai potongan baris berwarna sama lewat `rect()`, jadi view, cermin, skala, dan lapisan zoom tetap sama dengan gambar langsung.
+
+Pewarna disimpan per objek palet (tangga palet memberi objek yang sama untuk anak tangga yang sama), jadi warna hanya bergantung pada palet frame itu: deterministik, dan berubah searah sepanjang tangga palet (unit test memeriksa tidak ada warna yang bolak-balik). Tanpa `light`, karakter digambar langsung tanpa penyangga seperti sebelumnya.
+
+`identityColors(fc)` mengembalikan warna identitas yang sudah diterangi palet frame `fc`, sehingga aturan `validation.consistency` tetap berlaku untuk karakter yang warnanya berubah bersama cahaya.
+
+### Data gerak untuk pengujian (`motionProbe`)
+
+Aset boleh menyediakan `motionProbe(keadaan)` (tanpa menggambar). Rig mengembalikan telapak yang sedang menapak (`foot`, nomor langkah, kolom dunia) dan turunnya pinggul saat berjalan, dengan tanda `strict` untuk gerak natural. Komposer menyediakan `entitiesAt(frame)` dan `paletteAt(frame)`; `runtime.js` mengumpulkannya lewat `inspect.motionProbes(awal, jumlah)` dan `inspect.identityColors(kunci, frame)`. Keduanya generik: mesin tidak menyebut jenis aset mana pun.
+
 ## Kamera (`src/engine/camera.js`)
 
 | Jenis | Isi |
@@ -266,6 +305,7 @@ Adegan kustom mengambil aset lewat `assets.pick(scene.assets, type)`. Project A 
 | `smoke.cjs`, `lint.cjs` | pemeriksaan ringan untuk CI |
 | `zoom-tests.cjs` | lab zoom: mengukur semua mode zoom dengan pola kalibrasi, plus penerapan pada Project A |
 | `zoom-demo.cjs` | bahan pembanding V14 (video dan gambar sebelum/sesudah) di `output/comparisons/` |
+| `character-demo.cjs` | bahan pembanding V15/V16 dari proyek `character-lab` (sebelum = gerak klasik tanpa cahaya, sesudah = konfigurasi apa adanya) dan laporan ukur `output/reports/character-demo.md` |
 | `build.cjs`, `test-all.cjs` | rangkaian render + validasi, dan seluruh pengujian |
 
 Setiap frame dihitung dari waktu global `time = frame / fps` dan `seed` proyek. Karena tidak ada keadaan antar frame, render bisa dipecah per rentang (`--frames 0-119`, `--frames 120-239`, ...) dan hasilnya identik dengan render penuh. Ini dasar untuk render bersegmen/paralel di masa depan.
@@ -280,9 +320,9 @@ Setiap frame dihitung dari waktu global `time = frame / fps` dan `seed` proyek. 
 |----------|-----|---------------|
 | `npm run lint` | sintaks JS, JSON, determinisme, kemurnian mesin inti, file baseline cocok dengan registry | tidak |
 | `npm run test:baseline-guard` | file baseline lama, versi registry, dan riwayat persetujuan sama dengan `origin/main` | tidak |
-| `npm run test:engine` | unit test `tests/engine/*.test.js`: track, easing, PRNG, jadwal setengah terbuka, entitas (urutan bebas), kamera, registry, palet, loader dan skema | tidak |
+| `npm run test:engine` | unit test `tests/engine/*.test.js`: track, easing, PRNG, jadwal setengah terbuka, entitas (urutan bebas), kamera, registry, palet, loader dan skema, gerak dan pencahayaan karakter (`character.test.js`) | tidak |
 | `npm run test:smoke` | render beberapa frame per proyek, cocokkan dengan baseline | tidak (render kecil) |
-| `npm run validate -- --project <id>` | validasi lengkap satu proyek (video, frame, transisi, adegan terpisah, konsistensi aset, modul terisolasi, determinisme, manifest) | ya |
+| `npm run validate -- --project <id>` | validasi lengkap satu proyek (video, frame, transisi, adegan terpisah, konsistensi aset, gerak karakter, modul terisolasi, determinisme, manifest) | ya |
 | `npm run test:negative -- --project <id>` | kesalahan yang disengaja harus ditolak | ya |
 | `npm run test:regression` | setiap proyek identik dengan versi baseline resminya; `--project <id> --baseline <versi>` untuk versi historis | ya |
 | `npm run test:projects` | mesin bersama, file konfigurasi terpisah, isolasi dua arah | ya |
@@ -294,7 +334,8 @@ Teknik penting:
 - **Kilatan dan potongan kasar**: statistik kecerahan (`signalstats`) tiap frame. Batasnya di `config/engine.json`.
 - **Kesinambungan transisi**: frame pertama dan terakhir transisi dibandingkan per byte dengan render adegan tunggal.
 - **Adegan terpisah**: frame di luar transisi dirender sebagai film utuh dan sebagai adegan tunggal, hasilnya harus identik.
-- **Konsistensi aset**: aturan `validation.consistency` di proyek. `assetType` = semua adegan memakai satu aset berjenis itu; `asset` = warna identitas aset muncul di frame contoh.
+- **Konsistensi aset**: aturan `validation.consistency` di proyek. `assetType` = semua adegan memakai satu aset berjenis itu; `asset` = warna identitas aset muncul di frame contoh. Sejak Tahap 5 warna identitas dihitung per frame dari palet adegan, jadi karakter yang diterangi palet pencahayaan ikut diperiksa dengan warnanya yang benar-benar tampil.
+- **Gerak karakter** (Tahap 5): dari `motionProbe` setiap frame film. `motion-feet` = setiap telapak gerak natural diam di kolom dunia yang sama selama menapak (tidak meluncur); `motion-bob` = pinggul tidak bolak-balik dalam 1 frame (a, b, a) saat berjalan (tidak bergetar). Gerak klasik dilaporkan sebagai informasi (misalnya rata-rata meluncur per langkah) tetapi tidak diwajibkan, karena dipertahankan apa adanya untuk film lama. Uji negatif merusak kode gerak di salinan repository (telapak ikut terseret, pinggul bolak-balik) dan memastikan keduanya tertangkap.
 - **Isolasi modul**: daftar file JS yang benar-benar diunduh browser. Project B tidak memuat satu pun modul kereta.
 - **Determinisme**: seluruh frame dirender ulang di browser baru dengan urutan terbalik lalu dibandingkan per byte. MP4 di-encode ulang dan dibandingkan SHA-256-nya.
 - **Grid piksel kamera**: setiap frame mencatat mode zoom, nilai zoom, dan geseran lapisannya di manifest render. Validator menghitung ulang ukuran setiap kolom/baris dunia dan menolak crawl (ukuran berubah padahal zoom tetap) serta piksel bolak-balik.

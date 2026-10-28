@@ -74,10 +74,37 @@ const inspect = {
     }
     return usage;
   },
-  // Warna identitas sebuah aset (bila aset menyediakannya).
-  identityColors(key) {
+  // Warna identitas sebuah aset (bila aset menyediakannya). Dengan `frame`, aset menerima palet adegan
+  // pada frame itu, jadi aset yang warnanya mengikuti palet pencahayaan memberi warna yang benar-benar tampil.
+  identityColors(key, frame) {
     const asset = film.assets.get(key);
-    return asset.identityColors ? asset.identityColors() : [];
+    if (!asset.identityColors) return [];
+    if (frame === undefined) return asset.identityColors();
+    const segment = film.segmentAt(frame);
+    const id = segment.kind === 'scene' ? segment.id : segment.p < 0.5 ? segment.transition.from : segment.transition.to;
+    const pal = film.scenes[id].impl.paletteAt ? film.scenes[id].impl.paletteAt(frame) : undefined;
+    return asset.identityColors(pal ? { frame, pal } : undefined);
+  },
+  // Data gerak entitas di rentang frame, dari aset yang menyediakan motionProbe(keadaan entitas)
+  // (misalnya telapak karakter yang sedang menapak). Hasil: satu objek { idEntitas: data } per frame.
+  motionProbes(first, count) {
+    const frames = [];
+    for (let frame = first; frame < first + count; frame++) {
+      const segment = film.segmentAt(frame);
+      const ids = segment.kind === 'scene' ? [segment.id] : [segment.transition.from, segment.transition.to];
+      const probes = {};
+      for (const id of ids) {
+        const impl = film.scenes[id].impl;
+        if (!impl.entitiesAt) continue;
+        for (const { id: entity, asset, state } of impl.entitiesAt(frame)) {
+          if (!asset.motionProbe || probes[entity]) continue;
+          const probe = asset.motionProbe(state);
+          if (probe) probes[entity] = probe;
+        }
+      }
+      frames.push(probes);
+    }
+    return frames;
   },
   // Modul aset dan adegan yang dimuat proyek ini.
   loadedModules() {

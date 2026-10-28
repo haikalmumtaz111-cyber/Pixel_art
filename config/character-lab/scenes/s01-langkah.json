@@ -1,0 +1,12 @@
+{
+  "id": "s01-langkah",
+  "name": "Langkah dan ayunan tangan (pagi)",
+  "module": "compose",
+  "stage": "lab-street",
+  "start": 0,
+  "end": 4,
+  "cast": ["darto-pagi", "sumi-pagi"],
+  "lighting": { "from": "pagi", "to": "pagi", "track": "sunSide" },
+  "camera": { "type": "keys", "x": [[0, 20]], "y": [[0, 42]], "zoom": [[0, 2]] },
+  "transitionOut": { "type": "dissolve", "start": 3.6, "duration": 0.8, "params": { "easing": "linear" } }
+}

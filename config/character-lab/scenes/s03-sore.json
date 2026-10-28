@@ -1,0 +1,12 @@
+{
+  "id": "s03-sore",
+  "name": "Siang ke sore",
+  "module": "compose",
+  "stage": "lab-street",
+  "start": 7.5,
+  "end": 9.6,
+  "cast": ["darto-sore", "sumi-sore", "pak-tua", "bu-sari", "penyapu", "kakek", "anak-sekolah"],
+  "lighting": { "from": "siang", "to": "sore", "track": "senja" },
+  "camera": { "type": "keys", "x": [[0, 250]], "y": [[0, 0]] },
+  "transitionOut": null
+}

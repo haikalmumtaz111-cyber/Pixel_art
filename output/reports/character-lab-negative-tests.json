@@ -1,0 +1,219 @@
+{
+  "testedAt": "2026-10-28T04:34:17.448Z",
+  "project": "character-lab",
+  "allDetected": true,
+  "detected": 42,
+  "total": 42,
+  "results": [
+    {
+      "name": "Celah di timeline: adegan 2 mulai 1 frame terlambat",
+      "detected": true,
+      "detail": "Adegan 2 (s02-pose): ada celah, adegan seharusnya mulai di frame 120 tetapi mulai di 121"
+    },
+    {
+      "name": "Tumpang tindih: adegan 2 mulai 1 frame lebih awal",
+      "detected": true,
+      "detail": "Adegan 2 (s02-pose): tumpang tindih, adegan mulai di frame 119 padahal adegan sebelumnya berakhir di 120"
+    },
+    {
+      "name": "Durasi adegan tidak valid (akhir = awal)",
+      "detected": true,
+      "detail": "Adegan 1 (s01-langkah): durasi tidak valid (end harus lebih besar dari start)"
+    },
+    {
+      "name": "Durasi yang tidak menjadi frame bulat (0,01 detik)",
+      "detected": true,
+      "detail": "Adegan 1 (s01-langkah): end 4.01 detik tidak menjadi frame bulat pada 30 FPS"
+    },
+    {
+      "name": "ID adegan ganda",
+      "detected": true,
+      "detail": "Adegan 2 (s01-langkah): id adegan ganda"
+    },
+    {
+      "name": "Adegan terakhir tidak menutup akhir film",
+      "detected": true,
+      "detail": "Adegan terakhir harus berakhir tepat di akhir film (frame 360), bukan 359"
+    },
+    {
+      "name": "Transisi tidak melewati batas adegan",
+      "detected": true,
+      "detail": "Transisi dari s01-langkah: rentang frame 0..23 harus melewati batas adegan di frame 120"
+    },
+    {
+      "name": "Jenis transisi tidak dikenal",
+      "detected": true,
+      "detail": "Transisi dari s01-langkah: jenis \"wipe-hantu\" tidak dikenal (pilihan: cut, dissolve, portal)"
+    },
+    {
+      "name": "ID aset tidak dikenal",
+      "detected": true,
+      "detail": "Adegan 1 (s01-langkah) entitas \"hantu\": aset \"aset-hantu\" tidak ditemukan"
+    },
+    {
+      "name": "Track kamera tidak dikenal",
+      "detected": true,
+      "detail": "Adegan 1 (s01-langkah): track kamera \"track-hantu\" tidak ditemukan"
+    },
+    {
+      "name": "Keyframe tidak valid (frame mundur)",
+      "detected": true,
+      "detail": "Lingkungan \"uji\" key 1: frame harus berurutan naik"
+    },
+    {
+      "name": "Keyframe dengan easing tidak dikenal",
+      "detected": true,
+      "detail": "Lingkungan \"uji\" key 1: easing \"memantul-hantu\" tidak dikenal"
+    },
+    {
+      "name": "Parameter entitas/aset tidak valid",
+      "detected": true,
+      "detail": "Pemeran \"darto-pagi\" params: parameter \"parameterHantu\" tidak dikenal"
+    },
+    {
+      "name": "Nilai parameter di luar batas",
+      "detected": true,
+      "detail": "Pemeran \"darto-pagi\" paramTracks.headTurn key 1: nilai 5 di luar batas -1..1"
+    },
+    {
+      "name": "Mode gerak karakter salah ketik",
+      "detected": true,
+      "detail": "Aset \"pak-darto\".motion: nilai \"melayang\" bukan salah satu dari: classic, natural"
+    },
+    {
+      "name": "Pose lengan karakter tidak dikenal",
+      "detected": true,
+      "detail": "Aset \"pak-darto\".frontArm: nilai \"terbang\" bukan salah satu dari: auto, swing, hang, carry, behind"
+    },
+    {
+      "name": "Palet adegan belum punya warna cahaya karakter",
+      "detected": true,
+      "detail": "Adegan 1 (s01-langkah): palet \"pagi\" belum punya warna: cahayaHantuLight, cahayaHantuLift, cahayaHantuRim"
+    },
+    {
+      "name": "Arah cahaya karakter di luar batas",
+      "detected": true,
+      "detail": "Pemeran \"darto-pagi\" paramTracks.lightDirection key 1: nilai 3 di luar batas -1..1"
+    },
+    {
+      "name": "Track arah cahaya karakter tidak ada",
+      "detected": true,
+      "detail": "Aset \"pak-darto\".lightTrack: track lingkungan \"matahari-hantu\" tidak ada di bagian environment"
+    },
+    {
+      "name": "Kaki meluncur saat berjalan (telapak ikut terseret tubuh)",
+      "detected": true,
+      "detail": "Kaki yang menapak tidak meluncur: GAGAL, meluncur: darto-pagi frame 0-9 (5 px), sumi-pagi frame 0-10 (5 px), darto-pagi frame 10-23 (7 px), sumi-pagi frame 11-23 (5 px), darto-pagi frame 24-37 (7 px) | kontrol kode asli: lolos"
+    },
+    {
+      "name": "Tubuh bergetar saat berjalan (pinggul bolak-balik tiap frame)",
+      "detected": true,
+      "detail": "Tubuh tidak bergetar saat berjalan: GAGAL, pinggul bolak-balik dalam 1 frame: kakek frame 111, kakek frame 120, kakek frame 131, kakek frame 140, kakek frame 151, kakek frame 160 | kontrol kode asli: lolos"
+    },
+    {
+      "name": "Skala entitas bukan bilangan bulat (grid piksel rusak)",
+      "detected": true,
+      "detail": "Pemeran \"darto-pagi\": scale harus bilangan bulat 1..4 agar grid piksel tetap rapi"
+    },
+    {
+      "name": "Zoom kamera tanpa mode upscale \"browser\" (piksel jadi tidak tajam)",
+      "detected": true,
+      "detail": "Adegan 1 (s01-langkah) kamera: zoom kamera hanya didukung bila rendering.upscale = \"browser\" (agar piksel tetap tajam)"
+    },
+    {
+      "name": "Mode zoom salah ketik",
+      "detected": true,
+      "detail": "Proyek: rendering.zoomMode \"zoom-hantu\" tidak dikenal (pilihan: anchored, steps, nearest)"
+    },
+    {
+      "name": "Lensa zoom di mode upscale ffmpeg",
+      "detected": true,
+      "detail": "Adegan 1 (s01-langkah) lens: zoom kamera hanya didukung bila rendering.upscale = \"browser\" (agar piksel tetap tajam)"
+    },
+    {
+      "name": "Nama efek salah ketik",
+      "detected": true,
+      "detail": "Adegan 2 (s02-pose): efek \"hujan-deras-salah-ketik\" tidak dikenal"
+    },
+    {
+      "name": "Proyek yang tidak ada",
+      "detected": true,
+      "detail": "exit 1: RENDER GAGAL: Proyek \"proyek-hantu\" tidak ditemukan. Proyek yang tersedia: /   - character-lab        Lab Karakter: Gerak dan Cahaya (12 detik, 30 FPS)"
+    },
+    {
+      "name": "Adegan yang tidak ada",
+      "detected": true,
+      "detail": "exit 1: RENDER GAGAL: Adegan \"adegan-hantu\" tidak ada di proyek character-lab. Pilihan: s01-langkah, s02-pose, s03-sore, s04-malam"
+    },
+    {
+      "name": "Video kurang 1 frame (359 frame)",
+      "detected": true,
+      "detail": "Jumlah frame: GAGAL, 359 dari 360 frame | Durasi: GAGAL, 11.967 detik (target 12.000)"
+    },
+    {
+      "name": "Resolusi salah (1280x720)",
+      "detected": true,
+      "detail": "Resolusi output: GAGAL, 1280x720"
+    },
+    {
+      "name": "FPS salah (25 FPS)",
+      "detected": true,
+      "detail": "Frame rate: GAGAL, 25/1 (rata-rata 25/1) | Durasi: GAGAL, 14.400 detik (target 12.000)"
+    },
+    {
+      "name": "Format yang sulit diputar perangkat umum (yuv444p)",
+      "detected": true,
+      "detail": "Video dapat diputar di perangkat umum: GAGAL, profil High 4:4:4 Predictive, level 4.0, yuv444p, piksel 1:1, faststart ya | Format piksel: GAGAL, yuv444p"
+    },
+    {
+      "name": "Frame hitam disisipkan di frame 162",
+      "detected": true,
+      "detail": "Tidak ada frame kosong: GAGAL, frame kosong: 162 | Tidak ada kilatan cahaya mendadak: GAGAL, lompatan kecerahan di frame 162 (-124.2), 163 (124.3)"
+    },
+    {
+      "name": "Film berakhir di layar hitam",
+      "detected": true,
+      "detail": "Frame terakhir valid: GAGAL, frame 359: kecerahan rata-rata 16.0, rentang 0"
+    },
+    {
+      "name": "Frame 162 hilang dari folder frame",
+      "detected": true,
+      "detail": "Frame PNG lengkap dan berurutan: GAGAL, frame hilang: 162"
+    },
+    {
+      "name": "Render gagal, tetapi MP4 lama masih ada",
+      "detected": true,
+      "detail": "render exit 1, MP4 lama masih ada dan terlihat sah, Render terakhir selesai dengan sukses: GAGAL, status \"failed\": Error JavaScript di dalam adegan (frame 5): Error: Render sengaja digagalkan (uji negatif)"
+    },
+    {
+      "name": "MP4 diganti tanpa render ulang",
+      "detected": true,
+      "detail": "Video berasal dari render terbaru (bukan sisa render lama): GAGAL, berubah sejak render terakhir: file MP4"
+    },
+    {
+      "name": "Konfigurasi diubah setelah render (MP4 kedaluwarsa)",
+      "detected": true,
+      "detail": "Video berasal dari render terbaru (bukan sisa render lama): GAGAL, berubah sejak render terakhir: konfigurasi proyek"
+    },
+    {
+      "name": "Pergantian adegan dengan potongan kasar (hard cut)",
+      "detected": true,
+      "detail": "Tidak ada potongan kasar (hard cut): GAGAL, lonjakan di frame 120 (beda 42.3, di transisi cut) | kontrol transisi dissolve: lolos"
+    },
+    {
+      "name": "Aset pak-darto tampil berbeda di adegan terakhir",
+      "detected": true,
+      "detail": "Warna identitas pak-darto konsisten: GAGAL, frame 340: #727ea4 #333348"
+    },
+    {
+      "name": "Adegan memakai Math.random() (tidak deterministik)",
+      "detected": true,
+      "detail": "Rendering deterministik (render ulang identik, urutan terbalik): GAGAL, 30 frame berbeda, contoh: 29, 28, 27, 26, 25, 24"
+    },
+    {
+      "name": "Error JavaScript di tengah render",
+      "detected": true,
+      "detail": "render dihentikan: Error JavaScript di dalam adegan (frame 5): Error: kesalahan uji di frame 5"
+    }
+  ]
+}

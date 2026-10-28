@@ -1,0 +1,62 @@
+{
+  "testedAt": "2026-10-28T04:41:16.741Z",
+  "project": "character-lab",
+  "before": {
+    "steps": 98,
+    "slidingSteps": 98,
+    "meanSlide": 5.4,
+    "maxSlide": 11,
+    "bobFlips": 5,
+    "colors": {
+      "PAGI": [
+        "#ece6d6",
+        "#5a4a3a",
+        "#1c1a1e"
+      ],
+      "SIANG": [
+        "#ece6d6",
+        "#5a4a3a",
+        "#1c1a1e"
+      ],
+      "SORE": [
+        "#ece6d6",
+        "#5a4a3a",
+        "#1c1a1e"
+      ],
+      "MALAM": [
+        "#ece6d6",
+        "#5a4a3a",
+        "#1c1a1e"
+      ]
+    }
+  },
+  "after": {
+    "steps": 97,
+    "slidingSteps": 0,
+    "meanSlide": 0,
+    "maxSlide": 0,
+    "bobFlips": 0,
+    "colors": {
+      "PAGI": [
+        "#e5d1bf",
+        "#5d4a45",
+        "#24212f"
+      ],
+      "SIANG": [
+        "#ece6d6",
+        "#5a4a3a",
+        "#1c1a1e"
+      ],
+      "SORE": [
+        "#e4b793",
+        "#66423d",
+        "#311e2d"
+      ],
+      "MALAM": [
+        "#727ea4",
+        "#333348",
+        "#181c38"
+      ]
+    }
+  }
+}

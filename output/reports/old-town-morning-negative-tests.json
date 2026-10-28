@@ -1,9 +1,9 @@
 {
-  "testedAt": "2026-10-27T23:35:57.514Z",
+  "testedAt": "2026-10-28T04:36:06.401Z",
   "project": "old-town-morning",
   "allDetected": true,
-  "detected": 36,
-  "total": 36,
+  "detected": 41,
+  "total": 41,
   "results": [
     {
       "name": "Celah di timeline: adegan 2 mulai 1 frame terlambat",
@@ -76,6 +76,31 @@
       "detail": "Pemeran \"pak-darto\" paramTracks.headTurn key 1: nilai 5 di luar batas -1..1"
     },
     {
+      "name": "Mode gerak karakter salah ketik",
+      "detected": true,
+      "detail": "Aset \"pak-darto\".motion: nilai \"melayang\" bukan salah satu dari: classic, natural"
+    },
+    {
+      "name": "Pose lengan karakter tidak dikenal",
+      "detected": true,
+      "detail": "Aset \"pak-darto\".frontArm: nilai \"terbang\" bukan salah satu dari: auto, swing, hang, carry, behind"
+    },
+    {
+      "name": "Palet adegan belum punya warna cahaya karakter",
+      "detected": true,
+      "detail": "Adegan 2 (s02-morning-walk): palet \"early\" belum punya warna: cahayaHantuLight, cahayaHantuLift, cahayaHantuRim"
+    },
+    {
+      "name": "Arah cahaya karakter di luar batas",
+      "detected": true,
+      "detail": "Pemeran \"pak-darto\" paramTracks.lightDirection key 1: nilai 3 di luar batas -1..1"
+    },
+    {
+      "name": "Track arah cahaya karakter tidak ada",
+      "detected": true,
+      "detail": "Aset \"pak-darto\".lightTrack: track lingkungan \"matahari-hantu\" tidak ada di bagian environment"
+    },
+    {
       "name": "Skala entitas bukan bilangan bulat (grid piksel rusak)",
       "detected": true,
       "detail": "Pemeran \"pak-darto\": scale harus bilangan bulat 1..4 agar grid piksel tetap rapi"
@@ -108,7 +133,7 @@
     {
       "name": "Proyek yang tidak ada",
       "detected": true,
-      "detail": "exit 1: RENDER GAGAL: Proyek \"proyek-hantu\" tidak ditemukan. Proyek yang tersedia: /   - night-to-dawn        Kereta Malam Menuju Fajar (15 detik, 30 FPS)"
+      "detail": "exit 1: RENDER GAGAL: Proyek \"proyek-hantu\" tidak ditemukan. Proyek yang tersedia: /   - character-lab        Lab Karakter: Gerak dan Cahaya (12 detik, 30 FPS)"
     },
     {
       "name": "Adegan yang tidak ada",

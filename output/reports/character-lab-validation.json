@@ -1,0 +1,1915 @@
+{
+  "testedAt": "2026-10-28T04:31:51.902Z",
+  "project": "character-lab",
+  "config": "config/character-lab.json",
+  "includes": [
+    "config/character-lab/palettes.json",
+    "config/character-lab/assets.json",
+    "config/character-lab/stage.json",
+    "config/character-lab/cast.json",
+    "config/character-lab/scenes/s01-langkah.json",
+    "config/character-lab/scenes/s02-pose.json",
+    "config/character-lab/scenes/s03-sore.json",
+    "config/character-lab/scenes/s04-malam.json"
+  ],
+  "allPass": true,
+  "passed": 38,
+  "total": 38,
+  "groups": [
+    {
+      "title": "Jumlah frame tepat",
+      "pass": true
+    },
+    {
+      "title": "Durasi video tepat",
+      "pass": true
+    },
+    {
+      "title": "Resolusi sesuai target",
+      "pass": true
+    },
+    {
+      "title": "FPS sesuai target",
+      "pass": true
+    },
+    {
+      "title": "Interval waktu adegan valid",
+      "pass": true
+    },
+    {
+      "title": "Tidak ada frame yang hilang",
+      "pass": true
+    },
+    {
+      "title": "Tidak ada frame kosong",
+      "pass": true
+    },
+    {
+      "title": "Frame terakhir valid",
+      "pass": true
+    },
+    {
+      "title": "Tidak ada error JavaScript",
+      "pass": true
+    },
+    {
+      "title": "Transisi tanpa artefak",
+      "pass": true
+    },
+    {
+      "title": "Grid piksel kamera stabil (tanpa crawl)",
+      "pass": true
+    },
+    {
+      "title": "Aset konsisten antar adegan",
+      "pass": true
+    },
+    {
+      "title": "Gerak karakter: kaki tidak meluncur, tubuh tidak bergetar",
+      "pass": true
+    },
+    {
+      "title": "Adegan bisa dirender terpisah",
+      "pass": true
+    },
+    {
+      "title": "Mesin bersama, modul proyek terisolasi",
+      "pass": true
+    },
+    {
+      "title": "Video berasal dari render terbaru",
+      "pass": true
+    },
+    {
+      "title": "Rendering deterministik",
+      "pass": true
+    },
+    {
+      "title": "FFmpeg membaca seluruh video",
+      "pass": true
+    },
+    {
+      "title": "Video dapat diputar",
+      "pass": true
+    },
+    {
+      "title": "Render ulang konsisten",
+      "pass": true
+    }
+  ],
+  "checks": [
+    {
+      "id": "timeline",
+      "name": "Interval adegan valid",
+      "pass": true,
+      "detail": "4 adegan menutup 360/360 frame tanpa celah: s01-langkah [0, 120), s02-pose [120, 225), s03-sore [225, 288), s04-malam [288, 360)"
+    },
+    {
+      "id": "timeline-transitions",
+      "name": "Transisi berada di dalam durasi film",
+      "pass": true,
+      "detail": "dissolve 108-131, dissolve 213-236"
+    },
+    {
+      "id": "manifest:status",
+      "name": "Render terakhir selesai dengan sukses",
+      "pass": true,
+      "detail": "status complete, selesai 2026-10-28T04:27:55.817Z"
+    },
+    {
+      "id": "manifest:fresh",
+      "name": "Video berasal dari render terbaru (bukan sisa render lama)",
+      "pass": true,
+      "detail": "konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest"
+    },
+    {
+      "id": "file",
+      "name": "File MP4 ada",
+      "pass": true,
+      "detail": "character-lab.mp4 (4.13 MB)"
+    },
+    {
+      "id": "container",
+      "name": "Kontainer MP4",
+      "pass": true,
+      "detail": "mov,mp4,m4a,3gp,3g2,mj2"
+    },
+    {
+      "id": "codec",
+      "name": "Codec video H.264",
+      "pass": true,
+      "detail": "h264 (High)"
+    },
+    {
+      "id": "resolution",
+      "name": "Resolusi output",
+      "pass": true,
+      "detail": "1920x1080"
+    },
+    {
+      "id": "aspect",
+      "name": "Rasio 16:9",
+      "pass": true,
+      "detail": "1920:1080"
+    },
+    {
+      "id": "fps",
+      "name": "Frame rate",
+      "pass": true,
+      "detail": "30/1 (rata-rata 30/1)"
+    },
+    {
+      "id": "frame-count",
+      "name": "Jumlah frame",
+      "pass": true,
+      "detail": "360 dari 360 frame"
+    },
+    {
+      "id": "duration",
+      "name": "Durasi",
+      "pass": true,
+      "detail": "12.000 detik (target 12.000)"
+    },
+    {
+      "id": "pixel-format",
+      "name": "Format piksel",
+      "pass": true,
+      "detail": "yuv420p"
+    },
+    {
+      "id": "playable",
+      "name": "Video dapat diputar di perangkat umum",
+      "pass": true,
+      "detail": "profil High, level 4.1, yuv420p, piksel 1:1, faststart ya"
+    },
+    {
+      "id": "decode",
+      "name": "FFmpeg membaca seluruh video tanpa error",
+      "pass": true,
+      "detail": "semua frame terbaca bersih"
+    },
+    {
+      "id": "decoded-frames",
+      "name": "Tidak ada frame yang hilang saat decode",
+      "pass": true,
+      "detail": "360 frame ter-decode, 360 frame terukur"
+    },
+    {
+      "id": "blank",
+      "name": "Tidak ada frame kosong",
+      "pass": true,
+      "detail": "kecerahan rata-rata terendah 62.8, rentang terendah 169"
+    },
+    {
+      "id": "motion",
+      "name": "Animasi bergerak (bukan gambar statis)",
+      "pass": true,
+      "detail": "360 frame unik, 0 pasang frame berurutan identik"
+    },
+    {
+      "id": "end-frame",
+      "name": "Frame terakhir valid",
+      "pass": true,
+      "detail": "frame 359: kecerahan rata-rata 62.9, rentang 199"
+    },
+    {
+      "id": "no-flash",
+      "name": "Tidak ada kilatan cahaya mendadak",
+      "pass": true,
+      "detail": "perubahan kecerahan terbesar antar frame 2.9 (batas 8)"
+    },
+    {
+      "id": "no-hard-cut",
+      "name": "Tidak ada potongan kasar (hard cut)",
+      "pass": true,
+      "detail": "semua pergantian gambar berlangsung bertahap"
+    },
+    {
+      "id": "grid-stability",
+      "name": "Grid piksel stabil saat kamera bergerak dan zoom (tidak merayap)",
+      "pass": true,
+      "detail": "mode zoom \"anchored\", 0 frame zoom pecahan, 0 perubahan ukuran saat zoom tetap (crawl), 0 bolak-balik dari 173108 perbandingan kolom/baris dunia"
+    },
+    {
+      "id": "png-frames",
+      "name": "Frame PNG lengkap dan berurutan",
+      "pass": true,
+      "detail": "360/360 file PNG 1920x1080"
+    },
+    {
+      "id": "engine-modules",
+      "name": "Hanya modul milik proyek ini yang dimuat",
+      "pass": true,
+      "detail": "7 modul: /src/assets/common/environment.js, /src/assets/town/buildings.js, /src/assets/town/vegetation.js, /src/assets/town/props.js, /src/assets/town/street.js, /src/assets/town/vehicles.js, /src/assets/characters/rig.js"
+    },
+    {
+      "id": "engine-isolation",
+      "name": "Tidak ada modul proyek lain yang ikut terunduh",
+      "pass": true,
+      "detail": "27 file JS terunduh (/src/engine/: 16, /src/assets/: 11, /src/scenes/: 0)"
+    },
+    {
+      "id": "boundary:s01-langkah->s02-pose",
+      "name": "Transisi s01-langkah->s02-pose menyambung tanpa lompatan",
+      "pass": true,
+      "detail": "frame 108 sama dengan s01-langkah, frame 131 sama dengan s02-pose"
+    },
+    {
+      "id": "boundary:s02-pose->s03-sore",
+      "name": "Transisi s02-pose->s03-sore menyambung tanpa lompatan",
+      "pass": true,
+      "detail": "frame 213 sama dengan s02-pose, frame 236 sama dengan s03-sore"
+    },
+    {
+      "id": "scene:s01-langkah",
+      "name": "Adegan s01-langkah bisa dirender terpisah",
+      "pass": true,
+      "detail": "frame 0, 54, 107 identik dengan film utuh"
+    },
+    {
+      "id": "scene:s02-pose",
+      "name": "Adegan s02-pose bisa dirender terpisah",
+      "pass": true,
+      "detail": "frame 132, 172, 212 identik dengan film utuh"
+    },
+    {
+      "id": "scene:s03-sore",
+      "name": "Adegan s03-sore bisa dirender terpisah",
+      "pass": true,
+      "detail": "frame 237, 262, 287 identik dengan film utuh"
+    },
+    {
+      "id": "scene:s04-malam",
+      "name": "Adegan s04-malam bisa dirender terpisah",
+      "pass": true,
+      "detail": "frame 288, 324, 359 identik dengan film utuh"
+    },
+    {
+      "id": "consistency:pak-darto-asset",
+      "name": "Aset pak-darto dipakai bersama oleh adegan-adegannya",
+      "pass": true,
+      "detail": "satu definisi aset \"pak-darto\" dipakai adegan s01-langkah, s03-sore, s04-malam"
+    },
+    {
+      "id": "consistency:pak-darto-colors",
+      "name": "Warna identitas pak-darto konsisten",
+      "pass": true,
+      "detail": "warna mengikuti palet frame, ditemukan persis di frame 60 (#e5d1bf, #5d4a45, #24212f), frame 250 (#e8d4bb, #5e473a, #231b23), frame 340 (#727ea4, #333348, #181c38)"
+    },
+    {
+      "id": "motion-feet",
+      "name": "Kaki yang menapak tidak meluncur",
+      "pass": true,
+      "detail": "97 langkah gerak natural dari 6 karakter, setiap telapak diam di tanah selama menapak"
+    },
+    {
+      "id": "motion-bob",
+      "name": "Tubuh tidak bergetar saat berjalan",
+      "pass": true,
+      "detail": "1050 frame jalan natural diperiksa, pinggul tidak pernah bolak-balik dalam 1 frame"
+    },
+    {
+      "id": "determinism",
+      "name": "Rendering deterministik (render ulang identik, urutan terbalik)",
+      "pass": true,
+      "detail": "360/360 frame identik byte demi byte, 3/3 frame identik saat dirender dua kali"
+    },
+    {
+      "id": "js-errors",
+      "name": "Tidak ada error JavaScript selama rendering",
+      "pass": true,
+      "detail": "0 error saat render, 0 error saat pengujian"
+    },
+    {
+      "id": "reencode",
+      "name": "Encode ulang menghasilkan MP4 identik",
+      "pass": true,
+      "detail": "SHA-256 sama: 819e48df0f7a1450..."
+    }
+  ],
+  "sheets": [
+    {
+      "name": "contact-sheet",
+      "frames": [
+        0,
+        79,
+        162,
+        216,
+        295,
+        359
+      ],
+      "file": "output/reports/character-lab-contact-sheet.png"
+    },
+    {
+      "name": "scene-s01-langkah",
+      "frames": [
+        0,
+        36,
+        71,
+        107
+      ],
+      "file": "output/reports/character-lab-scene-s01-langkah.png"
+    },
+    {
+      "name": "scene-s02-pose",
+      "frames": [
+        132,
+        159,
+        185,
+        212
+      ],
+      "file": "output/reports/character-lab-scene-s02-pose.png"
+    },
+    {
+      "name": "scene-s03-sore",
+      "frames": [
+        237,
+        254,
+        270,
+        287
+      ],
+      "file": "output/reports/character-lab-scene-s03-sore.png"
+    },
+    {
+      "name": "scene-s04-malam",
+      "frames": [
+        288,
+        312,
+        335,
+        359
+      ],
+      "file": "output/reports/character-lab-scene-s04-malam.png"
+    },
+    {
+      "name": "transition-s01-langkah-to-s02-pose",
+      "frames": [
+        108,
+        111,
+        115,
+        118,
+        121,
+        124,
+        128,
+        131
+      ],
+      "file": "output/reports/character-lab-transition-s01-langkah-to-s02-pose.png"
+    },
+    {
+      "name": "transition-s02-pose-to-s03-sore",
+      "frames": [
+        213,
+        216,
+        220,
+        223,
+        226,
+        229,
+        233,
+        236
+      ],
+      "file": "output/reports/character-lab-transition-s02-pose-to-s03-sore.png"
+    }
+  ],
+  "engine": {
+    "name": "Pixel History Studio",
+    "version": "0.5.0",
+    "engineHash": "9420c042aa03f0b9884c05bc2726b3d666a76eb0a483a4b7adbfdc7b25de6427",
+    "libraryHash": "2a6000361daf6301ff19bf87c8c18df6df5d39b6be48ca4e19134c0258f77fa6",
+    "modules": [
+      "/src/assets/common/environment.js",
+      "/src/assets/town/buildings.js",
+      "/src/assets/town/vegetation.js",
+      "/src/assets/town/props.js",
+      "/src/assets/town/street.js",
+      "/src/assets/town/vehicles.js",
+      "/src/assets/characters/rig.js"
+    ]
+  },
+  "environment": {
+    "os": "Linux 6.18.44-fc-v180 (linux/x64)",
+    "node": "v22.22.0",
+    "chromium": "153.0.8010.12",
+    "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+    "ffprobe": "ffprobe version 6.1.1-3ubuntu5 Copyright (c) 2007-2023 the FFmpeg developers"
+  },
+  "render": {
+    "project": "character-lab",
+    "name": "character-lab",
+    "job": {
+      "kind": "film",
+      "first": 0,
+      "count": 360,
+      "scene": null
+    },
+    "configFile": "config/character-lab.json",
+    "inputsHash": "f6340df728c598424cc9833b3b9520470601ce23f79f42313fa6f7a994b1d6f3",
+    "engineHash": "9420c042aa03f0b9884c05bc2726b3d666a76eb0a483a4b7adbfdc7b25de6427",
+    "libraryHash": "2a6000361daf6301ff19bf87c8c18df6df5d39b6be48ca4e19134c0258f77fa6",
+    "engineVersion": "0.5.0",
+    "status": "complete",
+    "startedAt": "2026-10-28T04:27:34.923Z",
+    "finishedAt": "2026-10-28T04:27:55.817Z",
+    "renderSeconds": 10.446,
+    "encodeSeconds": 10.448,
+    "chromiumVersion": "153.0.8010.12",
+    "jsErrors": 0,
+    "loadedModules": [
+      "/src/assets/common/environment.js",
+      "/src/assets/town/buildings.js",
+      "/src/assets/town/vegetation.js",
+      "/src/assets/town/props.js",
+      "/src/assets/town/street.js",
+      "/src/assets/town/vehicles.js",
+      "/src/assets/characters/rig.js"
+    ],
+    "frameSize": {
+      "width": 1920,
+      "height": 1080
+    },
+    "framesHash": "ee6b2c15b8807d56ff1e043646c09e3c51c080dbd02ad8f0b85c9c884c0bf376",
+    "video": "output/video/character-lab.mp4",
+    "videoSha256": "819e48df0f7a145084b130626a043ce6fb22c5d0810ba134c3b011ac295d8815",
+    "ffmpegCommand": "ffmpeg -y -v error -framerate 30 -start_number 0 -i output/frames/character-lab/frame_%04d.png -frames:v 360 -vf scale=1920:1080:flags=neighbor:out_color_matrix=bt709:out_range=tv,format=yuv420p -c:v libx264 -preset slow -crf 16 -tune animation -profile:v high -level:v 4.1 -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv -r 30 -movflags +faststart -f mp4 output/video/character-lab.mp4"
+  },
+  "lumaSummary": [
+    [
+      132.4,
+      0
+    ],
+    [
+      132.4,
+      0.8
+    ],
+    [
+      132.3,
+      0.7
+    ],
+    [
+      132.4,
+      0.7
+    ],
+    [
+      132.4,
+      0.5
+    ],
+    [
+      132.3,
+      0.7
+    ],
+    [
+      132.3,
+      0.7
+    ],
+    [
+      132.3,
+      0.7
+    ],
+    [
+      132.3,
+      0.9
+    ],
+    [
+      132.3,
+      0.6
+    ],
+    [
+      132.3,
+      0.3
+    ],
+    [
+      132.3,
+      0.7
+    ],
+    [
+      132.3,
+      0.6
+    ],
+    [
+      132.3,
+      0.9
+    ],
+    [
+      132.3,
+      0.8
+    ],
+    [
+      132.4,
+      0.7
+    ],
+    [
+      132.3,
+      0.4
+    ],
+    [
+      132.4,
+      0.7
+    ],
+    [
+      132.4,
+      0.7
+    ],
+    [
+      132.4,
+      0.7
+    ],
+    [
+      132.4,
+      0.7
+    ],
+    [
+      132.4,
+      0.8
+    ],
+    [
+      132.4,
+      0.8
+    ],
+    [
+      132.4,
+      0.6
+    ],
+    [
+      132.4,
+      0.7
+    ],
+    [
+      132.4,
+      0.6
+    ],
+    [
+      132.4,
+      0.8
+    ],
+    [
+      132.4,
+      0.8
+    ],
+    [
+      132.4,
+      0.8
+    ],
+    [
+      132.4,
+      0.5
+    ],
+    [
+      132.4,
+      0.6
+    ],
+    [
+      132.4,
+      0.7
+    ],
+    [
+      132.3,
+      0.7
+    ],
+    [
+      132.3,
+      0.6
+    ],
+    [
+      132.3,
+      0.7
+    ],
+    [
+      132.3,
+      0.5
+    ],
+    [
+      132.3,
+      0.8
+    ],
+    [
+      132.3,
+      0.8
+    ],
+    [
+      132.3,
+      0.6
+    ],
+    [
+      132.4,
+      0.7
+    ],
+    [
+      132.4,
+      0.8
+    ],
+    [
+      132.4,
+      0.5
+    ],
+    [
+      132.4,
+      0.7
+    ],
+    [
+      132.4,
+      0.8
+    ],
+    [
+      132.4,
+      0.7
+    ],
+    [
+      132.4,
+      0.7
+    ],
+    [
+      132.3,
+      0.8
+    ],
+    [
+      132.3,
+      0.5
+    ],
+    [
+      132.4,
+      0.7
+    ],
+    [
+      132.4,
+      0.8
+    ],
+    [
+      132.4,
+      0.7
+    ],
+    [
+      132.3,
+      0.8
+    ],
+    [
+      132.3,
+      0.7
+    ],
+    [
+      132.3,
+      0.7
+    ],
+    [
+      132.3,
+      0.6
+    ],
+    [
+      132.3,
+      0.7
+    ],
+    [
+      132.3,
+      0.7
+    ],
+    [
+      132.2,
+      0.7
+    ],
+    [
+      132.2,
+      0.6
+    ],
+    [
+      132.1,
+      0.6
+    ],
+    [
+      132,
+      0.5
+    ],
+    [
+      132,
+      0.7
+    ],
+    [
+      131.8,
+      0.6
+    ],
+    [
+      131.7,
+      0.5
+    ],
+    [
+      131.6,
+      0.7
+    ],
+    [
+      131.6,
+      0.5
+    ],
+    [
+      131.4,
+      0.6
+    ],
+    [
+      131.3,
+      0.5
+    ],
+    [
+      131.3,
+      0.6
+    ],
+    [
+      131.4,
+      0.6
+    ],
+    [
+      131.5,
+      0.6
+    ],
+    [
+      131.5,
+      0.7
+    ],
+    [
+      131.5,
+      0.4
+    ],
+    [
+      131.6,
+      0.7
+    ],
+    [
+      131.8,
+      0.7
+    ],
+    [
+      131.9,
+      0.7
+    ],
+    [
+      132,
+      0.6
+    ],
+    [
+      132.1,
+      0.8
+    ],
+    [
+      132.2,
+      0.5
+    ],
+    [
+      132.2,
+      0.7
+    ],
+    [
+      132.3,
+      0.7
+    ],
+    [
+      132.4,
+      0.8
+    ],
+    [
+      132.4,
+      0.8
+    ],
+    [
+      132.4,
+      0.7
+    ],
+    [
+      132.4,
+      0.7
+    ],
+    [
+      132.4,
+      0.4
+    ],
+    [
+      132.3,
+      0.6
+    ],
+    [
+      132.3,
+      0.7
+    ],
+    [
+      132.2,
+      0.8
+    ],
+    [
+      132.3,
+      0.6
+    ],
+    [
+      132.3,
+      0.7
+    ],
+    [
+      132.3,
+      0.4
+    ],
+    [
+      132.3,
+      0.9
+    ],
+    [
+      132.3,
+      0.7
+    ],
+    [
+      132.4,
+      0.7
+    ],
+    [
+      132.4,
+      0.8
+    ],
+    [
+      132.4,
+      0.7
+    ],
+    [
+      132.3,
+      0.5
+    ],
+    [
+      132.4,
+      0.7
+    ],
+    [
+      132.3,
+      0.7
+    ],
+    [
+      132.2,
+      0.6
+    ],
+    [
+      132.2,
+      0.6
+    ],
+    [
+      132.2,
+      0.5
+    ],
+    [
+      132.2,
+      0.4
+    ],
+    [
+      132.2,
+      0.5
+    ],
+    [
+      132.2,
+      0.6
+    ],
+    [
+      132.3,
+      0.5
+    ],
+    [
+      132.4,
+      0.4
+    ],
+    [
+      132.4,
+      0.5
+    ],
+    [
+      133.1,
+      3.3
+    ],
+    [
+      133,
+      0.6
+    ],
+    [
+      133.5,
+      3.6
+    ],
+    [
+      134,
+      3.6
+    ],
+    [
+      134,
+      0.6
+    ],
+    [
+      134.5,
+      3.5
+    ],
+    [
+      135.2,
+      3.5
+    ],
+    [
+      135.6,
+      3.2
+    ],
+    [
+      135.6,
+      0.4
+    ],
+    [
+      136.1,
+      3.5
+    ],
+    [
+      136.7,
+      3.2
+    ],
+    [
+      136.7,
+      0.5
+    ],
+    [
+      137.2,
+      3.3
+    ],
+    [
+      137.6,
+      3.2
+    ],
+    [
+      137.5,
+      0.3
+    ],
+    [
+      137.8,
+      3.3
+    ],
+    [
+      138.3,
+      3.4
+    ],
+    [
+      138.9,
+      3.3
+    ],
+    [
+      138.8,
+      0.3
+    ],
+    [
+      139.3,
+      3.1
+    ],
+    [
+      139.8,
+      3.4
+    ],
+    [
+      139.7,
+      0.2
+    ],
+    [
+      140.3,
+      3.1
+    ],
+    [
+      140.2,
+      0.5
+    ],
+    [
+      140.1,
+      0.5
+    ],
+    [
+      139.9,
+      0.6
+    ],
+    [
+      139.8,
+      0.6
+    ],
+    [
+      139.7,
+      0.9
+    ],
+    [
+      139.6,
+      0.9
+    ],
+    [
+      139.7,
+      1
+    ],
+    [
+      139.7,
+      0.9
+    ],
+    [
+      139.9,
+      1.2
+    ],
+    [
+      140,
+      1
+    ],
+    [
+      140,
+      0.9
+    ],
+    [
+      140.1,
+      1
+    ],
+    [
+      140.2,
+      1
+    ],
+    [
+      140.3,
+      1
+    ],
+    [
+      140.2,
+      0.9
+    ],
+    [
+      140.2,
+      1.1
+    ],
+    [
+      140.2,
+      1.1
+    ],
+    [
+      140.2,
+      1
+    ],
+    [
+      140.2,
+      1.1
+    ],
+    [
+      140.2,
+      1.1
+    ],
+    [
+      140.3,
+      1
+    ],
+    [
+      140.3,
+      1
+    ],
+    [
+      140.3,
+      1.1
+    ],
+    [
+      140.3,
+      1.1
+    ],
+    [
+      140.3,
+      0.9
+    ],
+    [
+      140.2,
+      0.9
+    ],
+    [
+      140.2,
+      1.1
+    ],
+    [
+      140.3,
+      1
+    ],
+    [
+      140.2,
+      1
+    ],
+    [
+      140.2,
+      0.9
+    ],
+    [
+      140.2,
+      1
+    ],
+    [
+      140.2,
+      0.9
+    ],
+    [
+      140.3,
+      1.1
+    ],
+    [
+      140.3,
+      1
+    ],
+    [
+      140.3,
+      1
+    ],
+    [
+      140.4,
+      0.9
+    ],
+    [
+      140.4,
+      1
+    ],
+    [
+      140.3,
+      1
+    ],
+    [
+      140.3,
+      0.9
+    ],
+    [
+      140.3,
+      1.1
+    ],
+    [
+      140.3,
+      1
+    ],
+    [
+      140.3,
+      1.1
+    ],
+    [
+      140.3,
+      0.9
+    ],
+    [
+      140.4,
+      1
+    ],
+    [
+      140.4,
+      1
+    ],
+    [
+      140.3,
+      0.9
+    ],
+    [
+      140.3,
+      1.1
+    ],
+    [
+      140.4,
+      1
+    ],
+    [
+      140.4,
+      1
+    ],
+    [
+      140.3,
+      0.9
+    ],
+    [
+      140.3,
+      1
+    ],
+    [
+      140.3,
+      1.1
+    ],
+    [
+      140.3,
+      0.9
+    ],
+    [
+      140.4,
+      0.9
+    ],
+    [
+      140.4,
+      1
+    ],
+    [
+      140.4,
+      1
+    ],
+    [
+      140.4,
+      0.9
+    ],
+    [
+      140.4,
+      1
+    ],
+    [
+      140.4,
+      1
+    ],
+    [
+      140.4,
+      0.9
+    ],
+    [
+      140.4,
+      1
+    ],
+    [
+      140.3,
+      1
+    ],
+    [
+      140.3,
+      1
+    ],
+    [
+      140.2,
+      0.8
+    ],
+    [
+      140.2,
+      0.9
+    ],
+    [
+      140.1,
+      0.9
+    ],
+    [
+      140.1,
+      1
+    ],
+    [
+      140.2,
+      0.8
+    ],
+    [
+      140.2,
+      1
+    ],
+    [
+      140.2,
+      1.1
+    ],
+    [
+      140.2,
+      0.9
+    ],
+    [
+      140.3,
+      1
+    ],
+    [
+      140.3,
+      0.9
+    ],
+    [
+      140.4,
+      0.9
+    ],
+    [
+      140.4,
+      0.6
+    ],
+    [
+      140.5,
+      0.7
+    ],
+    [
+      140.5,
+      0.6
+    ],
+    [
+      140.5,
+      0.5
+    ],
+    [
+      140.6,
+      0.3
+    ],
+    [
+      140.6,
+      0.5
+    ],
+    [
+      140.5,
+      0.5
+    ],
+    [
+      140.6,
+      0.3
+    ],
+    [
+      140.9,
+      3.4
+    ],
+    [
+      140.8,
+      0.3
+    ],
+    [
+      141,
+      3.2
+    ],
+    [
+      141.3,
+      3.3
+    ],
+    [
+      141.2,
+      0.4
+    ],
+    [
+      141.3,
+      3.2
+    ],
+    [
+      141.6,
+      3.3
+    ],
+    [
+      141.9,
+      3.4
+    ],
+    [
+      141.8,
+      0.3
+    ],
+    [
+      142.1,
+      3.4
+    ],
+    [
+      142.3,
+      3.3
+    ],
+    [
+      142.3,
+      0.3
+    ],
+    [
+      142.3,
+      3.7
+    ],
+    [
+      142.5,
+      3.4
+    ],
+    [
+      142.7,
+      0.7
+    ],
+    [
+      142.9,
+      3.8
+    ],
+    [
+      143,
+      3.7
+    ],
+    [
+      142.2,
+      4.6
+    ],
+    [
+      142.3,
+      0.6
+    ],
+    [
+      142.4,
+      4
+    ],
+    [
+      142.4,
+      4.2
+    ],
+    [
+      142.4,
+      0.6
+    ],
+    [
+      141.6,
+      4.6
+    ],
+    [
+      141.6,
+      0.7
+    ],
+    [
+      141.6,
+      0.7
+    ],
+    [
+      140.7,
+      1.6
+    ],
+    [
+      140.6,
+      0.7
+    ],
+    [
+      139.7,
+      1.3
+    ],
+    [
+      139.6,
+      0.7
+    ],
+    [
+      139.6,
+      0.5
+    ],
+    [
+      138.7,
+      1.6
+    ],
+    [
+      138.6,
+      0.7
+    ],
+    [
+      137.5,
+      1.5
+    ],
+    [
+      137.5,
+      0.6
+    ],
+    [
+      136.6,
+      1.3
+    ],
+    [
+      135.5,
+      1.7
+    ],
+    [
+      135.5,
+      0.7
+    ],
+    [
+      134.4,
+      1.5
+    ],
+    [
+      134.4,
+      0.6
+    ],
+    [
+      133.4,
+      1.4
+    ],
+    [
+      133.4,
+      0.5
+    ],
+    [
+      132.2,
+      1.4
+    ],
+    [
+      132.2,
+      0.6
+    ],
+    [
+      131.3,
+      1.4
+    ],
+    [
+      130.2,
+      1.5
+    ],
+    [
+      130.2,
+      0.4
+    ],
+    [
+      129.3,
+      1.3
+    ],
+    [
+      129.3,
+      0.5
+    ],
+    [
+      128.2,
+      1.4
+    ],
+    [
+      128.2,
+      0.5
+    ],
+    [
+      127.3,
+      1.4
+    ],
+    [
+      126,
+      1.6
+    ],
+    [
+      126,
+      0.3
+    ],
+    [
+      125.2,
+      1.2
+    ],
+    [
+      125.1,
+      0.5
+    ],
+    [
+      124.1,
+      1.4
+    ],
+    [
+      124,
+      0.4
+    ],
+    [
+      124,
+      0.3
+    ],
+    [
+      122.9,
+      1.5
+    ],
+    [
+      122.8,
+      0.4
+    ],
+    [
+      121.8,
+      1.3
+    ],
+    [
+      121.8,
+      0.3
+    ],
+    [
+      121.9,
+      0.3
+    ],
+    [
+      120.9,
+      1.4
+    ],
+    [
+      120.9,
+      0.4
+    ],
+    [
+      121,
+      0.4
+    ],
+    [
+      121,
+      0.3
+    ],
+    [
+      121,
+      0.3
+    ],
+    [
+      120,
+      1.4
+    ],
+    [
+      120,
+      0.2
+    ],
+    [
+      120,
+      0.3
+    ],
+    [
+      120,
+      0.3
+    ],
+    [
+      120,
+      0.3
+    ],
+    [
+      120,
+      0.3
+    ],
+    [
+      120,
+      0.3
+    ],
+    [
+      120,
+      0.3
+    ],
+    [
+      120,
+      0.3
+    ],
+    [
+      120.1,
+      0.3
+    ],
+    [
+      120.1,
+      0.3
+    ],
+    [
+      117.4,
+      3
+    ],
+    [
+      117.4,
+      0.3
+    ],
+    [
+      117.3,
+      0.3
+    ],
+    [
+      117.9,
+      0.8
+    ],
+    [
+      115.3,
+      2.9
+    ],
+    [
+      115.3,
+      0.3
+    ],
+    [
+      115.3,
+      0.3
+    ],
+    [
+      112.7,
+      3
+    ],
+    [
+      112.7,
+      0.3
+    ],
+    [
+      110.5,
+      3.3
+    ],
+    [
+      110.5,
+      0.4
+    ],
+    [
+      108.1,
+      2.7
+    ],
+    [
+      105.3,
+      3.1
+    ],
+    [
+      105.3,
+      0.3
+    ],
+    [
+      102.8,
+      2.8
+    ],
+    [
+      102.9,
+      0.3
+    ],
+    [
+      100.1,
+      3
+    ],
+    [
+      97.6,
+      2.9
+    ],
+    [
+      97.5,
+      0.3
+    ],
+    [
+      95.6,
+      3
+    ],
+    [
+      92.7,
+      3.1
+    ],
+    [
+      92.7,
+      0.1
+    ],
+    [
+      90.2,
+      2.6
+    ],
+    [
+      87.8,
+      3.5
+    ],
+    [
+      85.3,
+      2.7
+    ],
+    [
+      85.3,
+      0.2
+    ],
+    [
+      82.9,
+      2.5
+    ],
+    [
+      80.2,
+      3
+    ],
+    [
+      80.2,
+      0.2
+    ],
+    [
+      77.7,
+      2.7
+    ],
+    [
+      77.6,
+      0.2
+    ],
+    [
+      75.4,
+      3.3
+    ],
+    [
+      72.8,
+      2.8
+    ],
+    [
+      72.8,
+      0.2
+    ],
+    [
+      70.1,
+      2.8
+    ],
+    [
+      70.2,
+      0.2
+    ],
+    [
+      67.7,
+      2.9
+    ],
+    [
+      67.7,
+      0.3
+    ],
+    [
+      67.8,
+      0.2
+    ],
+    [
+      65.3,
+      2.9
+    ],
+    [
+      65.3,
+      0.3
+    ],
+    [
+      65.3,
+      0.4
+    ],
+    [
+      65.3,
+      0.4
+    ],
+    [
+      62.8,
+      3
+    ],
+    [
+      62.8,
+      0.3
+    ],
+    [
+      62.8,
+      0.3
+    ],
+    [
+      62.8,
+      0.5
+    ],
+    [
+      62.8,
+      0.4
+    ],
+    [
+      62.8,
+      0.3
+    ],
+    [
+      62.9,
+      0.3
+    ],
+    [
+      62.9,
+      0.4
+    ],
+    [
+      62.9,
+      0.4
+    ],
+    [
+      62.9,
+      0.4
+    ],
+    [
+      62.9,
+      0.4
+    ],
+    [
+      62.9,
+      0.4
+    ],
+    [
+      62.9,
+      0.4
+    ],
+    [
+      62.9,
+      0.1
+    ],
+    [
+      62.9,
+      0.4
+    ],
+    [
+      62.9,
+      0.1
+    ],
+    [
+      62.9,
+      0.1
+    ],
+    [
+      62.9,
+      0.4
+    ],
+    [
+      62.9,
+      0.1
+    ],
+    [
+      62.9,
+      0.2
+    ],
+    [
+      62.9,
+      0.1
+    ],
+    [
+      62.9,
+      0.1
+    ],
+    [
+      62.9,
+      0.1
+    ],
+    [
+      62.9,
+      0.1
+    ]
+  ]
+}

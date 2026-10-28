@@ -1,0 +1,6693 @@
+{
+  "project": "character-lab",
+  "name": "character-lab",
+  "job": {
+    "kind": "film",
+    "first": 0,
+    "count": 360,
+    "scene": null
+  },
+  "configFile": "config/character-lab.json",
+  "inputsHash": "f6340df728c598424cc9833b3b9520470601ce23f79f42313fa6f7a994b1d6f3",
+  "engineHash": "9420c042aa03f0b9884c05bc2726b3d666a76eb0a483a4b7adbfdc7b25de6427",
+  "libraryHash": "2a6000361daf6301ff19bf87c8c18df6df5d39b6be48ca4e19134c0258f77fa6",
+  "engineVersion": "0.5.0",
+  "status": "complete",
+  "startedAt": "2026-10-28T04:27:34.923Z",
+  "finishedAt": "2026-10-28T04:27:55.817Z",
+  "renderSeconds": 10.446,
+  "encodeSeconds": 10.448,
+  "chromiumVersion": "153.0.8010.12",
+  "jsErrors": 0,
+  "loadedModules": [
+    "/src/assets/common/environment.js",
+    "/src/assets/town/buildings.js",
+    "/src/assets/town/vegetation.js",
+    "/src/assets/town/props.js",
+    "/src/assets/town/street.js",
+    "/src/assets/town/vehicles.js",
+    "/src/assets/characters/rig.js"
+  ],
+  "frameSize": {
+    "width": 1920,
+    "height": 1080
+  },
+  "framesHash": "ee6b2c15b8807d56ff1e043646c09e3c51c080dbd02ad8f0b85c9c884c0bf376",
+  "video": "output/video/character-lab.mp4",
+  "videoSha256": "819e48df0f7a145084b130626a043ce6fb22c5d0810ba134c3b011ac295d8815",
+  "ffmpegCommand": "ffmpeg -y -v error -framerate 30 -start_number 0 -i output/frames/character-lab/frame_%04d.png -frames:v 360 -vf scale=1920:1080:flags=neighbor:out_color_matrix=bt709:out_range=tv,format=yuv420p -c:v libx264 -preset slow -crf 16 -tune animation -profile:v high -level:v 4.1 -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv -r 30 -movflags +faststart -f mp4 output/video/character-lab.mp4",
+  "segments": [
+    {
+      "frame": 0,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 1,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 2,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 3,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 4,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 5,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 6,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 7,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 8,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 9,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 10,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 11,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 12,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 13,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 14,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 15,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 16,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 17,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 18,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 19,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 20,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 21,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 22,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 23,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 24,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 25,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 26,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 27,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 28,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 29,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 30,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 31,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 32,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 33,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 34,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 35,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 36,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 37,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 38,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 39,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 40,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 41,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 42,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 43,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 44,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 45,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 46,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 47,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 48,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 49,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 50,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 51,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 52,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 53,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 54,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 55,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 56,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 57,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 58,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 59,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 60,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 61,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 62,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 63,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 64,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 65,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 66,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 67,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 68,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 69,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 70,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 71,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 72,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 73,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 74,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 75,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 76,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 77,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 78,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 79,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 80,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 81,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 82,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 83,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 84,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 85,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 86,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 87,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 88,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 89,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 90,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 91,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 92,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 93,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 94,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 95,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 96,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 97,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 98,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 99,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 100,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 101,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 102,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 103,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 104,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 105,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 106,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 107,
+      "segment": "s01-langkah",
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 108,
+      "segment": "s01-langkah->s02-pose",
+      "mix": 0,
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 109,
+      "segment": "s01-langkah->s02-pose",
+      "mix": 0.0625,
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 110,
+      "segment": "s01-langkah->s02-pose",
+      "mix": 0.0625,
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 111,
+      "segment": "s01-langkah->s02-pose",
+      "mix": 0.125,
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 112,
+      "segment": "s01-langkah->s02-pose",
+      "mix": 0.1875,
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 113,
+      "segment": "s01-langkah->s02-pose",
+      "mix": 0.1875,
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 114,
+      "segment": "s01-langkah->s02-pose",
+      "mix": 0.25,
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 115,
+      "segment": "s01-langkah->s02-pose",
+      "mix": 0.3125,
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 116,
+      "segment": "s01-langkah->s02-pose",
+      "mix": 0.375,
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 117,
+      "segment": "s01-langkah->s02-pose",
+      "mix": 0.375,
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 118,
+      "segment": "s01-langkah->s02-pose",
+      "mix": 0.4375,
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 119,
+      "segment": "s01-langkah->s02-pose",
+      "mix": 0.5,
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 120,
+      "segment": "s01-langkah->s02-pose",
+      "mix": 0.5,
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 121,
+      "segment": "s01-langkah->s02-pose",
+      "mix": 0.5625,
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 122,
+      "segment": "s01-langkah->s02-pose",
+      "mix": 0.625,
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 123,
+      "segment": "s01-langkah->s02-pose",
+      "mix": 0.625,
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 124,
+      "segment": "s01-langkah->s02-pose",
+      "mix": 0.6875,
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 125,
+      "segment": "s01-langkah->s02-pose",
+      "mix": 0.75,
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 126,
+      "segment": "s01-langkah->s02-pose",
+      "mix": 0.8125,
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 127,
+      "segment": "s01-langkah->s02-pose",
+      "mix": 0.8125,
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 128,
+      "segment": "s01-langkah->s02-pose",
+      "mix": 0.875,
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 129,
+      "segment": "s01-langkah->s02-pose",
+      "mix": 0.9375,
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 130,
+      "segment": "s01-langkah->s02-pose",
+      "mix": 0.9375,
+      "grid": [
+        {
+          "scene": "s01-langkah",
+          "zoomMode": "anchored",
+          "zoom": 2,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 131,
+      "segment": "s01-langkah->s02-pose",
+      "mix": 1,
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 132,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 133,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 134,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 135,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 136,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 137,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 138,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 139,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 140,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 141,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 142,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 143,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 144,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 145,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 146,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 147,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 148,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 149,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 150,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 151,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 152,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 153,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 154,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 155,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 156,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 157,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 158,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 159,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 160,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 161,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 162,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 163,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 164,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 165,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 166,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 167,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 168,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 169,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 170,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 171,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 172,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 173,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 174,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 175,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 176,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 177,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 178,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 179,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 180,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 181,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 182,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 183,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 184,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 185,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 186,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 187,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 188,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 189,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 190,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 191,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 192,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 193,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 194,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 195,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 196,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 197,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 198,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 199,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 200,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 201,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 202,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 203,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 204,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 205,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 206,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 207,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 208,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 209,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 210,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 211,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 212,
+      "segment": "s02-pose",
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 213,
+      "segment": "s02-pose->s03-sore",
+      "mix": 0,
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 214,
+      "segment": "s02-pose->s03-sore",
+      "mix": 0.0625,
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 215,
+      "segment": "s02-pose->s03-sore",
+      "mix": 0.0625,
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 216,
+      "segment": "s02-pose->s03-sore",
+      "mix": 0.125,
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 217,
+      "segment": "s02-pose->s03-sore",
+      "mix": 0.1875,
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 218,
+      "segment": "s02-pose->s03-sore",
+      "mix": 0.1875,
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 219,
+      "segment": "s02-pose->s03-sore",
+      "mix": 0.25,
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 220,
+      "segment": "s02-pose->s03-sore",
+      "mix": 0.3125,
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 221,
+      "segment": "s02-pose->s03-sore",
+      "mix": 0.375,
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 222,
+      "segment": "s02-pose->s03-sore",
+      "mix": 0.375,
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 223,
+      "segment": "s02-pose->s03-sore",
+      "mix": 0.4375,
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 224,
+      "segment": "s02-pose->s03-sore",
+      "mix": 0.5,
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 225,
+      "segment": "s02-pose->s03-sore",
+      "mix": 0.5,
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 226,
+      "segment": "s02-pose->s03-sore",
+      "mix": 0.5625,
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 227,
+      "segment": "s02-pose->s03-sore",
+      "mix": 0.625,
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 228,
+      "segment": "s02-pose->s03-sore",
+      "mix": 0.625,
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 229,
+      "segment": "s02-pose->s03-sore",
+      "mix": 0.6875,
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 230,
+      "segment": "s02-pose->s03-sore",
+      "mix": 0.75,
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 231,
+      "segment": "s02-pose->s03-sore",
+      "mix": 0.8125,
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 232,
+      "segment": "s02-pose->s03-sore",
+      "mix": 0.8125,
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 233,
+      "segment": "s02-pose->s03-sore",
+      "mix": 0.875,
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 234,
+      "segment": "s02-pose->s03-sore",
+      "mix": 0.9375,
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 235,
+      "segment": "s02-pose->s03-sore",
+      "mix": 0.9375,
+      "grid": [
+        {
+          "scene": "s02-pose",
+          "zoomMode": "anchored",
+          "zoom": 1.5,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 236,
+      "segment": "s02-pose->s03-sore",
+      "mix": 1,
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 237,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 238,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 239,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 240,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 241,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 242,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 243,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 244,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 245,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 246,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 247,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 248,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 249,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 250,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 251,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 252,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 253,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 254,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 255,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 256,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 257,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 258,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 259,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 260,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 261,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 262,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 263,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 264,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 265,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 266,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 267,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 268,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 269,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 270,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 271,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 272,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 273,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 274,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 275,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 276,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 277,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 278,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 279,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 280,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 281,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 282,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 283,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 284,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 285,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 286,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 287,
+      "segment": "s03-sore",
+      "grid": [
+        {
+          "scene": "s03-sore",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 288,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 289,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 290,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 291,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 292,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 293,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 294,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 295,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 296,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 297,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 298,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 299,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 300,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 301,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 302,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 303,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 304,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 305,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 306,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 307,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 308,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 309,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 310,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 311,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 312,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 313,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 314,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 315,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 316,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 317,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 318,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 319,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 320,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 321,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 322,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 323,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 324,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 325,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 326,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 327,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 328,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 329,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 330,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 331,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 332,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 333,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 334,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 335,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 336,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 337,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 338,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 339,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 340,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 341,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 342,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 343,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 344,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 345,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 346,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 347,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 348,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 349,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 350,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 351,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 352,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 353,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 354,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 355,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 356,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 357,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 358,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 359,
+      "segment": "s04-malam",
+      "grid": [
+        {
+          "scene": "s04-malam",
+          "zoomMode": "anchored",
+          "zoom": 1,
+          "layers": [
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 # Pengujian Negatif: Kereta Malam Menuju Fajar
 
 Setiap baris adalah hasil yang SENGAJA dibuat salah. Pengujian lulus bila validator menolaknya (TERDETEKSI).
-Dibuat otomatis oleh `npm run test:negative -- --project night-to-dawn` pada 2026-10-27T23:34:53.797Z.
+Dibuat otomatis oleh `npm run test:negative -- --project night-to-dawn` pada 2026-10-28T04:35:12.009Z.
 
 | No | Kesalahan yang disengaja | Hasil | Detail |
 |----|--------------------------|-------|--------|
@@ -23,7 +23,7 @@ Dibuat otomatis oleh `npm run test:negative -- --project night-to-dawn` pada 202
 | 16 | Mode zoom salah ketik | TERDETEKSI | Proyek: rendering.zoomMode "zoom-hantu" tidak dikenal (pilihan: anchored, steps, nearest) |
 | 17 | Lensa zoom di mode upscale ffmpeg | TERDETEKSI | Adegan 1 (s01-night-train) lens: zoom kamera hanya didukung bila rendering.upscale = "browser" (agar piksel tetap tajam) |
 | 18 | Nama efek salah ketik | TERDETEKSI | Adegan 2 (s02-inside-train): efek "hujan-deras-salah-ketik" tidak dikenal |
-| 19 | Proyek yang tidak ada | TERDETEKSI | exit 1: RENDER GAGAL: Proyek "proyek-hantu" tidak ditemukan. Proyek yang tersedia: /   - night-to-dawn        Kereta Malam Menuju Fajar (15 detik, 30 FPS) |
+| 19 | Proyek yang tidak ada | TERDETEKSI | exit 1: RENDER GAGAL: Proyek "proyek-hantu" tidak ditemukan. Proyek yang tersedia: /   - character-lab        Lab Karakter: Gerak dan Cahaya (12 detik, 30 FPS) |
 | 20 | Adegan yang tidak ada | TERDETEKSI | exit 1: RENDER GAGAL: Adegan "adegan-hantu" tidak ada di proyek night-to-dawn. Pilihan: s01-night-train, s02-inside-train, s03-journey-to-dawn |
 | 21 | Video kurang 1 frame (449 frame) | TERDETEKSI | Jumlah frame: GAGAL, 449 dari 450 frame / Durasi: GAGAL, 14.967 detik (target 15.000) |
 | 22 | Resolusi salah (1280x720) | TERDETEKSI | Resolusi output: GAGAL, 1280x720 |

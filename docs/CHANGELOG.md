@@ -1,5 +1,37 @@
 # Riwayat Perubahan
 
+## Tahap 5: gerak dan pencahayaan karakter (branch `tahap-5-character-animation`)
+
+Menunggu persetujuan pemilik, belum di-merge. Fokus: V15 (warna karakter mengikuti palet pencahayaan) dan V16 (gerak karakter lebih natural). Versi mesin 0.5.0. Semua fitur baru opsional per karakter, jadi Project A, Project B, dan prototipe Tahap 1 identik piksel dan byte dengan baseline resminya.
+
+### Baru
+
+- **Gerak natural rig** (`"motion": "natural"`, `src/assets/characters/gait.js`): sendi siku dan lutut (dua tulang), pose lengan `swing`/`hang`/`carry`/`behind` (`frontArm`, `backArm`, `armSwing`), siklus jalan 8 fase yang telapaknya menempel di tanah, ayunan lengan yang dihitung dari fase yang sama dengan kaki (lengan selalu berlawanan dengan kaki di sisinya), pinggul turun paling banyak 1 piksel di sekitar kontak dan dimatikan bila hanya akan muncul 1 frame. Isyarat, duduk (membaca koran), mengayuh (siku menuju setang), dan menyapu (dua tangan di gagang) ikut memakai siku.
+- **Pencahayaan karakter** (`"light": "<awalan>"`, `src/assets/characters/lighting.js`): warna dasar dikalikan `<awalan>Light`, diangkat `<awalan>Lift`, dan siluet di sisi cahaya diberi `<awalan>Rim`. Ketiganya warna palet biasa, jadi ikut tangga palet adegan. Arah cahaya tepi dari `lightDirection` (-1..1, bisa `paramTracks`) atau `lightTrack` (nama track `environment`), tetap benar saat karakter dicerminkan. Karakter digambar ke penyangga piksel lalu diwarnai per piksel.
+- **Jenis parameter katalog `environmentTrack`**: nama track lingkungan, divalidasi ada di `environment` proyek.
+- **Komposer**: `paletteAt(frame)` dan `entitiesAt(frame)` untuk pengujian; aset menerima `scale` entitas saat menggambar. **Runtime**: `inspect.identityColors(kunci, frame)` dan `inspect.motionProbes(awal, jumlah)`. Semuanya generik.
+- **Validator**: warna identitas dihitung per frame dari palet adegan (aturan konsistensi tetap berlaku untuk karakter yang diterangi); pemeriksaan baru "Gerak karakter: kaki tidak meluncur, tubuh tidak bergetar" (`motion-feet`, `motion-bob`) dari `motionProbe` aset. Gerak klasik hanya dilaporkan.
+- **Uji negatif baru** (berlaku untuk proyek dengan karakter rig): mode gerak salah ketik, pose lengan tidak dikenal, palet tanpa warna cahaya karakter, arah cahaya di luar batas, track arah cahaya tidak ada, serta dua kerusakan kode gerak di salinan repository (telapak terseret, pinggul bolak-balik) yang harus tertangkap.
+- **21 unit test** (`tests/engine/character.test.js`): telapak tidak meluncur di berbagai langkah, kecepatan, arah, dan skala; tepat satu telapak menapak; lengan berlawanan dengan kaki; tanpa getar; dua tulang; pose lengan; pencahayaan netral = identitas; warna searah sepanjang tangga palet; penyangga piksel identik dengan gambar langsung; semua status rig natural tergambar di dalam batas; klasik tetap bawaan; konfigurasi salah ditolak.
+- **Proyek demo `character-lab`** (*Lab Karakter: Gerak dan Cahaya*, 12 detik, 360 frame, 4 adegan, 2 dissolve), murni konfigurasi: langkah dan ayunan tangan (pagi, zoom 2), pose lengan (siang, zoom 1,5), siang ke sore, sore ke malam dengan lampu dan jendela menyala. Belum punya baseline.
+- **`npm run demo:character`** (`src/render/character-demo.cjs`): `output/comparisons/v15-v16-sebelum-sesudah.mp4`, `v16-langkah.png`, `v15-cahaya.png`, dan laporan `output/reports/character-demo.md`.
+
+### Dipertahankan
+
+- `motion: "classic"` (bawaan) adalah kode gerak Tahap 3 yang hanya dipindah ke fungsi `drawClassic` tanpa mengubah satu panggilan gambar pun. Tanpa `light`, karakter digambar langsung seperti sebelumnya.
+- Konfigurasi Project A, Project B, dan prototipe tidak diubah. File baseline dan `pending-changes.json` tidak diubah.
+
+### Temuan
+
+- Tabel jalan Tahap 3 membuat telapak meluncur: di demo, 98 dari 98 langkah bergeser rata-rata 5,4 piksel art (terjauh 11). Gerak natural: 0 dari 97 langkah.
+- V26 (Project B belum memakai fitur Tahap 5), V27 (batas gerak natural), V28 (batas pencahayaan), T19 (cakupan pemeriksaan gerak) dicatat di BACKLOG.
+
+### Bukti
+
+- Hasil uji (render ulang semua proyek dari kode final): `npm run build:all` 4/4 proyek lulus; `npm test` 13/13 langkah; lint lulus (87 file JavaScript, 28 JSON, 8 pemeriksaan registry); unit test 86/86 (65 lama + 21 baru); penjaga baseline historis 3/3; validasi `character-lab` 38/38, A 39/39, B 36/36, prototipe 32/32 (masing-masing +2 pemeriksaan gerak); uji negatif `character-lab` 42/42, A 35/35, B 41/41 (+5 uji konfigurasi karakter); regresi 29/29; uji antar-proyek 22/22; lab zoom 10/10; uji asap 4/4 proyek; `npm run build:prototype` lulus.
+- Project A, Project B, dan prototipe identik piksel demi piksel di setiap frame dan MP4-nya identik byte demi byte dengan baseline resmi (`tahap-2`, `tahap-4`, `tahap-2`).
+- Validator Project B (gerak klasik, tidak diwajibkan) mencatat 46 langkah dengan telapak meluncur rata-rata 6,4 piksel art.
+
 ## Proteksi branch di GitHub (pengaturan pemilik, 28 Oktober 2026)
 
 Bukan perubahan kode, CI, baseline, aset, atau MP4. Pemilik mengaktifkan dua ruleset di pengaturan GitHub; dokumentasi diperbarui agar sesuai hasil audit.
