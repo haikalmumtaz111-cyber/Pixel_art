@@ -22,7 +22,7 @@ Kondisi saat ini:
 
 Perintah `npm run baseline` menampilkan tabel ini langsung dari registry.
 
-Proyek demo Tahap 5 `character-lab` belum punya baseline. Sesuai aturan proyek baru, baseline pertamanya direkam lewat `npm run baseline` setelah proyeknya disetujui pemilik dan di-merge. Sampai saat itu uji regresi tidak memeriksanya (uji asap hanya memastikan frame tidak kosong), tetapi validasi lengkap dan uji negatifnya tetap jalan di `npm test`. Tahap 5 tidak mengubah hasil render ketiga proyek lama, jadi tidak ada entri baru di `pending-changes.json`.
+Proyek demo Tahap 5 `character-lab` belum punya baseline. Tahap 5 sudah disetujui dan di-merge (PR #9), tetapi baseline pertamanya baru direkam lewat `npm run baseline` bila pemilik memerintahkannya. Sampai saat itu uji regresi tidak memeriksanya (uji asap hanya memastikan frame tidak kosong), tetapi validasi lengkap dan uji negatifnya tetap jalan di `npm test`. Tahap 5 tidak mengubah hasil render ketiga proyek lama, jadi tidak ada entri baru di `pending-changes.json`.
 
 ## Aturan
 
@@ -102,11 +102,11 @@ Kode: `src/render/baselines.cjs` (registry, pemeriksaannya, dan aturan penjaga),
 | Ruleset | ID | Target | Aturan |
 |---------|----|--------|--------|
 | Protect main - Pixel History Studio | 26005617 | `main` (`~DEFAULT_BRANCH`) | wajib PR (0 approval), hanya merge commit, dua check CI wajib ("Lint, unit test, validasi konfigurasi", "Uji asap render dan lab zoom") dengan mode strict (branch PR harus up to date), tidak boleh dihapus, tidak boleh force push, tanpa bypass |
-| Protect historical stages | 26006150 | `refs/heads/tahap-[1-4]-*` (empat branch Tahap 1-4) | tidak boleh dihapus, tidak boleh force push, tanpa bypass |
+| Protect historical stages | 26006150 | `refs/heads/tahap-[1-4]-*` dan `refs/heads/tahap-5-*` (lima branch Tahap 1-5) | tidak boleh dihapus, tidak boleh force push, tanpa bypass |
 
-- **Terbukti:** kedua ruleset berstatus `active`; API aturan efektif menampilkan aturan itu untuk `main` dan keempat branch historis (dan tidak untuk branch lain); nama dan aplikasi check wajib cocok dengan check run CI di `main`.
-- **Belum terbukti:** penolakan push nyata. Saat diaudit, API mencatat 0 evaluasi rule karena belum ada push ke branch yang dilindungi sejak ruleset dibuat.
-- **Tidak dicakup ruleset:** PR yang mengubah `ci.yml` (lihat batas di atas), push fast-forward ke branch historis (branch itu tidak dibekukan, hanya tidak bisa dihapus atau ditulis ulang), dan branch Tahap 5 ke atas.
+- **Terbukti:** kedua ruleset berstatus `active`; API aturan efektif menampilkan aturan itu untuk `main` dan kelima branch historis (dan tidak untuk branch lain); nama dan aplikasi check wajib cocok dengan check run CI di `main`. Pola `tahap-5-*` ditambahkan pemilik setelah Tahap 5 di-merge dan diverifikasi ulang lewat API pada hari yang sama: `tahap-5-character-animation` kini `protected`, aturan `main` tidak berubah.
+- **Belum terbukti:** penolakan push nyata. Sampai verifikasi terakhir belum pernah ada push yang ditolak, jadi enforcement-nya belum pernah teramati menolak.
+- **Tidak dicakup ruleset:** PR yang mengubah `ci.yml` (lihat batas di atas), push fast-forward ke branch historis (branch itu tidak dibekukan, hanya tidak bisa dihapus atau ditulis ulang), dan branch Tahap 6 ke atas.
 
 Usulan lanjutan dan statusnya: T18 di [`BACKLOG.md`](BACKLOG.md).
 
