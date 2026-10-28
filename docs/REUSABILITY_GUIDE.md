@@ -1,6 +1,6 @@
 # Panduan Reusability
 
-Berlaku untuk mesin versi 0.5.0 (Tahap 5: gerak dan pencahayaan karakter, branch `tahap-5-character-animation`, menunggu persetujuan pemilik). Kontrak teknis lengkapnya ada di [`ARCHITECTURE.md`](ARCHITECTURE.md).
+Berlaku untuk mesin versi 0.5.0 (Tahap 5: gerak dan pencahayaan karakter, di `main` sejak PR #9). Kontrak teknis lengkapnya ada di [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
 ## Bagaimana cara membuat proyek animasi baru menggunakan engine ini?
 

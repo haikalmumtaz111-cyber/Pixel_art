@@ -1,8 +1,22 @@
 # Riwayat Perubahan
 
-## Tahap 5: gerak dan pencahayaan karakter (branch `tahap-5-character-animation`)
+## Fondasi: folder sementara unit test baseline selalu dibersihkan (PR #10, branch `pr-a-bersihkan-folder-uji`)
 
-Menunggu persetujuan pemilik, belum di-merge. Fokus: V15 (warna karakter mengikuti palet pencahayaan) dan V16 (gerak karakter lebih natural). Versi mesin 0.5.0. Semua fitur baru opsional per karakter, jadi Project A, Project B, dan prototipe Tahap 1 identik piksel dan byte dengan baseline resminya.
+Disetujui pemilik dan di-merge ke `main` lewat PR #10 (merge commit `3d59391`, 28 Oktober 2026). Bukan tahap baru. Hanya `tests/engine/baselines.test.js` yang berubah; mesin, aset, konfigurasi, baseline, registry, workflow CI, dan MP4 tidak berubah.
+
+- **Masalah** (ditemukan saat audit setelah Tahap 5): `fixture()` membuat folder `pixel-baselines-*` di folder sementara sistem dan tidak pernah menghapusnya, jadi setiap `npm run test:engine` (juga lewat `npm test` dan `test:ci`) meninggalkan 9 folder.
+- **Perbaikan**: setiap folder fixture dicatat dan dihapus oleh `t.after()` milik tes yang membuatnya, yang tetap berjalan walau assertion gagal. `after()` di akhir file menjadi jaring pengaman. Pembersih hanya menghapus folder yang tercatat dibuat fixture dan jalurnya tepat satu tingkat di bawah folder sementara dengan awalan `pixel-baselines-`; tidak ada wildcard.
+- **4 tes baru**: folder hilang begitu tesnya selesai; folder tetap dihapus saat assertion gagal (diuji di proses anak supaya rangkaian utama tidak ikut gagal); pembersih menolak folder lain dan jalur dengan `..`; semua folder dari tes sebelumnya sudah hilang. Semua assertion lama dipertahankan. Unit test menjadi 91 (termasuk satu subtes).
+- **Bukti** (audit pasca-merge dari clean clone `main@3d59391`): `test:engine` 91/91 tiga kali tanpa folder baru; di folder sementara terisolasi, file uji versi sebelum PR #10 meninggalkan 9 folder sedangkan versi baru 0; `build:all` 4/4, `npm test` 13/13 langkah, regresi 29/29, `build:prototype` lulus, lab zoom 10/10, MP4 keempat proyek identik byte dengan yang ter-commit; CI push di `main@3d59391` hijau.
+- **Batas**: proses yang dimatikan paksa (SIGKILL, kehabisan memori, timeout runner) tidak sempat menjalankan hook pembersih; kasus ini belum diuji. Folder yang tertinggal dari run sebelum perbaikan tidak dihapus otomatis.
+
+## Proteksi branch Tahap 5 (pengaturan pemilik, 28 Oktober 2026)
+
+Bukan perubahan kode. Setelah Tahap 5 di-merge, pemilik menambahkan pola `refs/heads/tahap-5-*` ke ruleset "Protect historical stages" (26006150). Terverifikasi lewat API GitHub: ruleset tetap `active`, pola lama `tahap-[1-4]-*` tetap berlaku, `tahap-5-character-animation` kini `protected` dengan aturan tidak boleh dihapus dan tidak boleh force push, bypass kosong, dan ruleset `main` (26005617) tidak berubah. Penolakan push nyata tetap belum diuji (BACKLOG T18).
+
+## Tahap 5: gerak dan pencahayaan karakter (PR #9, branch `tahap-5-character-animation`)
+
+Disetujui pemilik dan di-merge ke `main` lewat PR #9 (merge commit `e6926d2`, 28 Oktober 2026). Fokus: V15 (warna karakter mengikuti palet pencahayaan) dan V16 (gerak karakter lebih natural). Versi mesin 0.5.0. Semua fitur baru opsional per karakter, jadi Project A, Project B, dan prototipe Tahap 1 identik piksel dan byte dengan baseline resminya.
 
 ### Baru
 
@@ -31,6 +45,7 @@ Menunggu persetujuan pemilik, belum di-merge. Fokus: V15 (warna karakter mengiku
 - Hasil uji (render ulang semua proyek dari kode final): `npm run build:all` 4/4 proyek lulus; `npm test` 13/13 langkah; lint lulus (87 file JavaScript, 28 JSON, 8 pemeriksaan registry); unit test 86/86 (65 lama + 21 baru); penjaga baseline historis 3/3; validasi `character-lab` 38/38, A 39/39, B 36/36, prototipe 32/32 (masing-masing +2 pemeriksaan gerak); uji negatif `character-lab` 42/42, A 35/35, B 41/41 (+5 uji konfigurasi karakter); regresi 29/29; uji antar-proyek 22/22; lab zoom 10/10; uji asap 4/4 proyek; `npm run build:prototype` lulus.
 - Project A, Project B, dan prototipe identik piksel demi piksel di setiap frame dan MP4-nya identik byte demi byte dengan baseline resmi (`tahap-2`, `tahap-4`, `tahap-2`).
 - Validator Project B (gerak klasik, tidak diwajibkan) mencatat 46 langkah dengan telapak meluncur rata-rata 6,4 piksel art.
+- Setelah merge, CI push di `main@e6926d2` hijau.
 
 ## Proteksi branch di GitHub (pengaturan pemilik, 28 Oktober 2026)
 

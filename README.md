@@ -10,11 +10,11 @@ Studio animasi pixel art berbasis kode. Tujuan jangka panjangnya adalah membuat 
 | 2 | Sistem multi-adegan + film 15 detik *Kereta Malam Menuju Fajar* | Selesai, di-merge ke `main` (PR #2) |
 | 3 | Mesin reusable untuk banyak proyek + film 12 detik *Pagi di Kota Tua* | Selesai, disetujui, di-merge ke `main` (PR #3) |
 | 4 | Kamera pixel-perfect: zoom tanpa piksel merayap (V14) | Selesai, disetujui, di-merge ke `main` (PR #4) |
-| 5 | Gerak dan pencahayaan karakter (V15, V16) + demo *Lab Karakter* | Selesai di branch `tahap-5-character-animation`, menunggu persetujuan pemilik |
+| 5 | Gerak dan pencahayaan karakter (V15, V16) + demo *Lab Karakter* | Selesai, disetujui, di-merge ke `main` (PR #9) |
 
-Versi mesin: **0.5.0** di branch Tahap 5 (`config/engine.json`). Kondisi resmi di `main`: 0.4.0 (Tahap 4).
+Versi mesin: **0.5.0** (`config/engine.json`, Tahap 5).
 
-Pengelolaan baseline setelah Tahap 4: baseline regresi kini punya versi per proyek, dan Project B memakai baseline resmi Tahap 4 (`tahap-4`). Disetujui pemilik dan di-merge ke `main` lewat PR #5 (`d0f3f34`). Penjelasan: [`docs/BASELINES.md`](docs/BASELINES.md).
+Pengelolaan baseline setelah Tahap 4: baseline regresi kini punya versi per proyek, dan Project B memakai baseline resmi Tahap 4 (`tahap-4`). Disetujui pemilik dan di-merge ke `main` lewat PR #5 (`d0f3f34`). Penjelasan: [`docs/BASELINES.md`](docs/BASELINES.md). Setelah Tahap 5, unit test baseline tidak lagi meninggalkan folder sementara (PR #10, `3d59391`).
 
 ## Proyek yang tersedia
 
@@ -29,7 +29,7 @@ Semua proyek memakai mesin yang sama (`src/engine/`). Yang membedakan hanya file
 
 Semua video: 1920 x 1080, 30 FPS, H.264 High level 4.1, yuv420p, faststart, tanpa audio. Dunia digambar di 480 x 270 lalu diperbesar nearest neighbor, jadi pikselnya tetap tajam.
 
-## Hasil Tahap 5: gerak dan pencahayaan karakter (menunggu persetujuan)
+## Hasil Tahap 5: gerak dan pencahayaan karakter
 
 Dua kekurangan karakter rig dari Tahap 3 diperbaiki, keduanya **opsional per karakter**, sehingga ketiga film lama tetap identik piksel dan byte dengan baseline resminya:
 
@@ -233,6 +233,6 @@ output/                         video, laporan, cuplikan, bahan pembanding (comp
 - Fitur gerak natural dan pencahayaan karakter Tahap 5 baru dipakai demo `character-lab`. Project B masih memakai gerak klasik dan warna tetap sampai pemilik memutuskan (V26). Batas lainnya: V27 (gerak) dan V28 (cahaya: belum ada bayangan dan cahaya lampu lokal).
 - Determinisme dijamin di lingkungan yang sama (versi Chromium dan FFmpeg yang sama).
 - CI di GitHub hanya menjalankan pemeriksaan ringan. Render penuh dan pengujian lengkap dijalankan lokal atau di sesi Claude Code.
-- `main` dan branch Tahap 1-4 dilindungi ruleset GitHub (lihat [`docs/BASELINES.md`](docs/BASELINES.md)). Konfigurasinya aktif, tetapi penolakan push nyata belum diuji, dan PR yang mengubah workflow CI tetap perlu ditinjau manual (BACKLOG T18).
+- `main` dan branch Tahap 1-5 dilindungi ruleset GitHub (lihat [`docs/BASELINES.md`](docs/BASELINES.md)). Konfigurasinya aktif, tetapi penolakan push nyata belum diuji, dan PR yang mengubah workflow CI tetap perlu ditinjau manual (BACKLOG T18).
 
 Daftar lengkap beserta prioritas dan ide perbaikannya ada di [`docs/BACKLOG.md`](docs/BACKLOG.md).
