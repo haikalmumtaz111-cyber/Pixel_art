@@ -14,8 +14,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
@@ -50,14 +50,14 @@ jobs:
       FFMPEG_CACHE: /var/cache/ci-ffmpeg
       FFMPEG_EXPECTED: 6.1.1-3ubuntu5
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
       # Kunci cache memuat digest image: paket deb di cache selalu cocok dengan isi image yang dipakai
       - name: Cache paket FFmpeg (deb resmi Ubuntu)
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: /var/cache/ci-ffmpeg
           key: ffmpeg-6.1.1-3ubuntu5-playwright-1.63.0-noble-eff16c30e6f3-v1
