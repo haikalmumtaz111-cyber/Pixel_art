@@ -14,7 +14,7 @@ Studio animasi pixel art berbasis kode. Tujuan jangka panjangnya adalah membuat 
 
 Versi mesin: **0.5.0** (`config/engine.json`, Tahap 5).
 
-Pengelolaan baseline setelah Tahap 4: baseline regresi kini punya versi per proyek, dan Project B memakai baseline resmi Tahap 4 (`tahap-4`). Disetujui pemilik dan di-merge ke `main` lewat PR #5 (`d0f3f34`). Penjelasan: [`docs/BASELINES.md`](docs/BASELINES.md). Setelah Tahap 5, unit test baseline tidak lagi meninggalkan folder sementara (PR #10, `3d59391`), dan demo `character-lab` mendapat baseline resmi `tahap-5` dari `main@e6926d2` atas perintah pemilik (PR #12, `09d68e9`). PR D (T19, pemeriksaan pose karakter) dikerjakan di branch `pr-d-validasi-gerak-t19` atas persetujuan pemilik, belum di-merge; hasil render semua proyek tidak berubah.
+Pengelolaan baseline setelah Tahap 4: baseline regresi kini punya versi per proyek, dan Project B memakai baseline resmi Tahap 4 (`tahap-4`). Disetujui pemilik dan di-merge ke `main` lewat PR #5 (`d0f3f34`). Penjelasan: [`docs/BASELINES.md`](docs/BASELINES.md). Setelah Tahap 5, unit test baseline tidak lagi meninggalkan folder sementara (PR #10, `3d59391`), dan demo `character-lab` mendapat baseline resmi `tahap-5` dari `main@e6926d2` atas perintah pemilik (PR #12, `09d68e9`). PR D (T19, pemeriksaan pose karakter) dikerjakan atas persetujuan pemilik dan di-merge ke `main` (PR #14, `0f2b33d`); hasil render semua proyek tidak berubah.
 
 ## Proyek yang tersedia
 
@@ -55,7 +55,7 @@ Bahan pembanding (`npm run demo:character`), "sebelum" = proyek yang sama dengan
 
 Project B belum memakai fitur ini (BACKLOG V26). Menerapkannya akan mengubah hampir semua frame Project B, jadi butuh deklarasi perubahan dan persetujuan terpisah. Cara memakai: [`docs/REUSABILITY_GUIDE.md`](docs/REUSABILITY_GUIDE.md) bagian karakter.
 
-## Pemeriksaan pose karakter (PR D, T19, belum di-merge)
+## Pemeriksaan pose karakter (PR D, T19, PR #14)
 
 Validator kini juga memeriksa pose karakter gerak natural di setiap frame, dari data yang dicatat fungsi gambar itu sendiri (tanpa mengubah gambar):
 
