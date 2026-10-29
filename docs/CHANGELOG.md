@@ -1,5 +1,15 @@
 # Riwayat Perubahan
 
+## CI ke runtime Node.js 24, T20 (PR #17, branch `t20-actions-node24`)
+
+Disetujui pemilik dan di-merge ke `main` lewat PR #17 (merge commit `b03f344`, 29 Oktober 2026 23.29 +07:00, atau 16.29 UTC). Bukan tahap baru. Hanya `.github/workflows/ci.yml` yang berubah (+5/-5). Kode, uji, konfigurasi, baseline, registry, `pending-changes.json`, output render, dan dokumentasi tidak berubah.
+
+- **Perubahan**: `actions/checkout`, `actions/setup-node`, dan `actions/cache` naik dari `@v4` ke `@v5` di kelima baris `uses:`. Menurut catatan rilis resmi, ketiganya berjalan di Node.js 24 (runner 2.327.1 ke atas). v5 dipilih, bukan versi terbaru, karena v6/v7 membawa perubahan lain (ESM, penyimpanan kredensial checkout, caching otomatis setup-node).
+- **Dipertahankan**: `node-version: 22`, `cache: npm`, nama kedua check wajib, pemicu, `needs`, timeout, image Playwright beserta digest, env dan key cache FFmpeg, skrip pasang FFmpeg, langkah penjaga baseline (checkout v5 tetap `persist-credentials: true` dan `fetch-depth: 1`), dan semua langkah uji. YAML lama dan baru identik setelah versi action dinormalkan.
+- **Bukti CI**: run PR 40909154992 dan run push `main@b03f344` (40912132900), kedua check success. Log memuat ketiga action v5 beserta SHA-nya dan tidak lagi memuat "Node.js 20 is deprecated". Penjaga baseline jalan dengan ref yang benar (`main` di PR, `97fbc2e` saat push) dan menghasilkan 3/3. Uji asap 4/4 identik baseline resmi, lab zoom 10/10. Cache npm dan FFmpeg hit, dan Node proyek tetap 22.23.4.
+- **Audit pasca-merge** (read-only, clean clone `main@b03f344`): tree merge identik dengan head PR (`c775b49`). Lint lulus, unit test 103/103, penjaga 3/3 (vs `origin/main` dan vs `97fbc2e`), `build:all` 4/4, `npm test` 13/13 langkah tanpa kegagalan (4 KNOWN ISSUE di `character-lab` dan TIDAK DIPERIKSA di proyek lain tetap bukan LULUS), `test:ci` lulus, regresi B vs `tahap-3` 11/11, `build:prototype` lulus. MP4 keempat proyek dan 19 lembar cuplikan identik byte dengan yang ter-commit. Tidak ada FAIL.
+- **Masih terbuka**: CI belum bebas peringatan. `setup-node@v5` masih mencetak `DeprecationWarning` DEP0040 (`punycode`) di langkah utama dan pasca-job, serta DEP0169 (`url.parse()`) di langkah utama, pada kedua job; pasca-job `cache@v5` tidak lagi mencetak `punycode`. Belum diverifikasi: jalur unduh ulang FFmpeg dengan `cache@v5` (cache selalu hit), dan penolakan push nyata oleh ruleset (T18).
+
 ## Proteksi pola branch Tahap 6 (pengaturan pemilik, 29 Oktober 2026)
 
 Bukan perubahan kode dan bukan awal Tahap 6: belum ada branch maupun pekerjaan Tahap 6. Pemilik menambahkan pola `refs/heads/tahap-6-*` ke ruleset "Protect historical stages" (26006150) lewat pengaturan GitHub (`updated_at` 29 Oktober 2026 12.22 +07:00). Verifikasi read-only lewat API GitHub, dibandingkan dengan snapshot sebelum perubahan:
@@ -8,6 +18,7 @@ Bukan perubahan kode dan bukan awal Tahap 6: belum ada branch maupun pekerjaan T
 - Aturan efektif kelima branch Tahap 1-5 identik dengan sebelum perubahan. Nama uji `tahap-6-cek-pola` (branch tidak dibuat) kini kena kedua aturan; `tahap6-cek` dan `tahap-7-cek` tidak.
 - Ruleset `main` (26005617) identik byte dengan sebelum perubahan, termasuk `updated_at`. Saat verifikasi, ke-16 branch di `origin` dan `main@9971143` tidak berubah.
 - Hasil: 9 PASS, 0 FAIL, 1 NOT VERIFIED (penolakan push nyata, sengaja tidak diuji). BACKLOG T18 butir 4 kini terpenuhi sampai Tahap 6; butir 1-3 tetap terbuka.
+- Dokumentasinya disinkronkan lewat PR #16 (branch `pr-e-sinkronisasi-dokumentasi-t18`, merge commit `97fbc2e`, 29 Oktober 2026 17.36 +07:00). Hanya enam dokumen (+30/-14); audit pasca-merge PR #16 dari clean clone tidak menemukan FAIL.
 
 ## Koreksi dokumentasi status PR D (PR #15, branch `claude/pixel-history-docs-audit-qp98fv`)
 
