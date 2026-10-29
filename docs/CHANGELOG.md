@@ -1,5 +1,20 @@
 # Riwayat Perubahan
 
+## Proteksi pola branch Tahap 6 (pengaturan pemilik, 29 Oktober 2026)
+
+Bukan perubahan kode dan bukan awal Tahap 6: belum ada branch maupun pekerjaan Tahap 6. Pemilik menambahkan pola `refs/heads/tahap-6-*` ke ruleset "Protect historical stages" (26006150) lewat pengaturan GitHub (`updated_at` 29 Oktober 2026 12.22 +07:00). Verifikasi read-only lewat API GitHub, dibandingkan dengan snapshot sebelum perubahan:
+
+- Satu-satunya perubahan di 26006150 adalah tambahan `refs/heads/tahap-6-*` (dan `updated_at`). Enforcement tetap `active`, exclude kosong, aturan tetap tidak boleh dihapus dan tidak boleh force push, `bypass_actors` kosong (dibaca tanpa login admin).
+- Aturan efektif kelima branch Tahap 1-5 identik dengan sebelum perubahan. Nama uji `tahap-6-cek-pola` (branch tidak dibuat) kini kena kedua aturan; `tahap6-cek` dan `tahap-7-cek` tidak.
+- Ruleset `main` (26005617) identik byte dengan sebelum perubahan, termasuk `updated_at`. Saat verifikasi, ke-16 branch di `origin` dan `main@9971143` tidak berubah.
+- Hasil: 9 PASS, 0 FAIL, 1 NOT VERIFIED (penolakan push nyata, sengaja tidak diuji). BACKLOG T18 butir 4 kini terpenuhi sampai Tahap 6; butir 1-3 tetap terbuka.
+
+## Koreksi dokumentasi status PR D (PR #15, branch `claude/pixel-history-docs-audit-qp98fv`)
+
+Hanya dokumentasi. Memperbaiki dua temuan audit pasca-merge PR #14: status PR D yang masih tertulis "belum di-merge" atau "menunggu review" di tujuh tempat, dan cakupan BACKLOG `V1-V28` di CLAUDE.md. Disetujui pemilik dan di-merge ke `main` lewat PR #15 (merge commit `9971143`, 29 Oktober 2026 11.36 +07:00, atau 04.36 UTC). Lima file berubah (+10/-9): CLAUDE.md, README, ARCHITECTURE, BACKLOG, CHANGELOG. Kode, uji, konfigurasi, baseline, workflow CI, dan hasil render tidak berubah.
+
+- **Audit pasca-merge** (read-only, clean clone `main@9971143`): parent merge commit `0f2b33d` dan `00ebf1a`, tree identik dengan head PR, diff identik dengan yang disetujui pemilik. CI push di `9971143` hijau di kedua job (run 40818685546). Lint lulus, unit test 103/103, penjaga baseline 3/3 (vs `origin/main` dan vs `0f2b33d`), `build:all` 4/4, `npm test` 13/13 langkah tanpa kegagalan, `test:ci` lulus (uji asap 4/4), `build:prototype` lulus, regresi B vs `tahap-3` 11/11, MP4 keempat proyek dan lembar cuplikan identik byte dengan yang ter-commit. Tidak ada FAIL. Belum diverifikasi saat itu: isi ruleset (kemudian dibaca lewat API, lihat entri di atas), penolakan push nyata (T18), dan proses uji yang dimatikan paksa. Log CI-nya memuat peringatan deprecation Node.js 20, dicatat sebagai BACKLOG T20.
+
 ## Pemeriksaan pose karakter, T19 (PR D, PR #14, branch `pr-d-validasi-gerak-t19`)
 
 Disetujui pemilik untuk diimplementasikan (opsi A) dan dibuka sebagai PR #14 ke `main`, lalu di-merge lewat merge commit `0f2b33d` (29 Oktober 2026 10.06 +07:00, atau 03.06 UTC). Bukan tahap baru. Versi mesin tetap 0.5.0. Hasil render keempat proyek, konfigurasi, baseline, `pending-changes.json`, workflow CI, dan MP4 tidak berubah.

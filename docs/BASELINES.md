@@ -98,16 +98,16 @@ Kode: `src/render/baselines.cjs` (registry, pemeriksaannya, dan aturan penjaga),
 
 **Batas yang diketahui.** Penjaga di CI dijalankan oleh `.github/workflows/ci.yml`, dan file itu bisa diubah oleh PR yang sama. PR yang menghapus atau melemahkan langkah penjaga tetap menghasilkan check "Lint, unit test, validasi konfigurasi" yang lulus. Jadi lapis terakhirnya tetap tinjauan diff PR: perubahan pada file baseline lama, `registry.json`, atau `ci.yml` harus terlihat jelas dan dijelaskan.
 
-**Proteksi branch di GitHub (pengaturan pemilik, 28 Oktober 2026).** Konfigurasi yang terbaca dari API GitHub:
+**Proteksi branch di GitHub (pengaturan pemilik, 28 Oktober 2026; pola Tahap 6 ditambahkan 29 Oktober 2026).** Konfigurasi yang terbaca dari API GitHub:
 
 | Ruleset | ID | Target | Aturan |
 |---------|----|--------|--------|
 | Protect main - Pixel History Studio | 26005617 | `main` (`~DEFAULT_BRANCH`) | wajib PR (0 approval), hanya merge commit, dua check CI wajib ("Lint, unit test, validasi konfigurasi", "Uji asap render dan lab zoom") dengan mode strict (branch PR harus up to date), tidak boleh dihapus, tidak boleh force push, tanpa bypass |
-| Protect historical stages | 26006150 | `refs/heads/tahap-[1-4]-*` dan `refs/heads/tahap-5-*` (lima branch Tahap 1-5) | tidak boleh dihapus, tidak boleh force push, tanpa bypass |
+| Protect historical stages | 26006150 | `refs/heads/tahap-[1-4]-*` dan `refs/heads/tahap-5-*` (lima branch Tahap 1-5), serta `refs/heads/tahap-6-*` (untuk Tahap 6, belum ada branch-nya) | tidak boleh dihapus, tidak boleh force push, tanpa bypass |
 
-- **Terbukti:** kedua ruleset berstatus `active`; API aturan efektif menampilkan aturan itu untuk `main` dan kelima branch historis (dan tidak untuk branch lain); nama dan aplikasi check wajib cocok dengan check run CI di `main`. Pola `tahap-5-*` ditambahkan pemilik setelah Tahap 5 di-merge dan diverifikasi ulang lewat API pada hari yang sama: `tahap-5-character-animation` kini `protected`, aturan `main` tidak berubah.
+- **Terbukti:** kedua ruleset berstatus `active`; API aturan efektif menampilkan aturan itu untuk `main` dan kelima branch historis (dan tidak untuk branch lain); nama dan aplikasi check wajib cocok dengan check run CI di `main`. Pola `tahap-5-*` ditambahkan pemilik setelah Tahap 5 di-merge dan diverifikasi ulang lewat API pada hari yang sama: `tahap-5-character-animation` kini `protected`, aturan `main` tidak berubah. Pola `tahap-6-*` ditambahkan pemilik pada 29 Oktober 2026 sebelum Tahap 6 dimulai dan diverifikasi read-only lewat API: ruleset tetap `active`, bypass kosong, aturan kelima branch Tahap 1-5 identik dengan sebelumnya, nama uji `tahap-6-cek-pola` (branch tidak dibuat) kena larangan hapus dan force push sedangkan `tahap6-cek` dan `tahap-7-cek` tidak, dan ruleset `main` identik byte dengan sebelumnya.
 - **Belum terbukti:** penolakan push nyata. Sampai verifikasi terakhir belum pernah ada push yang ditolak, jadi enforcement-nya belum pernah teramati menolak.
-- **Tidak dicakup ruleset:** PR yang mengubah `ci.yml` (lihat batas di atas), push fast-forward ke branch historis (branch itu tidak dibekukan, hanya tidak bisa dihapus atau ditulis ulang), dan branch Tahap 6 ke atas.
+- **Tidak dicakup ruleset:** PR yang mengubah `ci.yml` (lihat batas di atas), push fast-forward ke branch historis (branch itu tidak dibekukan, hanya tidak bisa dihapus atau ditulis ulang), branch Tahap 7 ke atas, dan nama branch tahap di luar bentuk `tahap-<n>-<nama>` (misalnya `tahap6-...`).
 
 Usulan lanjutan dan statusnya: T18 di [`BACKLOG.md`](BACKLOG.md).
 

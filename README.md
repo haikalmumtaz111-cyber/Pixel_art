@@ -250,6 +250,6 @@ output/                         video, laporan, cuplikan, bahan pembanding (comp
 - Determinisme dijamin di lingkungan yang sama (versi Chromium dan FFmpeg yang sama).
 - CI di GitHub hanya menjalankan pemeriksaan ringan. Render penuh dan pengujian lengkap dijalankan lokal atau di sesi Claude Code.
 - Pemeriksaan pose (PR D) menemukan V29-V32 (tangan pengayuh di atas setang, lengan jauh penyapu, kedip dan getar lutut). Dilaporkan sebagai KNOWN ISSUE sampai diperbaiki. Gerak klasik (Project B) tidak diperiksa pose-nya.
-- `main` dan branch Tahap 1-5 dilindungi ruleset GitHub (lihat [`docs/BASELINES.md`](docs/BASELINES.md)). Konfigurasinya aktif, tetapi penolakan push nyata belum diuji, dan PR yang mengubah workflow CI tetap perlu ditinjau manual (BACKLOG T18).
+- `main` dan branch Tahap 1-5 dilindungi ruleset GitHub, dan pola `tahap-6-*` sudah disiapkan untuk branch Tahap 6 yang belum dibuat (lihat [`docs/BASELINES.md`](docs/BASELINES.md)). Konfigurasinya aktif, tetapi penolakan push nyata belum diuji, dan PR yang mengubah workflow CI tetap perlu ditinjau manual (BACKLOG T18).
 
 Daftar lengkap beserta prioritas dan ide perbaikannya ada di [`docs/BACKLOG.md`](docs/BACKLOG.md).
