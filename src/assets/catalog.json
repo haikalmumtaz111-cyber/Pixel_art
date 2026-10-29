@@ -927,6 +927,12 @@
         "crankDrop": {
           "type": "number"
         },
+        "gripX": {
+          "type": "number"
+        },
+        "gripDrop": {
+          "type": "number"
+        },
         "crankRadius": {
           "type": "number",
           "min": 1

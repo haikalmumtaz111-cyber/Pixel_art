@@ -215,7 +215,7 @@ Pose lengan (`frontArm` untuk lengan dekat, `backArm` untuk lengan jauh):
 | `carry` | lengan bawah mendatar ke depan (membawa bakul, memegang koran) |
 | `behind` | tangan di belakang badan (berjalan santai) |
 
-`armSwing` (0..2) memperbesar atau memperkecil ayunan. Isyarat (`gesture`) di mode natural mengangkat lengan dengan siku menekuk, duduk dan mengayuh memakai siku menuju pangkuan, koran, atau setang, dan menyapu memakai dua tangan di gagang sapu. Langkah dibatasi 45% panjang kaki: bila `strideLength` terlalu panjang untuk karakter pendek, siklusnya memendek (langkah lebih rapat), bukan kakinya yang meluncur.
+`armSwing` (0..2) memperbesar atau memperkecil ayunan. Isyarat (`gesture`) di mode natural mengangkat lengan dengan siku menekuk, duduk dan mengayuh memakai siku menuju pangkuan, koran, atau setang (kedua tangan pengayuh tepat di atas batang setang; letak setang di koordinat lokal karakter dari params `gripX`/`gripDrop`, bawaan 7 dan 13 cocok dengan pemasangan `[-3, -7]` pada sepeda beroda 8, seperti `crankX`/`crankDrop` untuk pedal), dan menyapu memakai dua tangan di gagang sapu. Langkah dibatasi 45% panjang kaki: bila `strideLength` terlalu panjang untuk karakter pendek, siklusnya memendek (langkah lebih rapat), bukan kakinya yang meluncur.
 
 Pilihan bisa ditimpa per entitas lewat `params`, misalnya satu pemeran tetap klasik: `"params": { "motion": "classic" }`.
 

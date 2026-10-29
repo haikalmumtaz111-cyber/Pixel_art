@@ -449,6 +449,13 @@ export function createRigCharacter(def) {
     if (c.accessory === 'bag' || c.accessory === 'broom' || c.accessory === 'newspaper') drawAccessory(ctx, hand, hipY, 0);
   }
 
+  // Batang setang sepeda di koordinat lokal pengayuh (pojok kiri kotak "grip" sepeda), untuk pemasangan yang sama
+  // dengan engkol di pedalsOf: pengayuh di [-3, -7] dari titik bawah-tengah sepeda beroda 8. Seperti crankX/crankDrop,
+  // letaknya bisa disesuaikan lewat params gripX/gripDrop bila pemasangannya lain. Hanya dipakai gerak natural.
+  function gripOf(p) {
+    return { x: cx + (p.gripX ?? 7), y: boxH - (p.gripDrop ?? 13) };
+  }
+
   // Duduk dan mengayuh: kaki seperti Tahap 3, lengan bersiku menuju titik tujuan (pangkuan, koran, setang).
   function drawNaturalSeated(ctx, { breath, turn, blink, gesture, pedal }) {
     const footY = boxH;
@@ -461,11 +468,12 @@ export function createRigCharacter(def) {
     drawSeatedLegs(ctx, hipY, footY, pedal);
     // sepatu di pedal dekat; kotaknya sama dengan sepatu yang digambar drawSeatedLegs (bentuk Tahap 3)
     if (pedal) touch('shoe-pedal', { x: pedal.front.x - 1, y: pedal.front.y - 1, w: 4, h: 2 }, { socket: 'pedal', from: 'parent' });
-    const backTarget = pedal ? { x: cx + 7, y: shoulderY + 4 } : { x: cx + 3, y: hipY - 3 };
+    // tangan pengayuh tepat di atas batang setang (bersebelahan): dalam jangkauan lengan, jadi siku tetap sedikit menekuk
+    const backTarget = pedal ? { x: pedal.grip.x - 1, y: pedal.grip.y - 2 } : { x: cx + 3, y: hipY - 3 };
     const backHand = naturalArm(ctx, { x: cx - 1, y: shoulderY + 1 }, { target: backTarget }, false);
     drawTorso(ctx, shoulderY, hipY + 1);
     drawHead(ctx, headTop, turn, blink);
-    const target = pedal ? { x: cx + 8, y: shoulderY + 4 } : { x: cx + 5, y: Math.round(hipY - 3 - gesture * 6) };
+    const target = pedal ? { x: pedal.grip.x + 1, y: pedal.grip.y - 2 } : { x: cx + 5, y: Math.round(hipY - 3 - gesture * 6) };
     const hand = naturalArm(ctx, { x: cx + 1, y: shoulderY + 1 }, { target }, true, { drivers: pedal ? [] : ['gesture'] });
     // kedua tangan pengayuh memegang setang
     if (pedal) for (const h of [hand, backHand]) touch('hand-grip', box2(h), { socket: 'grip', from: 'parent' });
@@ -524,7 +532,7 @@ export function createRigCharacter(def) {
     } else if (e.state === 'sweep') {
       drawNaturalSweep(ctx, { time, turn, blink });
     } else if (e.state === 'cycle') {
-      drawNaturalSeated(ctx, { breath: 0, turn, blink, gesture: 0, pedal: pedalsOf(e, p) });
+      drawNaturalSeated(ctx, { breath: 0, turn, blink, gesture: 0, pedal: { ...pedalsOf(e, p), grip: gripOf(p) } });
     } else {
       const standing = e.state === 'stand';
       drawNaturalStanding(ctx, p, {
