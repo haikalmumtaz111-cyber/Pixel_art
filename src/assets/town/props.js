@@ -105,5 +105,11 @@ const reusable = (makeModel) => ({ create: (def) => ({ defaultState: 'idle', ...
 export const assetTypes = {
   'street-lamp': reusable(streetLampModel),
   kiosk: reusable(kioskModel),
-  bench: reusable(benchModel)
+  bench: {
+    create: (def) => ({
+      ...reusable(benchModel).create(def),
+      // papan dudukan (T19, hanya untuk pengujian posisi duduk): baris 3-5 yang digambar benchModel
+      sockets: (e) => ({ seat: { x: 0, y: 3, w: { ...def, ...(e.params || {}) }.width ?? 30, h: 3 } })
+    })
+  }
 };

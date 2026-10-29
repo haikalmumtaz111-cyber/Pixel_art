@@ -106,6 +106,31 @@ const inspect = {
     }
     return frames;
   },
+  // Data pose per frame (T19), dari adegan yang menyediakan layoutAt: setiap entitas yang asetnya punya
+  // poseProbe(keadaan) dan/atau sockets(keadaan) (bagian yang boleh disentuh entitas lain), beserta letak kotak
+  // gambarnya di dunia dan induknya. Hasil: satu objek { idEntitas: data } per frame. Tidak menggambar ke layar.
+  poseProbes(first, count) {
+    const frames = [];
+    for (let frame = first; frame < first + count; frame++) {
+      const segment = film.segmentAt(frame);
+      const ids = segment.kind === 'scene' ? [segment.id] : [segment.transition.from, segment.transition.to];
+      const out = {};
+      for (const id of ids) {
+        const impl = film.scenes[id].impl;
+        if (!impl.layoutAt) continue;
+        for (const { id: entity, asset, parent, state, place } of impl.layoutAt(frame)) {
+          if (out[entity] || (!asset.poseProbe && !asset.sockets)) continue;
+          out[entity] = {
+            scene: id, parent, state: state.state, place,
+            pose: asset.poseProbe ? asset.poseProbe(state) : null,
+            sockets: asset.sockets ? asset.sockets(state) : null
+          };
+        }
+      }
+      frames.push(out);
+    }
+    return frames;
+  },
   // Modul aset dan adegan yang dimuat proyek ini.
   loadedModules() {
     return film.loadedModules();

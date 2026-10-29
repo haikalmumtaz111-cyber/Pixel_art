@@ -50,6 +50,25 @@ function bicycle(def) {
       const py = cy + Math.round(Math.sin(angle) * 3);
       line(ctx, crankX, cy, px, py, spoke);
       rect(ctx, px - 1, py, 3, 1, frame);
+    },
+    // Bagian yang disentuh pengendara (T19, hanya untuk pengujian; draw() tidak memakainya): batang setang, sadel,
+    // dan pedal pada putaran frame ini, dalam koordinat lokal yang sama dengan draw(). Unit test mencocokkan
+    // kotak ini dengan piksel yang digambar draw().
+    sockets(e) {
+      const angle = (e.worldX * (e.flip ? -1 : 1)) / R;
+      const cy = H - R - 1;
+      const rear = R + 1;
+      const front = W - R - 2;
+      const crankX = Math.round((rear + front) / 2) - 1;
+      const seatX = rear + 5;
+      const seatY = cy - R + 1;
+      const px = crankX + Math.round(Math.cos(angle) * 3);
+      const py = cy + Math.round(Math.sin(angle) * 3);
+      return {
+        grip: { x: front - 6, y: seatY - 4, w: 4, h: 1 },
+        seat: { x: seatX - 2, y: seatY - 2, w: 5, h: 2 },
+        pedal: { x: px - 1, y: py, w: 3, h: 1 }
+      };
     }
   };
 }

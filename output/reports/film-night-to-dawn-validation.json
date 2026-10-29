@@ -1,91 +1,121 @@
 {
-  "testedAt": "2026-10-28T04:32:28.392Z",
+  "testedAt": "2026-10-29T02:47:02.821Z",
   "project": "night-to-dawn",
   "config": "config/film-night-to-dawn.json",
   "includes": [],
-  "allPass": true,
+  "allPass": false,
+  "noFailure": true,
   "passed": 39,
-  "total": 39,
+  "failed": 0,
+  "known": 0,
+  "proposed": 0,
+  "skipped": 5,
+  "total": 44,
   "groups": [
     {
       "title": "Jumlah frame tepat",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     },
     {
       "title": "Durasi video tepat",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     },
     {
       "title": "Resolusi sesuai target",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     },
     {
       "title": "FPS sesuai target",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     },
     {
       "title": "Interval waktu adegan valid",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     },
     {
       "title": "Tidak ada frame yang hilang",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     },
     {
       "title": "Tidak ada frame kosong",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     },
     {
       "title": "Frame terakhir valid",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     },
     {
       "title": "Tidak ada error JavaScript",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     },
     {
       "title": "Transisi tanpa artefak",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     },
     {
       "title": "Grid piksel kamera stabil (tanpa crawl)",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     },
     {
       "title": "Aset konsisten antar adegan",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     },
     {
       "title": "Gerak karakter: kaki tidak meluncur, tubuh tidak bergetar",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
+    },
+    {
+      "title": "Pose karakter: sendi, panjang lengan dan kaki, sentuhan, duduk, stabil antar-frame",
+      "pass": false,
+      "status": "TIDAK DIPERIKSA"
     },
     {
       "title": "Adegan bisa dirender terpisah",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     },
     {
       "title": "Mesin bersama, modul proyek terisolasi",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     },
     {
       "title": "Video berasal dari render terbaru",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     },
     {
       "title": "Rendering deterministik",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     },
     {
       "title": "FFmpeg membaca seluruh video",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     },
     {
       "title": "Video dapat diputar",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     },
     {
       "title": "Render ulang konsisten",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     }
   ],
   "checks": [
@@ -93,235 +123,309 @@
       "id": "timeline",
       "name": "Interval adegan valid",
       "pass": true,
-      "detail": "3 adegan menutup 450/450 frame tanpa celah: s01-night-train [0, 150), s02-inside-train [150, 300), s03-journey-to-dawn [300, 450)"
+      "detail": "3 adegan menutup 450/450 frame tanpa celah: s01-night-train [0, 150), s02-inside-train [150, 300), s03-journey-to-dawn [300, 450)",
+      "status": "pass"
     },
     {
       "id": "timeline-transitions",
       "name": "Transisi berada di dalam durasi film",
       "pass": true,
-      "detail": "portal 132-167, portal 282-317"
+      "detail": "portal 132-167, portal 282-317",
+      "status": "pass"
     },
     {
       "id": "manifest:status",
       "name": "Render terakhir selesai dengan sukses",
       "pass": true,
-      "detail": "status complete, selesai 2026-10-28T04:28:55.077Z"
+      "detail": "status complete, selesai 2026-10-29T02:40:55.213Z",
+      "status": "pass"
     },
     {
       "id": "manifest:fresh",
       "name": "Video berasal dari render terbaru (bukan sisa render lama)",
       "pass": true,
-      "detail": "konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest"
+      "detail": "konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest",
+      "status": "pass"
     },
     {
       "id": "file",
       "name": "File MP4 ada",
       "pass": true,
-      "detail": "film-night-to-dawn.mp4 (5.33 MB)"
+      "detail": "film-night-to-dawn.mp4 (5.33 MB)",
+      "status": "pass"
     },
     {
       "id": "container",
       "name": "Kontainer MP4",
       "pass": true,
-      "detail": "mov,mp4,m4a,3gp,3g2,mj2"
+      "detail": "mov,mp4,m4a,3gp,3g2,mj2",
+      "status": "pass"
     },
     {
       "id": "codec",
       "name": "Codec video H.264",
       "pass": true,
-      "detail": "h264 (High)"
+      "detail": "h264 (High)",
+      "status": "pass"
     },
     {
       "id": "resolution",
       "name": "Resolusi output",
       "pass": true,
-      "detail": "1920x1080"
+      "detail": "1920x1080",
+      "status": "pass"
     },
     {
       "id": "aspect",
       "name": "Rasio 16:9",
       "pass": true,
-      "detail": "1920:1080"
+      "detail": "1920:1080",
+      "status": "pass"
     },
     {
       "id": "fps",
       "name": "Frame rate",
       "pass": true,
-      "detail": "30/1 (rata-rata 30/1)"
+      "detail": "30/1 (rata-rata 30/1)",
+      "status": "pass"
     },
     {
       "id": "frame-count",
       "name": "Jumlah frame",
       "pass": true,
-      "detail": "450 dari 450 frame"
+      "detail": "450 dari 450 frame",
+      "status": "pass"
     },
     {
       "id": "duration",
       "name": "Durasi",
       "pass": true,
-      "detail": "15.000 detik (target 15.000)"
+      "detail": "15.000 detik (target 15.000)",
+      "status": "pass"
     },
     {
       "id": "pixel-format",
       "name": "Format piksel",
       "pass": true,
-      "detail": "yuv420p"
+      "detail": "yuv420p",
+      "status": "pass"
     },
     {
       "id": "playable",
       "name": "Video dapat diputar di perangkat umum",
       "pass": true,
-      "detail": "profil High, level 4.1, yuv420p, piksel 1:1, faststart ya"
+      "detail": "profil High, level 4.1, yuv420p, piksel 1:1, faststart ya",
+      "status": "pass"
     },
     {
       "id": "decode",
       "name": "FFmpeg membaca seluruh video tanpa error",
       "pass": true,
-      "detail": "semua frame terbaca bersih"
+      "detail": "semua frame terbaca bersih",
+      "status": "pass"
     },
     {
       "id": "decoded-frames",
       "name": "Tidak ada frame yang hilang saat decode",
       "pass": true,
-      "detail": "450 frame ter-decode, 450 frame terukur"
+      "detail": "450 frame ter-decode, 450 frame terukur",
+      "status": "pass"
     },
     {
       "id": "blank",
       "name": "Tidak ada frame kosong",
       "pass": true,
-      "detail": "kecerahan rata-rata terendah 40.9, rentang terendah 187"
+      "detail": "kecerahan rata-rata terendah 40.9, rentang terendah 187",
+      "status": "pass"
     },
     {
       "id": "motion",
       "name": "Animasi bergerak (bukan gambar statis)",
       "pass": true,
-      "detail": "450 frame unik, 0 pasang frame berurutan identik"
+      "detail": "450 frame unik, 0 pasang frame berurutan identik",
+      "status": "pass"
     },
     {
       "id": "end-frame",
       "name": "Frame terakhir valid",
       "pass": true,
-      "detail": "frame 449: kecerahan rata-rata 71.8, rentang 203"
+      "detail": "frame 449: kecerahan rata-rata 71.8, rentang 203",
+      "status": "pass"
     },
     {
       "id": "no-flash",
       "name": "Tidak ada kilatan cahaya mendadak",
       "pass": true,
-      "detail": "perubahan kecerahan terbesar antar frame 5.9 (batas 8)"
+      "detail": "perubahan kecerahan terbesar antar frame 5.9 (batas 8)",
+      "status": "pass"
     },
     {
       "id": "no-hard-cut",
       "name": "Tidak ada potongan kasar (hard cut)",
       "pass": true,
-      "detail": "semua pergantian gambar berlangsung bertahap"
+      "detail": "semua pergantian gambar berlangsung bertahap",
+      "status": "pass"
     },
     {
       "id": "grid-stability",
       "name": "Grid piksel stabil saat kamera bergerak dan zoom (tidak merayap)",
       "pass": true,
-      "detail": "proyek memakai upscale ffmpeg tanpa zoom kamera"
+      "detail": "proyek memakai upscale ffmpeg tanpa zoom kamera",
+      "status": "pass"
     },
     {
       "id": "png-frames",
       "name": "Frame PNG lengkap dan berurutan",
       "pass": true,
-      "detail": "450/450 file PNG 480x270"
+      "detail": "450/450 file PNG 480x270",
+      "status": "pass"
     },
     {
       "id": "engine-modules",
       "name": "Hanya modul milik proyek ini yang dimuat",
       "pass": true,
-      "detail": "4 modul: /src/assets/registry.js, /src/scenes/night-train.js, /src/scenes/inside-train.js, /src/scenes/journey-to-dawn.js"
+      "detail": "4 modul: /src/assets/registry.js, /src/scenes/night-train.js, /src/scenes/inside-train.js, /src/scenes/journey-to-dawn.js",
+      "status": "pass"
     },
     {
       "id": "engine-isolation",
       "name": "Tidak ada modul proyek lain yang ikut terunduh",
       "pass": true,
-      "detail": "29 file JS terunduh (/src/engine/: 16, /src/assets/: 10, /src/scenes/: 3)"
+      "detail": "29 file JS terunduh (/src/engine/: 16, /src/assets/: 10, /src/scenes/: 3)",
+      "status": "pass"
     },
     {
       "id": "boundary:s01-night-train->s02-inside-train",
       "name": "Transisi s01-night-train->s02-inside-train menyambung tanpa lompatan",
       "pass": true,
-      "detail": "frame 132 sama dengan s01-night-train, frame 167 sama dengan s02-inside-train"
+      "detail": "frame 132 sama dengan s01-night-train, frame 167 sama dengan s02-inside-train",
+      "status": "pass"
     },
     {
       "id": "portal:s01-night-train->s02-inside-train",
       "name": "Portal s01-night-train->s02-inside-train menutup layar sebelum transisi selesai",
       "pass": true,
-      "detail": "layar tertutup penuh mulai frame 160 (transisi berakhir di 167)"
+      "detail": "layar tertutup penuh mulai frame 160 (transisi berakhir di 167)",
+      "status": "pass"
     },
     {
       "id": "boundary:s02-inside-train->s03-journey-to-dawn",
       "name": "Transisi s02-inside-train->s03-journey-to-dawn menyambung tanpa lompatan",
       "pass": true,
-      "detail": "frame 282 sama dengan s02-inside-train, frame 317 sama dengan s03-journey-to-dawn"
+      "detail": "frame 282 sama dengan s02-inside-train, frame 317 sama dengan s03-journey-to-dawn",
+      "status": "pass"
     },
     {
       "id": "portal:s02-inside-train->s03-journey-to-dawn",
       "name": "Portal s02-inside-train->s03-journey-to-dawn menutup layar sebelum transisi selesai",
       "pass": true,
-      "detail": "layar tertutup penuh mulai frame 307 (transisi berakhir di 317)"
+      "detail": "layar tertutup penuh mulai frame 307 (transisi berakhir di 317)",
+      "status": "pass"
     },
     {
       "id": "scene:s01-night-train",
       "name": "Adegan s01-night-train bisa dirender terpisah",
       "pass": true,
-      "detail": "frame 0, 66, 131 identik dengan film utuh"
+      "detail": "frame 0, 66, 131 identik dengan film utuh",
+      "status": "pass"
     },
     {
       "id": "scene:s02-inside-train",
       "name": "Adegan s02-inside-train bisa dirender terpisah",
       "pass": true,
-      "detail": "frame 168, 225, 281 identik dengan film utuh"
+      "detail": "frame 168, 225, 281 identik dengan film utuh",
+      "status": "pass"
     },
     {
       "id": "scene:s03-journey-to-dawn",
       "name": "Adegan s03-journey-to-dawn bisa dirender terpisah",
       "pass": true,
-      "detail": "frame 318, 384, 449 identik dengan film utuh"
+      "detail": "frame 318, 384, 449 identik dengan film utuh",
+      "status": "pass"
     },
     {
       "id": "consistency:steam-train-asset",
       "name": "Aset steam-train sama di semua adegan",
       "pass": true,
-      "detail": "3 adegan memakai 1 definisi (train), 1 bentuk berbeda"
+      "detail": "3 adegan memakai 1 definisi (train), 1 bentuk berbeda",
+      "status": "pass"
     },
     {
       "id": "consistency:steam-train-colors",
       "name": "Warna identitas steam-train konsisten",
       "pass": true,
-      "detail": "warna #5c1c27, #c9a14e, #5e181e, #4d5474, #a8833a ditemukan persis di frame 60, 445"
+      "detail": "warna #5c1c27, #c9a14e, #5e181e, #4d5474, #a8833a ditemukan persis di frame 60, 445",
+      "status": "pass"
     },
     {
       "id": "motion-feet",
       "name": "Kaki yang menapak tidak meluncur",
       "pass": true,
-      "detail": "tidak ada karakter bergerak natural yang berjalan"
+      "detail": "tidak ada karakter bergerak natural yang berjalan",
+      "status": "pass"
     },
     {
       "id": "motion-bob",
       "name": "Tubuh tidak bergetar saat berjalan",
       "pass": true,
-      "detail": "tidak ada karakter bergerak natural yang berjalan"
+      "detail": "tidak ada karakter bergerak natural yang berjalan",
+      "status": "pass"
+    },
+    {
+      "id": "motion-joints",
+      "name": "Pose karakter: urutan tubuh, sendi di dalam kotak, telapak menapak di tanah",
+      "pass": false,
+      "detail": "tidak ada pose gerak natural skala 1 yang bisa diperiksa: tidak ada karakter rig",
+      "status": "skip"
+    },
+    {
+      "id": "motion-limbs",
+      "name": "Pose karakter: panjang lengan dan kaki tetap",
+      "pass": false,
+      "detail": "tidak ada pose gerak natural skala 1 yang bisa diperiksa: tidak ada karakter rig",
+      "status": "skip"
+    },
+    {
+      "id": "motion-contact",
+      "name": "Pose karakter: tangan, kaki, dan benda yang dipegang bersentuhan",
+      "pass": false,
+      "detail": "tidak ada pose gerak natural skala 1 yang bisa diperiksa: tidak ada karakter rig",
+      "status": "skip"
+    },
+    {
+      "id": "motion-seat",
+      "name": "Pose karakter: posisi duduk di sadel atau bangku",
+      "pass": false,
+      "detail": "tidak ada pose gerak natural skala 1 yang bisa diperiksa: tidak ada karakter rig",
+      "status": "skip"
+    },
+    {
+      "id": "motion-stable",
+      "name": "Pose karakter: stabil antar-frame (tanpa getar sendi)",
+      "pass": false,
+      "detail": "tidak ada pose gerak natural skala 1 yang bisa diperiksa: tidak ada karakter rig",
+      "status": "skip"
     },
     {
       "id": "determinism",
       "name": "Rendering deterministik (render ulang identik, urutan terbalik)",
       "pass": true,
-      "detail": "450/450 frame identik byte demi byte, 3/3 frame identik saat dirender dua kali"
+      "detail": "450/450 frame identik byte demi byte, 3/3 frame identik saat dirender dua kali",
+      "status": "pass"
     },
     {
       "id": "js-errors",
       "name": "Tidak ada error JavaScript selama rendering",
       "pass": true,
-      "detail": "0 error saat render, 0 error saat pengujian"
+      "detail": "0 error saat render, 0 error saat pengujian",
+      "status": "pass"
     },
     {
       "id": "reencode",
       "name": "Encode ulang menghasilkan MP4 identik",
       "pass": true,
-      "detail": "SHA-256 sama: aa188168ec04b5d7..."
+      "detail": "SHA-256 sama: aa188168ec04b5d7...",
+      "status": "pass"
     }
   ],
   "sheets": [
@@ -399,8 +503,8 @@
   "engine": {
     "name": "Pixel History Studio",
     "version": "0.5.0",
-    "engineHash": "9420c042aa03f0b9884c05bc2726b3d666a76eb0a483a4b7adbfdc7b25de6427",
-    "libraryHash": "2a6000361daf6301ff19bf87c8c18df6df5d39b6be48ca4e19134c0258f77fa6",
+    "engineHash": "e123d7ea0a4c402570afb69a48b6f1316442ea5370dd5dffad4e54b84930739b",
+    "libraryHash": "4c60b45add045f409a0dfef196ac3583e124e08ddbe7acb7d0b56c6852ecd25e",
     "modules": [
       "/src/assets/registry.js",
       "/src/scenes/night-train.js",
@@ -409,7 +513,7 @@
     ]
   },
   "environment": {
-    "os": "Linux 6.18.44-fc-v180 (linux/x64)",
+    "os": "Linux 6.18.44-fc-v185 (linux/x64)",
     "node": "v22.22.0",
     "chromium": "153.0.8010.12",
     "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
@@ -426,14 +530,14 @@
     },
     "configFile": "config/film-night-to-dawn.json",
     "inputsHash": "8db88bb63f248fce4b0259f7d31579533666d20e727e10c2a12a455f464514d5",
-    "engineHash": "9420c042aa03f0b9884c05bc2726b3d666a76eb0a483a4b7adbfdc7b25de6427",
-    "libraryHash": "2a6000361daf6301ff19bf87c8c18df6df5d39b6be48ca4e19134c0258f77fa6",
+    "engineHash": "e123d7ea0a4c402570afb69a48b6f1316442ea5370dd5dffad4e54b84930739b",
+    "libraryHash": "4c60b45add045f409a0dfef196ac3583e124e08ddbe7acb7d0b56c6852ecd25e",
     "engineVersion": "0.5.0",
     "status": "complete",
-    "startedAt": "2026-10-28T04:28:32.050Z",
-    "finishedAt": "2026-10-28T04:28:55.077Z",
-    "renderSeconds": 8.41,
-    "encodeSeconds": 14.617,
+    "startedAt": "2026-10-29T02:40:22.727Z",
+    "finishedAt": "2026-10-29T02:40:55.213Z",
+    "renderSeconds": 12.834,
+    "encodeSeconds": 19.65,
     "chromiumVersion": "153.0.8010.12",
     "jsErrors": 0,
     "loadedModules": [

@@ -1,5 +1,5 @@
 {
-  "testedAt": "2026-10-28T04:31:51.902Z",
+  "testedAt": "2026-10-29T02:46:11.644Z",
   "project": "character-lab",
   "config": "config/character-lab.json",
   "includes": [
@@ -12,89 +12,119 @@
     "config/character-lab/scenes/s03-sore.json",
     "config/character-lab/scenes/s04-malam.json"
   ],
-  "allPass": true,
-  "passed": 38,
-  "total": 38,
+  "allPass": false,
+  "noFailure": true,
+  "passed": 43,
+  "failed": 0,
+  "known": 4,
+  "proposed": 0,
+  "skipped": 0,
+  "total": 47,
   "groups": [
     {
       "title": "Jumlah frame tepat",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     },
     {
       "title": "Durasi video tepat",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     },
     {
       "title": "Resolusi sesuai target",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     },
     {
       "title": "FPS sesuai target",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     },
     {
       "title": "Interval waktu adegan valid",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     },
     {
       "title": "Tidak ada frame yang hilang",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     },
     {
       "title": "Tidak ada frame kosong",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     },
     {
       "title": "Frame terakhir valid",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     },
     {
       "title": "Tidak ada error JavaScript",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     },
     {
       "title": "Transisi tanpa artefak",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     },
     {
       "title": "Grid piksel kamera stabil (tanpa crawl)",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     },
     {
       "title": "Aset konsisten antar adegan",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     },
     {
       "title": "Gerak karakter: kaki tidak meluncur, tubuh tidak bergetar",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
+    },
+    {
+      "title": "Pose karakter: sendi, panjang lengan dan kaki, sentuhan, duduk, stabil antar-frame",
+      "pass": false,
+      "status": "KNOWN ISSUE"
     },
     {
       "title": "Adegan bisa dirender terpisah",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     },
     {
       "title": "Mesin bersama, modul proyek terisolasi",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     },
     {
       "title": "Video berasal dari render terbaru",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     },
     {
       "title": "Rendering deterministik",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     },
     {
       "title": "FFmpeg membaca seluruh video",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     },
     {
       "title": "Video dapat diputar",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     },
     {
       "title": "Render ulang konsisten",
-      "pass": true
+      "pass": true,
+      "status": "LULUS"
     }
   ],
   "checks": [
@@ -102,229 +132,338 @@
       "id": "timeline",
       "name": "Interval adegan valid",
       "pass": true,
-      "detail": "4 adegan menutup 360/360 frame tanpa celah: s01-langkah [0, 120), s02-pose [120, 225), s03-sore [225, 288), s04-malam [288, 360)"
+      "detail": "4 adegan menutup 360/360 frame tanpa celah: s01-langkah [0, 120), s02-pose [120, 225), s03-sore [225, 288), s04-malam [288, 360)",
+      "status": "pass"
     },
     {
       "id": "timeline-transitions",
       "name": "Transisi berada di dalam durasi film",
       "pass": true,
-      "detail": "dissolve 108-131, dissolve 213-236"
+      "detail": "dissolve 108-131, dissolve 213-236",
+      "status": "pass"
     },
     {
       "id": "manifest:status",
       "name": "Render terakhir selesai dengan sukses",
       "pass": true,
-      "detail": "status complete, selesai 2026-10-28T04:27:55.817Z"
+      "detail": "status complete, selesai 2026-10-29T02:39:23.348Z",
+      "status": "pass"
     },
     {
       "id": "manifest:fresh",
       "name": "Video berasal dari render terbaru (bukan sisa render lama)",
       "pass": true,
-      "detail": "konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest"
+      "detail": "konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest",
+      "status": "pass"
     },
     {
       "id": "file",
       "name": "File MP4 ada",
       "pass": true,
-      "detail": "character-lab.mp4 (4.13 MB)"
+      "detail": "character-lab.mp4 (4.13 MB)",
+      "status": "pass"
     },
     {
       "id": "container",
       "name": "Kontainer MP4",
       "pass": true,
-      "detail": "mov,mp4,m4a,3gp,3g2,mj2"
+      "detail": "mov,mp4,m4a,3gp,3g2,mj2",
+      "status": "pass"
     },
     {
       "id": "codec",
       "name": "Codec video H.264",
       "pass": true,
-      "detail": "h264 (High)"
+      "detail": "h264 (High)",
+      "status": "pass"
     },
     {
       "id": "resolution",
       "name": "Resolusi output",
       "pass": true,
-      "detail": "1920x1080"
+      "detail": "1920x1080",
+      "status": "pass"
     },
     {
       "id": "aspect",
       "name": "Rasio 16:9",
       "pass": true,
-      "detail": "1920:1080"
+      "detail": "1920:1080",
+      "status": "pass"
     },
     {
       "id": "fps",
       "name": "Frame rate",
       "pass": true,
-      "detail": "30/1 (rata-rata 30/1)"
+      "detail": "30/1 (rata-rata 30/1)",
+      "status": "pass"
     },
     {
       "id": "frame-count",
       "name": "Jumlah frame",
       "pass": true,
-      "detail": "360 dari 360 frame"
+      "detail": "360 dari 360 frame",
+      "status": "pass"
     },
     {
       "id": "duration",
       "name": "Durasi",
       "pass": true,
-      "detail": "12.000 detik (target 12.000)"
+      "detail": "12.000 detik (target 12.000)",
+      "status": "pass"
     },
     {
       "id": "pixel-format",
       "name": "Format piksel",
       "pass": true,
-      "detail": "yuv420p"
+      "detail": "yuv420p",
+      "status": "pass"
     },
     {
       "id": "playable",
       "name": "Video dapat diputar di perangkat umum",
       "pass": true,
-      "detail": "profil High, level 4.1, yuv420p, piksel 1:1, faststart ya"
+      "detail": "profil High, level 4.1, yuv420p, piksel 1:1, faststart ya",
+      "status": "pass"
     },
     {
       "id": "decode",
       "name": "FFmpeg membaca seluruh video tanpa error",
       "pass": true,
-      "detail": "semua frame terbaca bersih"
+      "detail": "semua frame terbaca bersih",
+      "status": "pass"
     },
     {
       "id": "decoded-frames",
       "name": "Tidak ada frame yang hilang saat decode",
       "pass": true,
-      "detail": "360 frame ter-decode, 360 frame terukur"
+      "detail": "360 frame ter-decode, 360 frame terukur",
+      "status": "pass"
     },
     {
       "id": "blank",
       "name": "Tidak ada frame kosong",
       "pass": true,
-      "detail": "kecerahan rata-rata terendah 62.8, rentang terendah 169"
+      "detail": "kecerahan rata-rata terendah 62.8, rentang terendah 169",
+      "status": "pass"
     },
     {
       "id": "motion",
       "name": "Animasi bergerak (bukan gambar statis)",
       "pass": true,
-      "detail": "360 frame unik, 0 pasang frame berurutan identik"
+      "detail": "360 frame unik, 0 pasang frame berurutan identik",
+      "status": "pass"
     },
     {
       "id": "end-frame",
       "name": "Frame terakhir valid",
       "pass": true,
-      "detail": "frame 359: kecerahan rata-rata 62.9, rentang 199"
+      "detail": "frame 359: kecerahan rata-rata 62.9, rentang 199",
+      "status": "pass"
     },
     {
       "id": "no-flash",
       "name": "Tidak ada kilatan cahaya mendadak",
       "pass": true,
-      "detail": "perubahan kecerahan terbesar antar frame 2.9 (batas 8)"
+      "detail": "perubahan kecerahan terbesar antar frame 2.9 (batas 8)",
+      "status": "pass"
     },
     {
       "id": "no-hard-cut",
       "name": "Tidak ada potongan kasar (hard cut)",
       "pass": true,
-      "detail": "semua pergantian gambar berlangsung bertahap"
+      "detail": "semua pergantian gambar berlangsung bertahap",
+      "status": "pass"
     },
     {
       "id": "grid-stability",
       "name": "Grid piksel stabil saat kamera bergerak dan zoom (tidak merayap)",
       "pass": true,
-      "detail": "mode zoom \"anchored\", 0 frame zoom pecahan, 0 perubahan ukuran saat zoom tetap (crawl), 0 bolak-balik dari 173108 perbandingan kolom/baris dunia"
+      "detail": "mode zoom \"anchored\", 0 frame zoom pecahan, 0 perubahan ukuran saat zoom tetap (crawl), 0 bolak-balik dari 173108 perbandingan kolom/baris dunia",
+      "status": "pass"
     },
     {
       "id": "png-frames",
       "name": "Frame PNG lengkap dan berurutan",
       "pass": true,
-      "detail": "360/360 file PNG 1920x1080"
+      "detail": "360/360 file PNG 1920x1080",
+      "status": "pass"
     },
     {
       "id": "engine-modules",
       "name": "Hanya modul milik proyek ini yang dimuat",
       "pass": true,
-      "detail": "7 modul: /src/assets/common/environment.js, /src/assets/town/buildings.js, /src/assets/town/vegetation.js, /src/assets/town/props.js, /src/assets/town/street.js, /src/assets/town/vehicles.js, /src/assets/characters/rig.js"
+      "detail": "7 modul: /src/assets/common/environment.js, /src/assets/town/buildings.js, /src/assets/town/vegetation.js, /src/assets/town/props.js, /src/assets/town/street.js, /src/assets/town/vehicles.js, /src/assets/characters/rig.js",
+      "status": "pass"
     },
     {
       "id": "engine-isolation",
       "name": "Tidak ada modul proyek lain yang ikut terunduh",
       "pass": true,
-      "detail": "27 file JS terunduh (/src/engine/: 16, /src/assets/: 11, /src/scenes/: 0)"
+      "detail": "27 file JS terunduh (/src/engine/: 16, /src/assets/: 11, /src/scenes/: 0)",
+      "status": "pass"
     },
     {
       "id": "boundary:s01-langkah->s02-pose",
       "name": "Transisi s01-langkah->s02-pose menyambung tanpa lompatan",
       "pass": true,
-      "detail": "frame 108 sama dengan s01-langkah, frame 131 sama dengan s02-pose"
+      "detail": "frame 108 sama dengan s01-langkah, frame 131 sama dengan s02-pose",
+      "status": "pass"
     },
     {
       "id": "boundary:s02-pose->s03-sore",
       "name": "Transisi s02-pose->s03-sore menyambung tanpa lompatan",
       "pass": true,
-      "detail": "frame 213 sama dengan s02-pose, frame 236 sama dengan s03-sore"
+      "detail": "frame 213 sama dengan s02-pose, frame 236 sama dengan s03-sore",
+      "status": "pass"
     },
     {
       "id": "scene:s01-langkah",
       "name": "Adegan s01-langkah bisa dirender terpisah",
       "pass": true,
-      "detail": "frame 0, 54, 107 identik dengan film utuh"
+      "detail": "frame 0, 54, 107 identik dengan film utuh",
+      "status": "pass"
     },
     {
       "id": "scene:s02-pose",
       "name": "Adegan s02-pose bisa dirender terpisah",
       "pass": true,
-      "detail": "frame 132, 172, 212 identik dengan film utuh"
+      "detail": "frame 132, 172, 212 identik dengan film utuh",
+      "status": "pass"
     },
     {
       "id": "scene:s03-sore",
       "name": "Adegan s03-sore bisa dirender terpisah",
       "pass": true,
-      "detail": "frame 237, 262, 287 identik dengan film utuh"
+      "detail": "frame 237, 262, 287 identik dengan film utuh",
+      "status": "pass"
     },
     {
       "id": "scene:s04-malam",
       "name": "Adegan s04-malam bisa dirender terpisah",
       "pass": true,
-      "detail": "frame 288, 324, 359 identik dengan film utuh"
+      "detail": "frame 288, 324, 359 identik dengan film utuh",
+      "status": "pass"
     },
     {
       "id": "consistency:pak-darto-asset",
       "name": "Aset pak-darto dipakai bersama oleh adegan-adegannya",
       "pass": true,
-      "detail": "satu definisi aset \"pak-darto\" dipakai adegan s01-langkah, s03-sore, s04-malam"
+      "detail": "satu definisi aset \"pak-darto\" dipakai adegan s01-langkah, s03-sore, s04-malam",
+      "status": "pass"
     },
     {
       "id": "consistency:pak-darto-colors",
       "name": "Warna identitas pak-darto konsisten",
       "pass": true,
-      "detail": "warna mengikuti palet frame, ditemukan persis di frame 60 (#e5d1bf, #5d4a45, #24212f), frame 250 (#e8d4bb, #5e473a, #231b23), frame 340 (#727ea4, #333348, #181c38)"
+      "detail": "warna mengikuti palet frame, ditemukan persis di frame 60 (#e5d1bf, #5d4a45, #24212f), frame 250 (#e8d4bb, #5e473a, #231b23), frame 340 (#727ea4, #333348, #181c38)",
+      "status": "pass"
     },
     {
       "id": "motion-feet",
       "name": "Kaki yang menapak tidak meluncur",
       "pass": true,
-      "detail": "97 langkah gerak natural dari 6 karakter, setiap telapak diam di tanah selama menapak"
+      "detail": "97 langkah gerak natural dari 6 karakter, setiap telapak diam di tanah selama menapak",
+      "status": "pass"
     },
     {
       "id": "motion-bob",
       "name": "Tubuh tidak bergetar saat berjalan",
       "pass": true,
-      "detail": "1050 frame jalan natural diperiksa, pinggul tidak pernah bolak-balik dalam 1 frame"
+      "detail": "1050 frame jalan natural diperiksa, pinggul tidak pernah bolak-balik dalam 1 frame",
+      "status": "pass"
+    },
+    {
+      "id": "motion-joints",
+      "name": "Pose karakter: urutan tubuh, sendi di dalam kotak, telapak menapak di tanah",
+      "pass": true,
+      "detail": "1947 pose dari 10 karakter natural: urutan tubuh benar, 16380 titik sendi di dalam kotak gambar, 2070 telapak menapak tepat di garis tanah",
+      "status": "pass"
+    },
+    {
+      "id": "motion-limbs",
+      "name": "Pose karakter: panjang lengan dan kaki tetap",
+      "pass": true,
+      "detail": "3894 lengan dan 1566 kaki: panjang tulang tepat sama dengan desain, ruas tergambar paling jauh 0.901 px dari tulangnya (batas 1.514), regangan betis terbesar 1.038 px (di dalam batas jangkauan langkah) | kaki duduk dan mengayuh bentuk Tahap 3 tidak diukur di 381 pose (keterbatasan, V19); kaki bersarung bentuk Tahap 3 tidak diukur di 783 pose (keterbatasan, V27)",
+      "status": "pass"
+    },
+    {
+      "id": "motion-contact",
+      "name": "Pose karakter: tangan, kaki, dan benda yang dipegang bersentuhan",
+      "pass": true,
+      "detail": "semua bersentuhan (jarak sel paling banyak 1): walk:parcel-hand 279, walk:basket-hand 279, sweep:nearHand-handle 252, sweep:farHand-handle 252, cycle:shoe-pedal 129 | di luar KNOWN ISSUE yang dilaporkan terpisah: V29, V30",
+      "status": "pass"
+    },
+    {
+      "id": "known:V29",
+      "name": "KNOWN ISSUE V29: Tangan pengayuh tidak memegang setang, melayang di atasnya",
+      "pass": false,
+      "detail": "258 sentuhan di 129 frame, terburuk 6 px, tidak lebih buruk dari batas tercatat 6 px (pemeran pengayuh, status cycle, sentuhan hand-grip, frame 108-236; lihat docs/BACKLOG.md V29)",
+      "status": "known",
+      "approval": "disetujui",
+      "count": 258
+    },
+    {
+      "id": "known:V30",
+      "name": "KNOWN ISSUE V30: Ujung lengan jauh penyapu tidak sampai ke tangan jauh yang menggenggam gagang",
+      "pass": false,
+      "detail": "252 sentuhan di 252 frame, terburuk 3 px, tidak lebih buruk dari batas tercatat 3 px (pemeran penyapu, status sweep, sentuhan farArm-farHand, frame 108-359; lihat docs/BACKLOG.md V30)",
+      "status": "known",
+      "approval": "disetujui",
+      "count": 252
+    },
+    {
+      "id": "motion-seat",
+      "name": "Pose karakter: posisi duduk di sadel atau bangku",
+      "pass": true,
+      "detail": "381 pose duduk: badan bawah tepat di tempat duduk (sadel induk atau bangku di bawahnya)",
+      "status": "pass"
+    },
+    {
+      "id": "motion-stable",
+      "name": "Pose karakter: stabil antar-frame (tanpa getar sendi)",
+      "pass": true,
+      "detail": "20389 titik sendi x 3 frame diperiksa, tanpa getar 1 frame di luar KNOWN ISSUE (29 kejadian dilaporkan terpisah: V31, V32); 20522 langkah frame: sendi yang penggeraknya diam bergerak paling banyak 1 px; 48 dikecualikan karena penggerak sendi itu sendiri berbalik arah dengan mulus di frame itu: bu-sari frame 182 lengan dekat siku y (titik balik gesture), bu-sari frame 182 lengan dekat tangan x (titik balik gesture), bu-sari frame 182 lengan dekat tangan y (titik balik gesture), bu-sari frame 188 lengan dekat siku x (titik balik gesture), bu-sari frame 188 lengan dekat siku y (titik balik gesture), bu-sari frame 188 lengan dekat tangan x (titik balik gesture), ... (48) | lompatan terbesar saat penggerak bergerak (informasi): walk 4 px, gesture 4 px, sweep 1 px",
+      "status": "pass"
+    },
+    {
+      "id": "known:V31",
+      "name": "KNOWN ISSUE V31: Lutut dan siku berkedip 1 piksel selama 1 frame saat berjalan (pembulatan)",
+      "pass": false,
+      "detail": "19 dari 19 kejadian tercatat (pembulatan) di 4 pemeran, terbesar 1 px, tidak lebih buruk dari batas tercatat 1 px (status walk, pemeran darto-pagi, sumi-pagi, darto-sore, sumi-sore); contoh darto-pagi frame 3 kaki jauh lutut y, darto-pagi frame 17 kaki dekat lutut y, darto-pagi frame 31 kaki jauh lutut y, ... (19); lihat docs/BACKLOG.md V31",
+      "status": "known",
+      "approval": "disetujui",
+      "count": 19
+    },
+    {
+      "id": "known:V32",
+      "name": "KNOWN ISSUE V32: Lutut bergetar di ujung ayunan kaki saat kaki hampir lurus (karakter kecil yang berjalan cepat)",
+      "pass": false,
+      "detail": "10 dari 10 kejadian tercatat (getar) di 1 pemeran, terbesar 1 px, tidak lebih buruk dari batas tercatat 1 px (status walk, pemeran anak-sekolah); contoh anak-sekolah frame 147 kaki dekat lutut x, anak-sekolah frame 147 kaki dekat lutut y, anak-sekolah frame 162 kaki dekat lutut x, ... (10); lihat docs/BACKLOG.md V32",
+      "status": "known",
+      "approval": "disetujui",
+      "count": 10
     },
     {
       "id": "determinism",
       "name": "Rendering deterministik (render ulang identik, urutan terbalik)",
       "pass": true,
-      "detail": "360/360 frame identik byte demi byte, 3/3 frame identik saat dirender dua kali"
+      "detail": "360/360 frame identik byte demi byte, 3/3 frame identik saat dirender dua kali",
+      "status": "pass"
     },
     {
       "id": "js-errors",
       "name": "Tidak ada error JavaScript selama rendering",
       "pass": true,
-      "detail": "0 error saat render, 0 error saat pengujian"
+      "detail": "0 error saat render, 0 error saat pengujian",
+      "status": "pass"
     },
     {
       "id": "reencode",
       "name": "Encode ulang menghasilkan MP4 identik",
       "pass": true,
-      "detail": "SHA-256 sama: 819e48df0f7a1450..."
+      "detail": "SHA-256 sama: 819e48df0f7a1450...",
+      "status": "pass"
     }
   ],
   "sheets": [
@@ -412,8 +551,8 @@
   "engine": {
     "name": "Pixel History Studio",
     "version": "0.5.0",
-    "engineHash": "9420c042aa03f0b9884c05bc2726b3d666a76eb0a483a4b7adbfdc7b25de6427",
-    "libraryHash": "2a6000361daf6301ff19bf87c8c18df6df5d39b6be48ca4e19134c0258f77fa6",
+    "engineHash": "e123d7ea0a4c402570afb69a48b6f1316442ea5370dd5dffad4e54b84930739b",
+    "libraryHash": "4c60b45add045f409a0dfef196ac3583e124e08ddbe7acb7d0b56c6852ecd25e",
     "modules": [
       "/src/assets/common/environment.js",
       "/src/assets/town/buildings.js",
@@ -425,7 +564,7 @@
     ]
   },
   "environment": {
-    "os": "Linux 6.18.44-fc-v180 (linux/x64)",
+    "os": "Linux 6.18.44-fc-v185 (linux/x64)",
     "node": "v22.22.0",
     "chromium": "153.0.8010.12",
     "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
@@ -442,14 +581,14 @@
     },
     "configFile": "config/character-lab.json",
     "inputsHash": "f6340df728c598424cc9833b3b9520470601ce23f79f42313fa6f7a994b1d6f3",
-    "engineHash": "9420c042aa03f0b9884c05bc2726b3d666a76eb0a483a4b7adbfdc7b25de6427",
-    "libraryHash": "2a6000361daf6301ff19bf87c8c18df6df5d39b6be48ca4e19134c0258f77fa6",
+    "engineHash": "e123d7ea0a4c402570afb69a48b6f1316442ea5370dd5dffad4e54b84930739b",
+    "libraryHash": "4c60b45add045f409a0dfef196ac3583e124e08ddbe7acb7d0b56c6852ecd25e",
     "engineVersion": "0.5.0",
     "status": "complete",
-    "startedAt": "2026-10-28T04:27:34.923Z",
-    "finishedAt": "2026-10-28T04:27:55.817Z",
-    "renderSeconds": 10.446,
-    "encodeSeconds": 10.448,
+    "startedAt": "2026-10-29T02:38:46.278Z",
+    "finishedAt": "2026-10-29T02:39:23.348Z",
+    "renderSeconds": 22.389,
+    "encodeSeconds": 14.681,
     "chromiumVersion": "153.0.8010.12",
     "jsErrors": 0,
     "loadedModules": [

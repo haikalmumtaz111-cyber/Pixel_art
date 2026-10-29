@@ -14,7 +14,8 @@ Dokumen ini menjelaskan cara mesin animasi bekerja sejak Tahap 3 (mesin reusable
 | Transisi | `cut`, `dissolve`, `portal` |
 | Baseline regresi | Versi per proyek di `tests/baselines/registry.json` ([`BASELINES.md`](BASELINES.md)). Resmi: Project A dan prototipe `tahap-2` (`main@cfed35a`), Project B `tahap-4` (`main@a1fd4a1`, perubahan 124 frame Tahap 4 yang disetujui pemilik), demo `character-lab` `tahap-5` (`main@e6926d2`). Historis: Project B `tahap-3` (`main@9d7a144`). File baseline tidak pernah diubah; perubahan yang disengaja dicatat di `tests/baselines/pending-changes.json` dan versi baru dibuat lewat `npm run baseline` setelah pemilik menyetujui |
 | Proteksi branch | Ruleset GitHub aktif untuk `main` (26005617: wajib PR, hanya merge commit, dua check CI wajib, tidak boleh dihapus atau force push) dan branch `tahap-1` sampai `tahap-5` (26006150, pola `tahap-[1-4]-*` dan `tahap-5-*`: tidak boleh dihapus atau force push). Konfigurasi terverifikasi lewat API GitHub; penolakan push nyata belum diuji. Detail: [`BASELINES.md`](BASELINES.md), BACKLOG T18 |
-| Keterbatasan yang diketahui | [`BACKLOG.md`](BACKLOG.md), termasuk V23 (dua ukuran piksel di zoom pecahan), V24 (warna baru dari lapisan semi-transparan), V25 (batas antar lapisan memotong piksel art), V26-V28 (batas gerak dan cahaya karakter Tahap 5), T13 (deteksi tokoh "pop"), dan T19 (cakupan pemeriksaan gerak) |
+| Keterbatasan yang diketahui | [`BACKLOG.md`](BACKLOG.md), termasuk V23 (dua ukuran piksel di zoom pecahan), V24 (warna baru dari lapisan semi-transparan), V25 (batas antar lapisan memotong piksel art), V26-V28 (batas gerak dan cahaya karakter Tahap 5), V29-V32 (temuan pemeriksaan pose PR D, dilaporkan sebagai KNOWN ISSUE), T13 (deteksi tokoh "pop"), dan T19 (cakupan pemeriksaan gerak) |
+| Pemeriksaan pose (PR D, T19, belum di-merge) | `motion-joints`, `motion-limbs`, `motion-contact`, `motion-seat`, `motion-stable` untuk gerak natural skala 1 (lihat "Data pose untuk pengujian"); gerak klasik TIDAK DIPERIKSA. Laporan validasi punya status LULUS, GAGAL, KNOWN ISSUE, dan TIDAK DIPERIKSA |
 
 ## Gambaran besar
 
@@ -182,6 +183,25 @@ Pewarna disimpan per objek palet (tangga palet memberi objek yang sama untuk ana
 
 Aset boleh menyediakan `motionProbe(keadaan)` (tanpa menggambar). Rig mengembalikan telapak yang sedang menapak (`foot`, nomor langkah, kolom dunia) dan turunnya pinggul saat berjalan, dengan tanda `strict` untuk gerak natural. Komposer menyediakan `entitiesAt(frame)` dan `paletteAt(frame)`; `runtime.js` mengumpulkannya lewat `inspect.motionProbes(awal, jumlah)` dan `inspect.identityColors(kunci, frame)`. Keduanya generik: mesin tidak menyebut jenis aset mana pun.
 
+### Data pose untuk pengujian (`poseProbe`, `sockets`, PR D, T19)
+
+- **Perekam di fungsi gambar natural.** `rig.js` punya perekam per karakter (`record`, `mark()`). Saat menggambar biasa isinya `null`, jadi `mark()` tidak melakukan apa-apa. `poseProbe(keadaan)` menyalakan perekam, menjalankan `draw()` yang sama ke konteks kosong tanpa cahaya, lalu mematikannya di `finally`. Datanya berasal dari titik yang benar-benar dipakai menggambar, bukan rumus salinan. Isi (`items`): `body` (baris kaki, pinggul, bahu, kepala), `arm` (bahu, siku, tangan tergambar dan mentah, panjang tulang, target, `drivers`), `leg` (pinggul, lutut, pergelangan, lutut mentah, `drivers`), `feet` (`lift`, `planted`), `sit` (baris badan terbawah dan soket tempat duduk), `touch` (dua bagian yang harus bersentuhan), dan `driver` (penggerak frame itu: `gesture`, `headTurn`, `breath`, `swing`, `stride`, `sweep`).
+- **Gerak klasik tidak diukur.** Untuk `motion: "classic"`, `poseProbe` hanya mengembalikan `{ mode: 'classic' }`. Tidak ada panggilan perekam di fungsi Tahap 3 (`drawClassic`, `drawStanding`, `drawLegs`, `drawArm`, `drawSeated`, `drawSeatedLegs`, `drawAccessory`), `draw()`, `motionProbe`, maupun `gait.js`.
+- **Soket benda.** Aset boleh menyediakan `sockets(keadaan)`: kotak lokal yang boleh disentuh entitas lain. Sepeda: `grip` (batang setang), `seat` (sadel), `pedal` (pedal pada putaran frame itu). Bangku: `seat` (papan dudukan). `draw()` keduanya tidak berubah; unit test mencocokkan soket dengan piksel yang digambar.
+- **Letak kotak gambar.** `composer.layoutAt(frame)` = `entitiesAt` ditambah lapisan, induk, dan letak kotak gambar di dunia (`placementOf`, rumus yang sama dengan `render()` dengan geseran kamera 0; `render()` sendiri tidak berubah dan tidak memakainya; unit test mencocokkan keduanya). `runtime.js` mengumpulkan semuanya lewat `inspect.poseProbes(awal, jumlah)`.
+- **Analisis** di `src/render/pose-checks.cjs` (Node, fungsi murni). Hanya pose natural skala 1 (`strict`) yang diwajibkan:
+
+| Pemeriksaan | Isi | Toleransi |
+|-------------|-----|-----------|
+| `motion-joints` | urutan kepala-bahu-pinggul-kaki; sendi di dalam kotak gambar + margin penyangga; telapak menapak tepat di garis tanah, tidak pernah di bawahnya | margin 12 px; telapak 0 px |
+| `motion-limbs` | panjang tulang dari pemecah (sebelum dibulatkan) tepat sama dengan desain; ruas tergambar vs ruas mentah; regangan betis bila pergelangan lebih jauh dari panjang kaki | 1e-6; sqrt(2) + 0,1 px (pembulatan dua ujung); regangan paling banyak `hypot(span, 0,45 x panjang kaki + 1) - span` |
+| `motion-contact` | sentuhan `touch` (tangan dan gagang sapu, sepatu dan pedal, bakul dan bungkusan di tangan, tangan pengayuh dan setang, ujung lengan jauh dan tangan jauh); soket dari induk (`parent`) atau benda di bawahnya (`below`) | jarak sel Chebyshev paling banyak 1 |
+| `motion-seat` | baris badan terbawah di antara (baris atas soket `seat` - 1) dan baris bawah soket; pinggul di dalam lebar soket +- 1 | lihat isi |
+| `motion-stable` | di koordinat lokal: tanpa pola a, b, a satu frame; sendi yang penggeraknya diam bergerak paling banyak 1 px per frame | pengecualian hanya bila penggerak sendi itu sendiri (daftar `drivers` dari `rig.js`) berbalik mulus tepat di frame itu (dua frame naik lalu dua frame turun). Selain itu pelanggaran: "pembulatan" (gerak mentah < 0,5 px) atau "getar" |
+
+- **Status laporan.** `src/render/checks.cjs` punya dua status selain LULUS dan GAGAL, keduanya `pass: false`: **KNOWN ISSUE** (`known`) dan **TIDAK DIPERIKSA** (`skip`, misalnya proyek tanpa pose natural). Laporan validasi, ringkasan `build:all`, dan ringkasan `npm test` menulisnya terpisah dan tidak menghitungnya sebagai LULUS ("TIDAK ADA YANG GAGAL (43 lulus, 4 KNOWN ISSUE, dari 47 pemeriksaan)"). Validasi hanya gagal bila ada GAGAL.
+- **KNOWN ISSUE** didaftar di `src/render/known-issues.cjs` dan hanya berlaku untuk kejadian yang benar-benar tercatat: proyek (`project`, diteruskan `browser-checks.cjs` dari `config.id`), pemeran (id entitas), status karakter, lalu nama sentuhan dengan rentang frame (`motion-contact`) atau daftar persis pemeran, sendi, sumbu, dan frame dengan jenis pelanggarannya (`motion-stable`), serta batas terburuk yang terukur. Masalah serupa di pemeran, frame, sendi, atau proyek lain tidak cocok dan memakai toleransi normal, jadi tetap GAGAL; tanpa `project` tidak ada KNOWN ISSUE yang berlaku. Kasus yang cocok dilaporkan `known:<id>`. Lebih buruk dari batas = GAGAL "memburuk"; tidak ada lagi kejadian yang cocok atau sentuhannya sudah tidak bermasalah = GAGAL "tidak lagi terjadi" supaya daftar dan BACKLOG diperbarui. `approval: "usulan"` = belum disetujui pemilik; laporan menandainya "usulan" dan menghitungnya terpisah.
+
 ## Kamera (`src/engine/camera.js`)
 
 | Jenis | Isi |
@@ -302,6 +322,7 @@ Adegan kustom mengambil aset lewat `assets.pick(scene.assets, type)`. Project A 
 | `baselines.cjs`, `baseline.cjs` | registry versi baseline dan pemeriksaannya; `npm run baseline` untuk melihat dan merekam versi baru |
 | `baseline-guard.cjs` | penjaga baseline historis terhadap referensi tepercaya di Git (`npm run test:baseline-guard`) |
 | `project-tests.cjs`, `sandbox.cjs` | uji antar-proyek (mesin bersama, isolasi di salinan repository) |
+| `pose-checks.cjs`, `known-issues.cjs` | analisis pose karakter (T19) dari `inspect.poseProbes`, dan daftar KNOWN ISSUE yang dilaporkan terpisah |
 | `smoke.cjs`, `lint.cjs` | pemeriksaan ringan untuk CI |
 | `zoom-tests.cjs` | lab zoom: mengukur semua mode zoom dengan pola kalibrasi, plus penerapan pada Project A |
 | `zoom-demo.cjs` | bahan pembanding V14 (video dan gambar sebelum/sesudah) di `output/comparisons/` |
@@ -320,9 +341,9 @@ Setiap frame dihitung dari waktu global `time = frame / fps` dan `seed` proyek. 
 |----------|-----|---------------|
 | `npm run lint` | sintaks JS, JSON, determinisme, kemurnian mesin inti, file baseline cocok dengan registry | tidak |
 | `npm run test:baseline-guard` | file baseline lama, versi registry, dan riwayat persetujuan sama dengan `origin/main` | tidak |
-| `npm run test:engine` | unit test `tests/engine/*.test.js`: track, easing, PRNG, jadwal setengah terbuka, entitas (urutan bebas), kamera, registry, palet, loader dan skema, gerak dan pencahayaan karakter (`character.test.js`), registry dan penjaga baseline (`baselines.test.js`, folder sementaranya dihapus otomatis walau tes gagal) | tidak |
+| `npm run test:engine` | unit test `tests/engine/*.test.js`: track, easing, PRNG, jadwal setengah terbuka, entitas (urutan bebas), kamera, registry, palet, loader dan skema, gerak dan pencahayaan karakter (`character.test.js`), registry dan penjaga baseline (`baselines.test.js`, folder sementaranya dihapus otomatis walau tes gagal), data pose, soket, `layoutAt`, dan analisis pose (`pose.test.js`) | tidak |
 | `npm run test:smoke` | render beberapa frame per proyek, cocokkan dengan baseline | tidak (render kecil) |
-| `npm run validate -- --project <id>` | validasi lengkap satu proyek (video, frame, transisi, adegan terpisah, konsistensi aset, gerak karakter, modul terisolasi, determinisme, manifest) | ya |
+| `npm run validate -- --project <id>` | validasi lengkap satu proyek (video, frame, transisi, adegan terpisah, konsistensi aset, gerak karakter, pose karakter, modul terisolasi, determinisme, manifest) | ya |
 | `npm run test:negative -- --project <id>` | kesalahan yang disengaja harus ditolak | ya |
 | `npm run test:regression` | setiap proyek identik dengan versi baseline resminya; `--project <id> --baseline <versi>` untuk versi historis | ya |
 | `npm run test:projects` | mesin bersama, file konfigurasi terpisah, isolasi dua arah | ya |
@@ -336,6 +357,7 @@ Teknik penting:
 - **Adegan terpisah**: frame di luar transisi dirender sebagai film utuh dan sebagai adegan tunggal, hasilnya harus identik.
 - **Konsistensi aset**: aturan `validation.consistency` di proyek. `assetType` = semua adegan memakai satu aset berjenis itu; `asset` = warna identitas aset muncul di frame contoh. Sejak Tahap 5 warna identitas dihitung per frame dari palet adegan, jadi karakter yang diterangi palet pencahayaan ikut diperiksa dengan warnanya yang benar-benar tampil.
 - **Gerak karakter** (Tahap 5): dari `motionProbe` setiap frame film. `motion-feet` = setiap telapak gerak natural diam di kolom dunia yang sama selama menapak (tidak meluncur); `motion-bob` = pinggul tidak bolak-balik dalam 1 frame (a, b, a) saat berjalan (tidak bergetar). Gerak klasik dilaporkan sebagai informasi (misalnya rata-rata meluncur per langkah) tetapi tidak diwajibkan, karena dipertahankan apa adanya untuk film lama. Uji negatif merusak kode gerak di salinan repository (telapak ikut terseret, pinggul bolak-balik) dan memastikan keduanya tertangkap.
+- **Pose karakter** (PR D, T19): dari `inspect.poseProbes` setiap frame, lihat bagian "Data pose untuk pengujian". Uji negatif merusak kode gambar natural di salinan repository (telapak melayang, siku bergeser, tulang kaki salah, sepatu lepas dari pedal, tangan lepas dari gagang, bakul lepas, duduk melayang, napas bergetar, lengan jauh bergetar tepat di puncak isyarat), memburukkan setiap KNOWN ISSUE, membuat kedip dan getar baru di luar daftar V31 dan V32, mengganti nama pemeran yang tercatat, dan menyalin proyek dengan id lain; semuanya harus GAGAL (masalah yang sama persis di pemeran atau proyek lain menghasilkan jumlah pelanggaran yang sama dengan kejadian KNOWN ISSUE-nya), kode asli sebagai kontrol.
 - **Isolasi modul**: daftar file JS yang benar-benar diunduh browser. Project B tidak memuat satu pun modul kereta.
 - **Determinisme**: seluruh frame dirender ulang di browser baru dengan urutan terbalik lalu dibandingkan per byte. MP4 di-encode ulang dan dibandingkan SHA-256-nya.
 - **Grid piksel kamera**: setiap frame mencatat mode zoom, nilai zoom, dan geseran lapisannya di manifest render. Validator menghitung ulang ukuran setiap kolom/baris dunia dan menolak crawl (ukuran berubah padahal zoom tetap) serta piksel bolak-balik.

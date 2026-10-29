@@ -1,6 +1,7 @@
 // Pemeriksaan yang butuh browser: determinisme, kesinambungan transisi, adegan terpisah,
 // konsistensi aset, dan modul yang dimuat. Semuanya generik, berlaku untuk proyek mana pun.
 const { sha256, result } = require('./checks.cjs');
+const P = require('./pose-checks.cjs');
 
 // Render ulang frame di browser baru dengan urutan terbalik, lalu bandingkan byte demi byte.
 // Ini sekaligus membuktikan hasil tidak bergantung pada urutan render.
@@ -164,6 +165,12 @@ async function motionChecks(studio, config) {
   ];
 }
 
+// Pose karakter (T19): data poseProbe dan soket setiap frame film, dianalisis oleh pose-checks.cjs.
+// KNOWN ISSUE hanya berlaku untuk proyek ini (config.id).
+async function poseChecks(studio, config, options = {}) {
+  return P.poseChecks(await studio.inspect('poseProbes', 0, config.totalFrames), { project: config.id, ...options });
+}
+
 // Proyek hanya boleh memuat modul aset yang jenisnya dipakai di bagian "assets", plus modul adegannya sendiri.
 // Ini bukti bahwa mesin tidak menyimpan logika proyek lain (misalnya Project B tidak memuat modul kereta).
 // Selain itu, file yang benar-benar diunduh browser (termasuk impor tidak langsung) tidak boleh berisi
@@ -195,4 +202,4 @@ function jsErrorChecks(renderInfo, studio) {
     `${during ?? 'tidak tercatat'} error saat render, ${studio.errors.length} error saat pengujian`)];
 }
 
-module.exports = { determinismChecks, transitionBoundaryChecks, sceneIsolationChecks, consistencyChecks, motionChecks, moduleChecks, jsErrorChecks };
+module.exports = { determinismChecks, transitionBoundaryChecks, sceneIsolationChecks, consistencyChecks, motionChecks, poseChecks, moduleChecks, jsErrorChecks };

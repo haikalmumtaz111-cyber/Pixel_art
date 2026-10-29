@@ -14,7 +14,7 @@ Studio animasi pixel art berbasis kode. Tujuan jangka panjangnya adalah membuat 
 
 Versi mesin: **0.5.0** (`config/engine.json`, Tahap 5).
 
-Pengelolaan baseline setelah Tahap 4: baseline regresi kini punya versi per proyek, dan Project B memakai baseline resmi Tahap 4 (`tahap-4`). Disetujui pemilik dan di-merge ke `main` lewat PR #5 (`d0f3f34`). Penjelasan: [`docs/BASELINES.md`](docs/BASELINES.md). Setelah Tahap 5, unit test baseline tidak lagi meninggalkan folder sementara (PR #10, `3d59391`), dan demo `character-lab` mendapat baseline resmi `tahap-5` dari `main@e6926d2` atas perintah pemilik (PR #12, `09d68e9`).
+Pengelolaan baseline setelah Tahap 4: baseline regresi kini punya versi per proyek, dan Project B memakai baseline resmi Tahap 4 (`tahap-4`). Disetujui pemilik dan di-merge ke `main` lewat PR #5 (`d0f3f34`). Penjelasan: [`docs/BASELINES.md`](docs/BASELINES.md). Setelah Tahap 5, unit test baseline tidak lagi meninggalkan folder sementara (PR #10, `3d59391`), dan demo `character-lab` mendapat baseline resmi `tahap-5` dari `main@e6926d2` atas perintah pemilik (PR #12, `09d68e9`). PR D (T19, pemeriksaan pose karakter) dikerjakan di branch `pr-d-validasi-gerak-t19` atas persetujuan pemilik, belum di-merge; hasil render semua proyek tidak berubah.
 
 ## Proyek yang tersedia
 
@@ -54,6 +54,22 @@ Bahan pembanding (`npm run demo:character`), "sebelum" = proyek yang sama dengan
 | [`output/reports/character-demo.md`](output/reports/character-demo.md) | angka ukur gerak dan warna identitas per waktu |
 
 Project B belum memakai fitur ini (BACKLOG V26). Menerapkannya akan mengubah hampir semua frame Project B, jadi butuh deklarasi perubahan dan persetujuan terpisah. Cara memakai: [`docs/REUSABILITY_GUIDE.md`](docs/REUSABILITY_GUIDE.md) bagian karakter.
+
+## Pemeriksaan pose karakter (PR D, T19, belum di-merge)
+
+Validator kini juga memeriksa pose karakter gerak natural di setiap frame, dari data yang dicatat fungsi gambar itu sendiri (tanpa mengubah gambar):
+
+| Pemeriksaan | Isi |
+|-------------|-----|
+| `motion-joints` | urutan kepala-bahu-pinggul-kaki benar, sendi di dalam kotak gambar, telapak menapak tepat di tanah |
+| `motion-limbs` | panjang lengan dan kaki tetap (hanya selisih pembulatan piksel) |
+| `motion-contact` | tangan di gagang sapu, sepatu di pedal, bakul dan bungkusan di tangan, tangan pengayuh di setang |
+| `motion-seat` | duduk tepat di sadel atau bangku |
+| `motion-stable` | tidak ada sendi yang bergetar 1 frame (kecuali titik balik penggerak sendi itu sendiri, misalnya puncak lambaian) |
+
+Laporan validasi kini punya empat status: **LULUS**, **GAGAL**, **KNOWN ISSUE** (masalah yang sudah tercatat di BACKLOG dan tidak memburuk, hanya di proyek, pemeran, dan frame yang tercatat; masalah serupa di tempat lain tetap GAGAL), dan **TIDAK DIPERIKSA** (tidak ada yang bisa diperiksa, misalnya gerak klasik yang dibekukan). Dua status terakhir tidak dihitung LULUS. Contoh: `character-lab` "TIDAK ADA YANG GAGAL (43 lulus, 4 KNOWN ISSUE, dari 47 pemeriksaan)".
+
+Pemeriksaan ini menemukan empat masalah kecil di gerak yang sudah ada, dicatat sebagai V29-V32 di [`docs/BACKLOG.md`](docs/BACKLOG.md): tangan pengayuh 6 piksel di atas setang (juga di Project B), ujung lengan jauh penyapu tidak sampai ke tangannya, kedip pembulatan lutut dan siku 1 piksel, dan getar lutut anak sekolah di ujung ayunan kaki. Memperbaikinya mengubah render, jadi dikerjakan terpisah setelah disetujui.
 
 ## Hasil Tahap 4: kamera pixel-perfect
 
@@ -233,6 +249,7 @@ output/                         video, laporan, cuplikan, bahan pembanding (comp
 - Fitur gerak natural dan pencahayaan karakter Tahap 5 baru dipakai demo `character-lab`. Project B masih memakai gerak klasik dan warna tetap sampai pemilik memutuskan (V26). Batas lainnya: V27 (gerak) dan V28 (cahaya: belum ada bayangan dan cahaya lampu lokal).
 - Determinisme dijamin di lingkungan yang sama (versi Chromium dan FFmpeg yang sama).
 - CI di GitHub hanya menjalankan pemeriksaan ringan. Render penuh dan pengujian lengkap dijalankan lokal atau di sesi Claude Code.
+- Pemeriksaan pose (PR D) menemukan V29-V32 (tangan pengayuh di atas setang, lengan jauh penyapu, kedip dan getar lutut). Dilaporkan sebagai KNOWN ISSUE sampai diperbaiki. Gerak klasik (Project B) tidak diperiksa pose-nya.
 - `main` dan branch Tahap 1-5 dilindungi ruleset GitHub (lihat [`docs/BASELINES.md`](docs/BASELINES.md)). Konfigurasinya aktif, tetapi penolakan push nyata belum diuji, dan PR yang mengubah workflow CI tetap perlu ditinjau manual (BACKLOG T18).
 
 Daftar lengkap beserta prioritas dan ide perbaikannya ada di [`docs/BACKLOG.md`](docs/BACKLOG.md).

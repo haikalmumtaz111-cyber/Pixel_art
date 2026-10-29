@@ -2,13 +2,13 @@
 
 Laporan ini dibuat otomatis oleh `npm run validate`.
 
-- Waktu uji: 2026-10-28T04:33:13.537Z
+- Waktu uji: 2026-10-29T02:48:07.877Z
 - Proyek: `old-town-morning`
 - Konfigurasi: `config/old-town-morning.json` (+ 7 file $include)
-- Mesin: Pixel History Studio 0.5.0, sidik jari mesin `9420c042aa03f0b9`, pustaka aset `2a6000361daf6301`
+- Mesin: Pixel History Studio 0.5.0, sidik jari mesin `e123d7ea0a4c4025`, pustaka aset `4c60b45add045f40`
 - Video: `output/video/old-town-morning.mp4`
 - Spesifikasi: 480x270 internal, 1920x1080 output (upscale browser), 30 FPS, 12 detik, 360 frame, seed 1958
-- Lama render frame: 17.6 detik, lama encoding: 13.6 detik
+- Lama render frame: 25.3 detik, lama encoding: 18.7 detik
 
 ## Ringkasan kebutuhan
 
@@ -27,15 +27,18 @@ Laporan ini dibuat otomatis oleh `npm run validate`.
 | 11 | Grid piksel kamera stabil (tanpa crawl) | LULUS |
 | 12 | Aset konsisten antar adegan | LULUS |
 | 13 | Gerak karakter: kaki tidak meluncur, tubuh tidak bergetar | LULUS |
-| 14 | Adegan bisa dirender terpisah | LULUS |
-| 15 | Mesin bersama, modul proyek terisolasi | LULUS |
-| 16 | Video berasal dari render terbaru | LULUS |
-| 17 | Rendering deterministik | LULUS |
-| 18 | FFmpeg membaca seluruh video | LULUS |
-| 19 | Video dapat diputar | LULUS |
-| 20 | Render ulang konsisten | LULUS |
+| 14 | Pose karakter: sendi, panjang lengan dan kaki, sentuhan, duduk, stabil antar-frame | TIDAK DIPERIKSA |
+| 15 | Adegan bisa dirender terpisah | LULUS |
+| 16 | Mesin bersama, modul proyek terisolasi | LULUS |
+| 17 | Video berasal dari render terbaru | LULUS |
+| 18 | Rendering deterministik | LULUS |
+| 19 | FFmpeg membaca seluruh video | LULUS |
+| 20 | Video dapat diputar | LULUS |
+| 21 | Render ulang konsisten | LULUS |
 
-Status akhir: **SEMUA LULUS** (36/36 pemeriksaan)
+Status akhir: **TIDAK ADA YANG GAGAL** (36 lulus, 5 tidak diperiksa, dari 41 pemeriksaan)
+
+KNOWN ISSUE = masalah yang sudah tercatat di `docs/BACKLOG.md` dan tidak memburuk, hanya di proyek, pemeran, dan frame yang tercatat (`src/render/known-issues.cjs`). KNOWN ISSUE "usulan" belum disetujui pemilik. TIDAK DIPERIKSA = tidak ada yang bisa diperiksa di proyek ini. Keduanya bukan LULUS.
 
 ## Timeline
 
@@ -55,7 +58,7 @@ Status akhir: **SEMUA LULUS** (36/36 pemeriksaan)
 |----|-------------|-------|--------|
 | 1 | Interval adegan valid | LULUS | 3 adegan menutup 360/360 frame tanpa celah: s01-old-town-morning [0, 120), s02-morning-walk [120, 240), s03-town-awakens [240, 360) |
 | 2 | Transisi berada di dalam durasi film | LULUS | dissolve 108-131 |
-| 3 | Render terakhir selesai dengan sukses | LULUS | status complete, selesai 2026-10-28T04:30:03.558Z |
+| 3 | Render terakhir selesai dengan sukses | LULUS | status complete, selesai 2026-10-29T02:42:31.268Z |
 | 4 | Video berasal dari render terbaru (bukan sisa render lama) | LULUS | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest |
 | 5 | File MP4 ada | LULUS | old-town-morning.mp4 (6.70 MB) |
 | 6 | Kontainer MP4 | LULUS | mov,mp4,m4a,3gp,3g2,mj2 |
@@ -86,9 +89,14 @@ Status akhir: **SEMUA LULUS** (36/36 pemeriksaan)
 | 31 | Warna identitas pak-darto konsisten | LULUS | warna #ece6d6, #5a4a3a, #1c1a1e ditemukan persis di frame 160, 330 |
 | 32 | Kaki yang menapak tidak meluncur | LULUS | tidak ada karakter bergerak natural yang berjalan / gerak klasik (tidak diwajibkan): 46 langkah, meluncur rata-rata 6.4 px, maks 10 px |
 | 33 | Tubuh tidak bergetar saat berjalan | LULUS | tidak ada karakter bergerak natural yang berjalan |
-| 34 | Rendering deterministik (render ulang identik, urutan terbalik) | LULUS | 360/360 frame identik byte demi byte, 3/3 frame identik saat dirender dua kali |
-| 35 | Tidak ada error JavaScript selama rendering | LULUS | 0 error saat render, 0 error saat pengujian |
-| 36 | Encode ulang menghasilkan MP4 identik | LULUS | SHA-256 sama: 756f7d874738ddb1... |
+| 34 | Pose karakter: urutan tubuh, sendi di dalam kotak, telapak menapak di tanah | TIDAK DIPERIKSA | tidak ada pose gerak natural skala 1 yang bisa diperiksa: 7 karakter gerak klasik tidak punya data pose (gerak klasik dibekukan) |
+| 35 | Pose karakter: panjang lengan dan kaki tetap | TIDAK DIPERIKSA | tidak ada pose gerak natural skala 1 yang bisa diperiksa: 7 karakter gerak klasik tidak punya data pose (gerak klasik dibekukan) |
+| 36 | Pose karakter: tangan, kaki, dan benda yang dipegang bersentuhan | TIDAK DIPERIKSA | tidak ada pose gerak natural skala 1 yang bisa diperiksa: 7 karakter gerak klasik tidak punya data pose (gerak klasik dibekukan) |
+| 37 | Pose karakter: posisi duduk di sadel atau bangku | TIDAK DIPERIKSA | tidak ada pose gerak natural skala 1 yang bisa diperiksa: 7 karakter gerak klasik tidak punya data pose (gerak klasik dibekukan) |
+| 38 | Pose karakter: stabil antar-frame (tanpa getar sendi) | TIDAK DIPERIKSA | tidak ada pose gerak natural skala 1 yang bisa diperiksa: 7 karakter gerak klasik tidak punya data pose (gerak klasik dibekukan) |
+| 39 | Rendering deterministik (render ulang identik, urutan terbalik) | LULUS | 360/360 frame identik byte demi byte, 3/3 frame identik saat dirender dua kali |
+| 40 | Tidak ada error JavaScript selama rendering | LULUS | 0 error saat render, 0 error saat pengujian |
+| 41 | Encode ulang menghasilkan MP4 identik | LULUS | SHA-256 sama: 756f7d874738ddb1... |
 
 ## Lembar kontak (preview)
 
@@ -110,7 +118,7 @@ Status akhir: **SEMUA LULUS** (36/36 pemeriksaan)
 
 ## Lingkungan
 
-- Sistem operasi: Linux 6.18.44-fc-v180 (linux/x64)
+- Sistem operasi: Linux 6.18.44-fc-v185 (linux/x64)
 - Node.js: v22.22.0
 - Chromium: 153.0.8010.12
 - ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers

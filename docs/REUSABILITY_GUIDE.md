@@ -162,6 +162,7 @@ Pixel art dibesarkan tanpa blur, jadi satu piksel art selalu berukuran bulat di 
 
 - Tambah aturan konsistensi supaya tokoh utama dijamin tampil sama di semua adegan:
   `"validation": { "consistency": [{ "asset": "bu-ani", "frames": [30, 100] }] }`
+- Karakter `"motion": "natural"` otomatis ikut pemeriksaan pose (sendi, panjang lengan dan kaki, sentuhan, posisi duduk, stabil antar-frame). Laporan validasi menulis LULUS, GAGAL, KNOWN ISSUE (masalah tercatat di BACKLOG, `src/render/known-issues.cjs`, hanya untuk proyek, pemeran, dan frame yang tercatat, jadi proyek baru tidak mewarisi KNOWN ISSUE proyek lain), atau TIDAK DIPERIKSA. Hanya GAGAL yang membuat validasi gagal, tetapi KNOWN ISSUE dan TIDAK DIPERIKSA bukan LULUS.
 - Jalankan `npm run test:negative -- --project <id>` untuk memastikan validator menolak kesalahan di proyek baru.
 - Jalankan `npm run test:regression` dan `npm run test:projects` untuk memastikan proyek lama tidak berubah.
 - Setelah proyek baru disetujui pemilik, rekam baseline pertamanya dengan `npm run baseline -- --project <id> --version tahap-<n> ...` supaya ikut dijaga uji regresi. Langkahnya di [`BASELINES.md`](BASELINES.md).
@@ -171,6 +172,7 @@ Pixel art dibesarkan tanpa blur, jadi satu piksel art selalu berukuran bulat di 
 1. Tulis modul di `src/assets/<kategori>/<nama>.js` yang mengekspor `assetTypes` (kontrak di [`ARCHITECTURE.md`](ARCHITECTURE.md#sistem-entitas-srcenginentitiesjs)). Gambar dengan helper `src/engine/pixel.js`, warna lewat `pick(fc, 'namaWarna')` dari `src/assets/common/colors.js`, variasi acak lewat `hash()` dari `src/engine/random.js`. Dilarang `Math.random()` dan `Date`.
 2. Daftarkan jenisnya di `src/assets/catalog.json`: `module`, `category`, `entity: true`, skema `params` (tipe, batas, enum), `entityParams` untuk parameter yang bisa dianimasikan, `states`, `colorStates`, dan `paletteKeys`.
 3. Pakai di proyek mana pun lewat `assets: { "nama": { "type": "<jenis baru>", ... } }`.
+4. Opsional: bila karakter boleh menyentuh aset ini (duduk, memegang), sediakan `sockets(keadaan)` berisi kotak lokal (`seat`, `grip`, `pedal`, ...) dengan ukuran yang sama dengan yang digambar `draw()`, plus unit test yang mencocokkan kotak itu dengan piksel. Karakter yang duduk mencari soket `seat` di bawah pinggulnya; pengendara memakai soket induknya. Kontraknya di [`ARCHITECTURE.md`](ARCHITECTURE.md) bagian data pose.
 
 Katalog adalah satu-satunya tempat mesin dan validator mengenal jenis aset. Mesin memuat modul hanya bila proyek memakainya, jadi aset baru tidak membebani proyek lain.
 
