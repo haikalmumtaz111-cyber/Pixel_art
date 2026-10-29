@@ -26,6 +26,16 @@ function createLighting(film, lighting) {
   return (env) => ramp.at(ramp.index(env[lighting.track] ?? 0));
 }
 
+// Letak kotak gambar entitas di dunia (tanpa geseran kamera), untuk pengujian. Rumusnya sama dengan letak yang
+// dihitung render() di bawah dengan geseran 0; render() sendiri tidak memakai fungsi ini (unit test mencocokkan).
+// Sel lokal (x, y) skala 1 ada di dunia (left + x, top + y), atau (right - 1 - x, top + y) bila dicerminkan.
+export function placementOf(entity, st, size) {
+  const s = entity.scale;
+  const left = Math.round(st.worldX) - Math.round(entity.anchor[0] * size.w * s);
+  const top = Math.round(st.worldY) - Math.round(entity.anchor[1] * size.h * s);
+  return { left, top, right: left + size.w * s, w: size.w, h: size.h, scale: s, flip: Boolean(st.flip) };
+}
+
 export function createComposedScene({ film, scene, assets, environment }) {
   const stage = film.stages?.[scene.stage];
   if (!stage) throw new Error(`Adegan "${scene.id}": stage "${scene.stage}" tidak ditemukan.`);
@@ -78,6 +88,21 @@ export function createComposedScene({ film, scene, assets, environment }) {
         for (const { entity } of byLayer.get(layer.id)) {
           const st = entity.stateAt(frame, frame / fps);
           if (st.visible) out.push({ id: entity.id, asset: entity.asset, state: { ...st, scale: entity.scale } });
+        }
+      }
+      return out;
+    },
+    // seperti entitiesAt, ditambah lapisan, induk, dan letak kotak gambar di dunia (dipakai pengujian pose, T19)
+    layoutAt(frame) {
+      const env = environment.at(frame);
+      const fc = { frame, time: frame / fps, fps, env, pal: palette(env), width, height, seed: film.seed, scene: scene.id };
+      const out = [];
+      for (const layer of layers) {
+        for (const { entity } of byLayer.get(layer.id)) {
+          const st = entity.stateAt(frame, frame / fps);
+          if (!st.visible) continue;
+          const size = entity.asset.size ? entity.asset.size(st, fc) : { w: 0, h: 0 };
+          out.push({ id: entity.id, asset: entity.asset, layer: layer.id, parent: entity.def.parent || null, state: { ...st, scale: entity.scale }, place: placementOf(entity, st, size) });
         }
       }
       return out;

@@ -41,11 +41,12 @@ async function main() {
   const composed = scenes.some((s) => config.engine.builtinScenes.includes(s.module));
   const results = [];
 
-  // Pengujian lulus bila SEMUA pemeriksaan `ids` gagal (artinya kesalahan terdeteksi).
+  // Pengujian lulus bila SEMUA pemeriksaan `ids` GAGAL (artinya kesalahan terdeteksi).
+  // KNOWN ISSUE dan TIDAK DIPERIKSA bukan deteksi (T19).
   const expectFail = (checks, ids) => {
     const hit = ids.map((id) => checks.find((c) => c.id === id || c.id.startsWith(`${id}:`)));
-    const detected = hit.every((c) => c && !c.pass);
-    return { detected, detail: hit.map((c, i) => (c ? `${c.name}: ${c.pass ? 'LOLOS (tidak terdeteksi)' : 'GAGAL'}, ${c.detail}` : `${ids[i]}: tidak dijalankan`)).join(' | ') };
+    const detected = hit.every((c) => c && C.statusOf(c) === 'fail');
+    return { detected, detail: hit.map((c, i) => (c ? `${c.name}: ${C.statusOf(c) === 'fail' ? 'GAGAL' : `${C.STATUS_LABEL[C.statusOf(c)]} (tidak terdeteksi)`}, ${c.detail}` : `${ids[i]}: tidak dijalankan`)).join(' | ') };
   };
   // Kesalahan konfigurasi harus ditolak DENGAN pesan yang tepat, bukan sekadar gagal karena hal lain.
   const expectIssue = (cfg, pattern) => {
@@ -257,6 +258,206 @@ async function main() {
     await test('Tubuh bergetar saat berjalan (pinggul bolak-balik tiap frame)', () => {
       if (!naturalWalkers) return { skipped: 'proyek tanpa karakter berjalan dengan gerak natural' };
       return brokenMotion('src/assets/characters/gait.js', '  return Math.cos(4 * Math.PI * u) >= 0.5 ? depth : 0;\n', '  return Math.floor(u * 64) % 2;\n', 'motion-bob');
+    });
+
+    // Pemeriksaan pose (T19): kode gambar sengaja dirusak di salinan repository. Pemeriksaan pose harus GAGAL
+    // (bukan KNOWN ISSUE atau TIDAK DIPERIKSA), sedangkan kode asli memberi status yang diharapkan sebagai kontrol.
+    const rigUses = [
+      ...Object.values(raw.cast || {}),
+      ...Object.values(raw.stages || {}).flatMap((s) => s.entities || []),
+      ...(raw.timeline?.scenes || []).flatMap((s) => s.entities || [])
+    ].map((d) => ({ d, a: raw.assets?.[d.asset] })).filter(({ d, a }) => a?.type === 'rig-character' && (d.params?.motion ?? a.motion) === 'natural');
+    const statesOf = (d) => (Array.isArray(d.state) ? d.state.map((k) => k[1]) : [d.state || 'idle']);
+    const naturalIn = (states, test = () => true) => composed && rigUses.some(({ d, a }) => statesOf(d).some((s) => states.includes(s)) && test(a));
+    const STANDING = ['walk', 'idle', 'stand', 'gesture'];
+    let realPose = null;
+    // `ids` harus GAGAL di salinan; `controlStatus` = status kode asli yang diharapkan untuk setiap id (kontrol).
+    // Opsi: `edit(r)` mengubah konfigurasi proyek di salinan (ditulis utuh tanpa $include), `copyAs` = id proyek baru
+    // yang dibuat di salinan dari konfigurasi ini, `check(hasil, kontrol)` = syarat tambahan { ok, detail }.
+    const brokenPose = async (file, swaps, ids, controlStatus = 'pass', { edit, copyAs, check } = {}) => {
+      ids = [].concat(ids);
+      const wanted = ids.map((_, i) => [].concat(controlStatus)[i] ?? [].concat(controlStatus)[0]);
+      if (!realPose) {
+        const real = await openStudio(config);
+        try {
+          realPose = await B.poseChecks(real, config);
+        } finally {
+          await real.close();
+        }
+      }
+      const controls = ids.map((id) => realPose.find((c) => c.id === id));
+      const absent = ids.find((id, i) => !controls[i] && id.startsWith('known:'));
+      if (absent) return { skipped: `${absent.slice(6)} tidak terjadi di proyek ini` };
+      const sandbox = makeSandbox('pixel-pose-rusak-');
+      try {
+        if (file) {
+          const target = path.join(sandbox.dir, file);
+          let code = fs.readFileSync(target, 'utf8');
+          for (const [from, to] of swaps) {
+            if (code.split(from).length !== 2) throw new Error(`kode yang mau dirusak tidak ditemukan tepat satu kali di ${file}`);
+            code = code.replace(from, to);
+          }
+          fs.writeFileSync(target, code);
+        }
+        if (edit) {
+          const r = clone(raw);
+          edit(r);
+          fs.writeFileSync(path.join(sandbox.dir, config.configFile), JSON.stringify(r, null, 2));
+        }
+        if (copyAs) fs.writeFileSync(path.join(sandbox.dir, 'config', `${copyAs}.json`), JSON.stringify({ ...clone(raw), id: copyAs, name: copyAs }, null, 2));
+        const sconfig = sandbox.require('src/render/projects.cjs').loadProject(copyAs || config.id);
+        const studio = await sandbox.require('src/render/browser.cjs').openStudio(sconfig);
+        try {
+          const found = await sandbox.require('src/render/browser-checks.cjs').poseChecks(studio, sconfig);
+          const verdict = expectFail(found, ids);
+          const ok = controls.every((c, i) => c && C.statusOf(c) === wanted[i]);
+          const extra = check ? check(found, controls) : { ok: true, detail: '' };
+          const label = (c) => (c ? C.STATUS_LABEL[C.statusOf(c)] : 'tidak ada');
+          return {
+            detected: verdict.detected && ok && extra.ok,
+            detail: `${verdict.detail}${extra.detail ? ` | ${extra.detail}` : ''} | kontrol kode asli: ${ids.map((id, i) => `${id} ${label(controls[i])} (diharapkan ${C.STATUS_LABEL[wanted[i]]})`).join(', ')}`
+          };
+        } finally {
+          await studio.close();
+        }
+      } finally {
+        sandbox.cleanup();
+      }
+    };
+    // KNOWN ISSUE proyek ini (known-issues.cjs) dan pemerannya, untuk kontrol bahwa masalah serupa di luar catatan GAGAL
+    const knownHere = require('./known-issues.cjs').filter((k) => k.project === config.id);
+    const knownCast = (check) => [...new Set(knownHere.filter((k) => k.check === check).flatMap((k) => (k.entity ? [k.entity] : Object.keys(k.occurrences))))];
+    // ganti nama pemeran di konfigurasi (cast, daftar pemeran adegan, induk); gambar dan geraknya tidak berubah
+    const renameCast = (names) => (r) => {
+      const to = (id) => (names.includes(id) ? `${id}-lain` : id);
+      r.cast = Object.fromEntries(Object.entries(r.cast).map(([id, d]) => [to(id), d.parent ? { ...d, parent: to(d.parent) } : d]));
+      for (const s of r.timeline.scenes) if (Array.isArray(s.cast)) s.cast = s.cast.map(to);
+    };
+    // banyak pelanggaran pemeriksaan utama = jumlah kejadian KNOWN ISSUE di kode asli (masalah yang sama persis)
+    const violations = (found, id) => Number((found.find((c) => c.id === id)?.detail.match(/^(\d+) pelanggaran/) || [])[1] || 0);
+    const sameCount = (pairs) => (found, controls) => {
+      const rows = pairs.map(([id, knownIds]) => {
+        const expected = knownIds.reduce((n, k) => n + (realPose.find((c) => c.id === k)?.count || 0), 0);
+        return { id, expected, got: violations(found, id) };
+      });
+      return { ok: rows.every((x) => x.expected > 0 && x.got === x.expected), detail: rows.map((x) => `${x.id} ${x.got} pelanggaran (sama dengan ${x.expected} kejadian KNOWN ISSUE di kode asli)`).join(', ') };
+    };
+    const RIG = 'src/assets/characters/rig.js';
+    const skipPose = (what) => ({ skipped: `proyek tanpa ${what} gerak natural` });
+
+    await test('Telapak yang menapak melayang 1 piksel (pose: kaki tidak di tanah)', () => {
+      if (!naturalIn(['walk'])) return skipPose('karakter berjalan');
+      return brokenPose('src/assets/characters/gait.js', [['  let h = 0;\n', '  let h = 1;\n']], 'motion-joints');
+    });
+
+    await test('Siku bergeser 3 piksel dari tulang lengan (pose: lengan memanjang)', () => {
+      if (!rigUses.length || !composed) return skipPose('karakter rig');
+      return brokenPose(RIG, [['    const E = pt(elbow);\n', '    const E = pt({ x: elbow.x + 3, y: elbow.y });\n']], 'motion-limbs');
+    });
+
+    await test('Paha dan betis tidak sama panjang dengan desain (pose: tulang kaki salah)', () => {
+      if (!naturalIn([...STANDING, 'sweep'], (a) => !a.sarong)) return skipPose('karakter bercelana (tanpa sarung) yang berdiri');
+      return brokenPose(RIG, [['twoBone(hip, ankle, span / 2, span / 2, -1)', 'twoBone(hip, ankle, span / 2 + 2, span / 2 - 2, -1)']], 'motion-limbs');
+    });
+
+    await test('Sepatu pengayuh lepas 3 piksel dari pedal (pose: sentuhan)', () => {
+      if (!naturalIn(['cycle'])) return skipPose('pengayuh sepeda');
+      return brokenPose(RIG, [['y: boxH - (p.crankDrop ?? 2) }', 'y: boxH - (p.crankDrop ?? 5) }']], 'motion-contact');
+    });
+
+    await test('Tangan dekat penyapu lepas dari gagang sapu (pose: sentuhan)', () => {
+      if (!naturalIn(['sweep'], (a) => a.accessory === 'broom')) return skipPose('penyapu bersapu');
+      return brokenPose(RIG, [["{ target: top }, true, { drivers: ['sweep'] }", "{ target: { x: top.x + 4, y: top.y } }, true, { drivers: ['sweep'] }"]], 'motion-contact');
+    });
+
+    await test('Bakul tidak di tangan (pose: sentuhan)', () => {
+      if (!naturalIn(STANDING, (a) => a.accessory === 'basket')) return skipPose('pembawa bakul');
+      // bibir bakul selebar 6 piksel: geser 5 piksel ke bawah supaya benar-benar lepas dari tangan
+      return brokenPose(RIG, [['    if (basketHand) drawBasket(ctx, basketHand);\n', '    if (basketHand) basketHand.y += 5;\n    if (basketHand) drawBasket(ctx, basketHand);\n']], 'motion-contact');
+    });
+
+    await test('Badan duduk melayang 4 piksel di atas tempat duduk (pose: posisi duduk)', () => {
+      if (!naturalIn(['seated', 'cycle'])) return skipPose('karakter duduk');
+      return brokenPose(RIG, [[
+        '  function drawNaturalSeated(ctx, { breath, turn, blink, gesture, pedal }) {\n    const footY = boxH;\n    const hipY = footY - Math.round(legLen * 0.55);\n',
+        '  function drawNaturalSeated(ctx, { breath, turn, blink, gesture, pedal }) {\n    const footY = boxH;\n    const hipY = footY - Math.round(legLen * 0.55) - 4;\n'
+      ]], 'motion-seat');
+    });
+
+    await test('Bahu bergetar: napas berganti setiap frame (pose: stabil antar-frame)', () => {
+      if (!naturalIn(['idle', 'stand', 'seated', 'gesture'])) return skipPose('karakter diam');
+      return brokenPose(RIG, [['breath: Math.sin((time / (p.breathSeconds ?? 3.4)) * Math.PI * 2) > 0.2 ? 1 : 0', 'breath: Math.round(time * 30) % 2']], 'motion-stable');
+    });
+
+    await test('Lengan jauh bergetar di puncak isyarat (pengecualian titik balik hanya untuk sendi dengan penggerak itu)', () => {
+      if (!naturalIn(['gesture'])) return skipPose('isyarat');
+      return brokenPose(RIG, [["armAngles(backKind, -swing, amp), false, { drivers: ['swing'] }", "armAngles(backKind, -swing + (gesture > 0.85 ? 1.5 : 0), amp), false, { drivers: ['swing'] }"]], 'motion-stable');
+    });
+
+    await test('KNOWN ISSUE V29 memburuk: tangan pengayuh makin jauh dari setang', () => {
+      if (!naturalIn(['cycle'])) return skipPose('pengayuh sepeda');
+      return brokenPose(RIG, [['const target = pedal ? { x: cx + 8, y: shoulderY + 4 }', 'const target = pedal ? { x: cx + 8, y: shoulderY + 1 }']], 'known:V29', 'known');
+    });
+
+    await test('KNOWN ISSUE V29 tidak lagi terjadi: daftar KNOWN ISSUE harus diperbarui', () => {
+      if (!naturalIn(['cycle'])) return skipPose('pengayuh sepeda');
+      return brokenPose(RIG, [['const target = pedal ? { x: cx + 8, y: shoulderY + 4 }', 'const target = pedal ? { x: cx + 8, y: shoulderY + 9 }'], ['const backTarget = pedal ? { x: cx + 7, y: shoulderY + 4 }', 'const backTarget = pedal ? { x: cx + 7, y: shoulderY + 9 }']], 'known:V29', 'known');
+    });
+
+    await test('KNOWN ISSUE V30 memburuk: ujung lengan jauh penyapu makin jauh dari tangannya', () => {
+      if (!naturalIn(['sweep'], (a) => a.accessory === 'broom')) return skipPose('penyapu bersapu');
+      return brokenPose(RIG, [["{ target: low }, false, { hand: false, drivers: ['sweep'] }", "{ target: { x: low.x + 6, y: low.y } }, false, { hand: false, drivers: ['sweep'] }"]], 'known:V30', 'known');
+    });
+
+    await test('KNOWN ISSUE V31 memburuk: kedip lutut yang tercatat melompat 2 piksel', () => {
+      if (!naturalIn(['walk'])) return skipPose('karakter berjalan');
+      // pecahan .5 dibulatkan 1 piksel lebih jauh: kedip pembulatan di frame yang sama menjadi 2 piksel
+      return brokenPose(RIG, [['      const knee = pt(bone.joint);\n', '      const knee = pt({ x: bone.joint.x, y: bone.joint.y + (bone.joint.y % 1 >= 0.5 ? 1 : 0) });\n']], 'known:V31', 'known');
+    });
+
+    await test('KNOWN ISSUE V32 memburuk: getar lutut yang tercatat melompat 2 piksel', () => {
+      if (!naturalIn(['walk'])) return skipPose('karakter berjalan');
+      // jarak lutut dari pinggul digandakan di sumbu x: pola a, b, a yang sama, lompatannya dua kali lipat
+      return brokenPose(RIG, [['      const knee = pt(bone.joint);\n', '      const knee = pt(bone.joint);\n      knee.x = 2 * knee.x - Math.round(hip.x);\n']], 'known:V32', 'known');
+    });
+
+    await test('Kedip pembulatan baru di luar daftar V31 (frame dan pemeran lain) tetap GAGAL', () => {
+      if (!naturalIn(['walk'])) return skipPose('karakter berjalan');
+      return brokenPose(RIG, [['      const knee = pt(bone.joint);\n', '      const knee = pt({ x: bone.joint.x + (ankle.x % 2 ? 0.6 : 0), y: bone.joint.y });\n']], 'motion-stable');
+    });
+
+    await test('Getar lutut baru di luar daftar V32 (frame dan pemeran lain) tetap GAGAL', () => {
+      if (!naturalIn(['walk'])) return skipPose('karakter berjalan');
+      return brokenPose(RIG, [['      const ankle = { x: hipX + f.dx, y: footY - 1 - f.lift };\n      const bone', '      const ankle = { x: hipX + f.dx, y: footY - 1 - f.lift };\n      const bone = twoBone(hip, { x: ankle.x + (ankle.x % 2 ? 3 : 0), y: ankle.y }, span / 2, span / 2, -1);\n      const unused']], 'motion-stable');
+    });
+
+    await test('Masalah V29 dan V30 di pemeran lain (nama pemeran diganti) GAGAL, bukan KNOWN ISSUE', () => {
+      const names = knownCast('motion-contact');
+      if (!names.length) return { skipped: 'proyek tanpa KNOWN ISSUE sentuhan' };
+      const ids = knownHere.filter((k) => k.check === 'motion-contact').map((k) => `known:${k.id}`);
+      return brokenPose(null, [], ['motion-contact', ...ids], ['pass', ...ids.map(() => 'known')], { edit: renameCast(names), check: sameCount([['motion-contact', ids]]) });
+    });
+
+    await test('Masalah V31 dan V32 di pemeran lain (nama pemeran diganti) GAGAL, bukan KNOWN ISSUE', () => {
+      const names = knownCast('motion-stable');
+      if (!names.length) return { skipped: 'proyek tanpa KNOWN ISSUE gerak' };
+      const ids = knownHere.filter((k) => k.check === 'motion-stable').map((k) => `known:${k.id}`);
+      return brokenPose(null, [], ['motion-stable', ...ids], ['pass', ...ids.map(() => 'known')], { edit: renameCast(names), check: sameCount([['motion-stable', ids]]) });
+    });
+
+    await test('KNOWN ISSUE tidak berlaku di proyek baru (salinan proyek ini dengan id lain) = GAGAL', () => {
+      if (!knownHere.length) return { skipped: 'proyek tanpa KNOWN ISSUE' };
+      const byCheck = (check) => knownHere.filter((k) => k.check === check).map((k) => `known:${k.id}`);
+      const pairs = [['motion-contact', byCheck('motion-contact')], ['motion-stable', byCheck('motion-stable')]].filter(([, ids]) => ids.length);
+      const counts = sameCount(pairs);
+      return brokenPose(null, [], pairs.map(([id]) => id), 'pass', {
+        copyAs: `${config.id}-salinan`,
+        check: (found, controls) => {
+          const c = counts(found, controls);
+          const leaked = found.filter((x) => x.id.startsWith('known:'));
+          return { ok: c.ok && !leaked.length, detail: `${c.detail}, baris KNOWN ISSUE di proyek baru: ${leaked.length}` };
+        }
+      });
     });
 
     await test('Skala entitas bukan bilangan bulat (grid piksel rusak)', () => {

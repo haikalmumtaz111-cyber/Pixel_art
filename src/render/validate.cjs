@@ -29,6 +29,7 @@ const GROUPS = [
   ['Grid piksel kamera stabil (tanpa crawl)', ['grid-stability']],
   ['Aset konsisten antar adegan', ['consistency:']],
   ['Gerak karakter: kaki tidak meluncur, tubuh tidak bergetar', ['motion-feet', 'motion-bob']],
+  ['Pose karakter: sendi, panjang lengan dan kaki, sentuhan, duduk, stabil antar-frame', ['motion-joints', 'motion-limbs', 'motion-contact', 'motion-seat', 'motion-stable', 'known:']],
   ['Adegan bisa dirender terpisah', ['scene:']],
   ['Mesin bersama, modul proyek terisolasi', ['engine-modules', 'engine-isolation']],
   ['Video berasal dari render terbaru', ['manifest:']],
@@ -91,9 +92,32 @@ function versionLine(cmd) {
   return r.status === 0 ? r.stdout.split('\n')[0] : 'tidak tersedia';
 }
 
+// Ringkasan status (T19): selain LULUS dan GAGAL ada KNOWN ISSUE dan TIDAK DIPERIKSA, yang tidak dihitung LULUS.
+function tally(checks) {
+  const count = (s) => checks.filter((c) => C.statusOf(c) === s).length;
+  const t = { passed: count('pass'), failed: count('fail'), known: count('known'), skipped: count('skip'), total: checks.length };
+  t.proposed = checks.filter((c) => C.statusOf(c) === 'known' && c.approval === 'usulan').length;
+  t.allPass = t.passed === t.total;
+  t.noFailure = t.failed === 0;
+  t.verdict = t.allPass ? 'SEMUA LULUS' : t.noFailure ? 'TIDAK ADA YANG GAGAL' : 'ADA YANG GAGAL';
+  t.line = t.allPass ? `${t.passed}/${t.total} pemeriksaan`
+    : `${t.failed ? `${t.failed} gagal, ` : ''}${t.passed} lulus${t.known ? `, ${C.knownText(t.known, t.proposed)}` : ''}${t.skipped ? `, ${t.skipped} tidak diperiksa` : ''}, dari ${t.total} pemeriksaan`;
+  return t;
+}
+
+function groupStatus(items) {
+  const st = items.map(C.statusOf);
+  if (!st.length) return 'TIDAK DIUJI';
+  if (st.includes('fail')) return 'GAGAL';
+  if (st.every((s) => s === 'skip')) return 'TIDAK DIPERIKSA';
+  if (st.includes('known')) return 'KNOWN ISSUE';
+  if (st.includes('skip')) return 'LULUS, sebagian tidak diperiksa';
+  return 'LULUS';
+}
+
 function writeReports(config, checks, sheets, extra) {
-  const passed = checks.filter((c) => c.pass).length;
-  const allPass = passed === checks.length;
+  const t = tally(checks);
+  const { passed, allPass } = t;
   const testedAt = new Date().toISOString();
   const environment = {
     os: `${os.type()} ${os.release()} (${os.platform()}/${os.arch()})`,
@@ -104,15 +128,15 @@ function writeReports(config, checks, sheets, extra) {
   };
   const groups = GROUPS.map(([title], g) => {
     const items = checks.filter((c) => groupOf(c.id) === g);
-    return { title, pass: items.length > 0 && items.every((c) => c.pass), items };
+    return { title, pass: items.length > 0 && items.every((c) => c.pass), status: groupStatus(items), items };
   });
   const { segments, ...renderSummary } = extra.renderInfo || {};
   const engine = { name: config.engine.name, version: config.engine.engineVersion, engineHash: M.engineHash(), libraryHash: M.libraryHash(), modules: extra.modules || [] };
   fs.writeFileSync(path.join(config.paths.reports, `${config.name}-validation.json`),
-    JSON.stringify({ testedAt, project: config.id, config: config.configFile, includes: config.includes, allPass, passed, total: checks.length, groups: groups.map((g) => ({ title: g.title, pass: g.pass })), checks, sheets, engine, environment, render: renderSummary, lumaSummary: extra.lumaSummary }, null, 2) + '\n');
+    JSON.stringify({ testedAt, project: config.id, config: config.configFile, includes: config.includes, allPass, noFailure: t.noFailure, passed, failed: t.failed, known: t.known, proposed: t.proposed, skipped: t.skipped, total: checks.length, groups: groups.map((g) => ({ title: g.title, pass: g.pass, status: g.status })), checks: checks.map((c) => ({ ...c, status: C.statusOf(c) })), sheets, engine, environment, render: renderSummary, lumaSummary: extra.lumaSummary }, null, 2) + '\n');
 
-  const rows = checks.map((c, i) => `| ${i + 1} | ${c.name} | ${c.pass ? 'LULUS' : 'GAGAL'} | ${c.detail.replace(/\|/g, '/')} |`).join('\n');
-  const groupRows = groups.map((g, i) => `| ${i + 1} | ${g.title} | ${g.items.length ? (g.pass ? 'LULUS' : 'GAGAL') : 'TIDAK DIUJI'} |`).join('\n');
+  const rows = checks.map((c, i) => `| ${i + 1} | ${c.name} | ${C.STATUS_LABEL[C.statusOf(c)]} | ${c.detail.replace(/\|/g, '/')} |`).join('\n');
+  const groupRows = groups.map((g, i) => `| ${i + 1} | ${g.title} | ${g.status} |`).join('\n');
   const sceneRows = config.timeline.scenes.map((s) => `| ${s.id} | ${s.name} | [${s.startFrame}, ${s.endFrame}) = ${s.startFrame}-${s.endFrame - 1} | ${s.durationFrames} | ${(s.durationFrames / config.fps).toFixed(2)} detik |`).join('\n');
   const transitionRows = config.timeline.transitions.map((t) => `| ${t.id} | ${t.type} | ${t.startFrame}-${t.lastFrame} | ${t.durationFrames} |`).join('\n') || '| - | - | - | - |';
   const sheetList = sheets.map((s) => `- \`${s.file}\` (frame ${s.frames.join(', ')})`).join('\n');
@@ -133,7 +157,7 @@ ${renderSummary.renderSeconds ? `- Lama render frame: ${renderSummary.renderSeco
 |----|-----------|-------|
 ${groupRows}
 
-Status akhir: **${allPass ? 'SEMUA LULUS' : 'ADA YANG GAGAL'}** (${passed}/${checks.length} pemeriksaan)
+Status akhir: **${t.verdict}** (${t.line})${t.known || t.skipped ? '\n\nKNOWN ISSUE = masalah yang sudah tercatat di `docs/BACKLOG.md` dan tidak memburuk, hanya di proyek, pemeran, dan frame yang tercatat (`src/render/known-issues.cjs`). KNOWN ISSUE "usulan" belum disetujui pemilik. TIDAK DIPERIKSA = tidak ada yang bisa diperiksa di proyek ini. Keduanya bukan LULUS.' : ''}
 
 ## Timeline
 
@@ -168,7 +192,7 @@ ${engine.modules.map((m) => `- \`${m}\``).join('\n') || '-'}
 - ${environment.ffprobe}
 ${renderSummary.ffmpegCommand ? `\n## Perintah encoding\n\n\`\`\`\n${renderSummary.ffmpegCommand}\n\`\`\`\n` : ''}`;
   fs.writeFileSync(path.join(config.paths.reports, `${config.name}-validation.md`), md);
-  return { allPass, passed, total: checks.length };
+  return t;
 }
 
 async function main() {
@@ -185,7 +209,7 @@ async function main() {
   const checks = [];
   const add = (list) => list.forEach((c) => {
     checks.push(c);
-    console.log(`${c.pass ? 'LULUS' : 'GAGAL'}  ${c.name}: ${c.detail}`);
+    console.log(`${C.STATUS_LABEL[C.statusOf(c)]}  ${c.name}: ${c.detail}`);
   });
   console.log(`Validasi proyek "${config.title}" (${config.id})\n`);
 
@@ -217,6 +241,7 @@ async function main() {
       add(await B.sceneIsolationChecks(studio, config));
       add(await B.consistencyChecks(studio, config));
       add(await B.motionChecks(studio, config));
+      add(await B.poseChecks(studio, config));
       if (png.checks[0].pass) {
         console.log('Render ulang seluruh frame dengan urutan terbalik untuk uji determinisme...');
         add(await B.determinismChecks(studio, png.hashes, {}));
@@ -233,10 +258,10 @@ async function main() {
 
   const sheets = fs.existsSync(path.join(config.paths.frames, 'frame_0000.png')) ? contactSheets(config) : [];
   const summary = writeReports(config, checks, sheets, { chromium, renderInfo, lumaSummary, modules });
-  console.log(`\n${summary.allPass ? 'SEMUA LULUS' : 'ADA YANG GAGAL'} (${summary.passed}/${summary.total}). Laporan: ${path.relative(config.paths.root, config.paths.reports)}/${config.name}-validation.md`);
+  console.log(`\n${summary.verdict} (${summary.allPass ? `${summary.passed}/${summary.total}` : summary.line}). Laporan: ${path.relative(config.paths.root, config.paths.reports)}/${config.name}-validation.md`);
   if (sheets.length) console.log(`Lembar kontak: ${sheets.map((x) => x.file).join(', ')}`);
   console.log(`Video: ${config.output.video}`);
-  if (!summary.allPass) process.exitCode = 1;
+  if (!summary.noFailure) process.exitCode = 1;
 }
 
 main().catch((error) => {

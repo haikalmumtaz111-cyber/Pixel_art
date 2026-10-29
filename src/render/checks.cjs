@@ -8,6 +8,18 @@ const { FFMPEG, FFPROBE, run } = require('./pipeline.cjs');
 
 const sha256 = (buffer) => crypto.createHash('sha256').update(buffer).digest('hex');
 const result = (id, name, pass, detail) => ({ id, name, pass: Boolean(pass), detail: String(detail) });
+// Dua status lain (T19), keduanya bukan LULUS (pass false) dan bukan kegagalan:
+// known = masalah yang sudah tercatat di BACKLOG dan tidak lebih buruk dari batas tercatatnya (src/render/known-issues.cjs),
+//         `approval` "usulan" bila belum disetujui pemilik, `count` = banyak kejadian;
+// skip  = tidak ada yang bisa diperiksa (misalnya proyek tanpa karakter gerak natural).
+const known = (id, name, detail, extra = {}) => ({ ...result(id, name, false, detail), status: 'known', ...extra });
+const skipped = (id, name, detail) => ({ ...result(id, name, false, detail), status: 'skip' });
+const statusOf = (c) => c.status || (c.pass ? 'pass' : 'fail');
+const STATUS_LABEL = { pass: 'LULUS', fail: 'GAGAL', known: 'KNOWN ISSUE', skip: 'TIDAK DIPERIKSA' };
+// Teks hasil validasi satu proyek dari laporan JSON validate.cjs: KNOWN ISSUE dan TIDAK DIPERIKSA tidak ditulis LULUS.
+const knownText = (n, proposed) => `${n} KNOWN ISSUE${proposed ? ` (${proposed} usulan, belum disetujui pemilik)` : ''}`;
+const validationVerdict = (v) => (v.allPass ? 'LULUS' : v.noFailure === false || v.noFailure === undefined ? 'GAGAL'
+  : `tanpa kegagalan (${[v.known ? knownText(v.known, v.proposed) : '', v.skipped ? `${v.skipped} tidak diperiksa` : ''].filter(Boolean).join(', ')})`);
 
 // Batas bawaan pemeriksaan transisi dan frame kosong. Nilai resminya ada di config/engine.json
 // (bagian "validation") dan diteruskan lewat config.validationLimits.
@@ -291,6 +303,6 @@ function pngChecks(framesDir, count, width, height) {
 }
 
 module.exports = {
-  LIMITS, sha256, result, timelineChecks, probeVideo, videoChecks, decodeChecks,
+  LIMITS, sha256, result, known, skipped, statusOf, STATUS_LABEL, knownText, validationVerdict, timelineChecks, probeVideo, videoChecks, decodeChecks,
   lumaStats, frameHashes, frameChecks, lumaEvents, transitionLumaChecks, manifestChecks, gridChecks, pngChecks
 };

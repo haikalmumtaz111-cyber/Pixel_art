@@ -23,6 +23,8 @@ import { walkPose, twoBone, armFromAngles, armAngles, raiseArm } from './gait.js
 import { createGrader, createSpriteBuffer, flushLit, lightFromPalette, lightSide } from './lighting.js';
 
 const BOX_W = 26;
+// Konteks kosong untuk poseProbe: menerima perintah gambar tanpa menyimpan apa pun.
+const NULL_CTX = { pixelView: null, fillStyle: '', fillRect() {} };
 
 // Tabel siklus jalan 8 frame: kontak, turun, lewat, naik, kontak, turun, lewat, naik.
 const WALK = {
@@ -319,6 +321,18 @@ export function createRigCharacter(def) {
   const hipX = cx - Math.floor(legW / 2);
   const pt = (q) => ({ x: Math.round(q.x), y: Math.round(q.y) });
 
+  // Perekam pose (T19). Saat menggambar biasa isinya null, jadi mark() tidak melakukan apa-apa dan gambar tidak
+  // berubah. poseProbe() mengisinya selama satu kali gambar ke konteks kosong, sehingga data sendi, titik pegang,
+  // dan penggerak diambil dari titik yang benar-benar dipakai fungsi gambar natural di bawah.
+  let record = null;
+  const mark = (kind, data) => {
+    if (record) record.push({ kind, ...data });
+  };
+  // Dua bagian yang harus bersentuhan: a = kotak lokal, b = kotak lokal, { cells } atau { socket, from }
+  // (soket aset lain: from "parent" = induk entitas, "below" = benda di bawah titik itu).
+  const touch = (name, a, b) => mark('touch', { name, a, b });
+  const box2 = (q) => ({ x: q.x, y: q.y, w: 2, h: 2 });
+
   // Ruas tubuh setebal w dari a ke b (titik bulat). Ruas tegak digambar per baris, ruas mendatar per kolom,
   // jadi ketebalannya tetap w di arah mana pun dan siku yang menekuk tidak bolong.
   function stroke(ctx, a, b, w, color) {
@@ -334,7 +348,8 @@ export function createRigCharacter(def) {
   }
 
   // Lengan dengan siku: spec = { angle, bend } (sudut) atau { target } (tangan menuju titik, siku ke bawah/belakang).
-  function naturalArm(ctx, shoulder, spec, front, { hand: drawHand = true } = {}) {
+  // drivers = nama penggerak bernilai kontinu yang menggerakkan lengan ini (untuk pemeriksaan kestabilan).
+  function naturalArm(ctx, shoulder, spec, front, { hand: drawHand = true, drivers = [] } = {}) {
     let elbow;
     let hand;
     if (spec.target) ({ joint: elbow, end: hand } = twoBone(shoulder, spec.target, upperArm, foreArm, 1));
@@ -342,6 +357,10 @@ export function createRigCharacter(def) {
     const S = pt(shoulder);
     const E = pt(elbow);
     const H = pt(hand);
+    mark('arm', {
+      front, shoulder: S, elbow: E, hand: H, rawShoulder: { x: shoulder.x, y: shoulder.y }, rawElbow: { x: elbow.x, y: elbow.y },
+      rawHand: { x: hand.x, y: hand.y }, upper: upperArm, lower: foreArm, target: spec.target ? { x: spec.target.x, y: spec.target.y } : null, drawHand, drivers
+    });
     const sleeve = front ? c.shirt : c.shirtShade;
     const fore = c.sleeves === 'long' ? sleeve : front ? c.skin : c.skinShade;
     if (front) {
@@ -361,7 +380,10 @@ export function createRigCharacter(def) {
   }
 
   // Kaki dengan lutut yang menekuk ke depan (dua tulang sama panjang). Kain sarung memakai bentuk Tahap 3.
-  function drawNaturalLegs(ctx, hipY, footY, front, back) {
+  // drivers = penggerak kontinu kaki (misalnya jarak tempuh saat berjalan), untuk pemeriksaan kestabilan.
+  function drawNaturalLegs(ctx, hipY, footY, front, back, drivers = []) {
+    // telapak: dasar sepatu = footY - lift (sama untuk kain sarung dan celana); planted = menapak (data jalan)
+    mark('feet', { footY, sarong: Boolean(c.sarong), feet: [['front', front], ['back', back]].map(([foot, f]) => ({ foot, lift: f.lift, planted: f.planted ?? f.lift === 0 })) });
     if (c.sarong) {
       drawLegs(ctx, hipY, footY, front, back);
       return;
@@ -369,10 +391,12 @@ export function createRigCharacter(def) {
     const hip = { x: hipX, y: hipY };
     for (const [f, color, shoe] of [[back, c.pantsShade, '#1b130d'], [front, c.pants, c.shoes]]) {
       const ankle = { x: hipX + f.dx, y: footY - 1 - f.lift };
-      const knee = pt(twoBone(hip, ankle, span / 2, span / 2, -1).joint);
+      const bone = twoBone(hip, ankle, span / 2, span / 2, -1);
+      const knee = pt(bone.joint);
       stroke(ctx, hip, knee, legW, color);
       stroke(ctx, knee, ankle, legW, color);
       rect(ctx, ankle.x - 1, footY - 1 - f.lift, 4, 2, shoe);
+      mark('leg', { front: f === front, hip, knee, ankle, rawKnee: { x: bone.joint.x, y: bone.joint.y }, half: span / 2, legLen, drivers });
     }
   }
 
@@ -402,21 +426,26 @@ export function createRigCharacter(def) {
     const amp = 30 * (p.armSwing ?? c.armSwing);
     const frontKind = armKind(p, 'frontArm');
     const backKind = armKind(p, 'backArm');
-    const backHand = naturalArm(ctx, { x: cx - 1, y: shoulderY + 1 }, armAngles(backKind, -swing, amp), false);
+    mark('body', { pose: 'standing', footY, hipY, shoulderY, headTop });
+    const backHand = naturalArm(ctx, { x: cx - 1, y: shoulderY + 1 }, armAngles(backKind, -swing, amp), false, { drivers: ['swing'] });
     // bungkusan dijinjing tangan jauh, di balik badan
     if (c.accessory === 'parcel') {
       rect(ctx, backHand.x - 4, backHand.y + 1, 6, 5, c.accessoryColor);
       rect(ctx, backHand.x - 4, backHand.y + 3, 6, 1, c.accessoryShade);
+      touch('parcel-hand', { x: backHand.x - 4, y: backHand.y + 1, w: 6, h: 5 }, box2(backHand));
     }
-    drawNaturalLegs(ctx, hipY, footY, front, back);
+    drawNaturalLegs(ctx, hipY, footY, front, back, ['stride']);
     drawTorso(ctx, shoulderY, hipY + 1);
     drawHead(ctx, headTop, turn, blink);
     let spec = armAngles(frontKind, swing, amp);
     if (gesture > 0) spec = raiseArm(spec, gesture);
     const shoulder = { x: cx + 1, y: shoulderY + 1 };
     // bakul digambar sebelum lengan, supaya tangan terlihat memegang bibirnya
-    if (c.accessory === 'basket') drawBasket(ctx, pt(armFromAngles(shoulder, upperArm, foreArm, spec.angle, spec.bend).hand));
-    const hand = naturalArm(ctx, shoulder, spec, true);
+    const basketHand = c.accessory === 'basket' ? pt(armFromAngles(shoulder, upperArm, foreArm, spec.angle, spec.bend).hand) : null;
+    if (basketHand) drawBasket(ctx, basketHand);
+    const hand = naturalArm(ctx, shoulder, spec, true, { drivers: ['swing', 'gesture'] });
+    // bibir bakul (lihat drawBasket) harus di tangan dekat
+    if (basketHand) touch('basket-hand', { x: basketHand.x - 2, y: basketHand.y, w: 6, h: 2 }, box2(hand));
     if (c.accessory === 'bag' || c.accessory === 'broom' || c.accessory === 'newspaper') drawAccessory(ctx, hand, hipY, 0);
   }
 
@@ -426,13 +455,20 @@ export function createRigCharacter(def) {
     const hipY = footY - Math.round(legLen * 0.55);
     const shoulderY = hipY - torsoLen - breath;
     const headTop = shoulderY - 9;
+    mark('body', { pose: pedal ? 'cycle' : 'seated', footY, hipY, shoulderY, headTop });
+    // baris badan terbawah (drawTorso sampai hipY) duduk di soket "seat": sadel induk saat mengayuh, bangku di bawahnya
+    mark('sit', { row: hipY, x: cx - 1, socket: 'seat', from: pedal ? 'parent' : 'below' });
     drawSeatedLegs(ctx, hipY, footY, pedal);
+    // sepatu di pedal dekat; kotaknya sama dengan sepatu yang digambar drawSeatedLegs (bentuk Tahap 3)
+    if (pedal) touch('shoe-pedal', { x: pedal.front.x - 1, y: pedal.front.y - 1, w: 4, h: 2 }, { socket: 'pedal', from: 'parent' });
     const backTarget = pedal ? { x: cx + 7, y: shoulderY + 4 } : { x: cx + 3, y: hipY - 3 };
-    naturalArm(ctx, { x: cx - 1, y: shoulderY + 1 }, { target: backTarget }, false);
+    const backHand = naturalArm(ctx, { x: cx - 1, y: shoulderY + 1 }, { target: backTarget }, false);
     drawTorso(ctx, shoulderY, hipY + 1);
     drawHead(ctx, headTop, turn, blink);
     const target = pedal ? { x: cx + 8, y: shoulderY + 4 } : { x: cx + 5, y: Math.round(hipY - 3 - gesture * 6) };
-    const hand = naturalArm(ctx, { x: cx + 1, y: shoulderY + 1 }, { target }, true);
+    const hand = naturalArm(ctx, { x: cx + 1, y: shoulderY + 1 }, { target }, true, { drivers: pedal ? [] : ['gesture'] });
+    // kedua tangan pengayuh memegang setang
+    if (pedal) for (const h of [hand, backHand]) touch('hand-grip', box2(h), { socket: 'grip', from: 'parent' });
     drawAccessory(ctx, hand, hipY, gesture);
   }
 
@@ -446,24 +482,42 @@ export function createRigCharacter(def) {
     const top = { x: cx + 3 + Math.round(swing * 2), y: shoulderY + 5 };
     const tip = { x: cx + 6 + Math.round(swing * 6), y: footY - 3 };
     const low = pt({ x: lerp(top.x, tip.x, 0.4), y: lerp(top.y, tip.y, 0.4) });
-    naturalArm(ctx, { x: cx - 1, y: shoulderY + 1 }, { target: low }, false, { hand: false });
+    mark('body', { pose: 'sweep', footY, hipY, shoulderY, headTop });
+    mark('driver', { sweep: swing });
+    const farArm = naturalArm(ctx, { x: cx - 1, y: shoulderY + 1 }, { target: low }, false, { hand: false, drivers: ['sweep'] });
     drawNaturalLegs(ctx, hipY, footY, { dx: 3, lift: 0 }, { dx: -3, lift: 0 });
     drawTorso(ctx, shoulderY, hipY + 1);
     drawHead(ctx, headTop, turn, blink);
+    // sel gagang yang digambar, hanya dikumpulkan saat poseProbe
+    const handle = record ? [] : null;
     if (c.accessory === 'broom') {
       const n = Math.max(Math.abs(tip.x - top.x), Math.abs(tip.y - top.y));
-      for (let i = 0; i <= n; i++) pixel(ctx, Math.round(lerp(top.x, tip.x, i / n)), Math.round(lerp(top.y, tip.y, i / n)), c.accessoryShade);
+      for (let i = 0; i <= n; i++) {
+        const q = { x: Math.round(lerp(top.x, tip.x, i / n)), y: Math.round(lerp(top.y, tip.y, i / n)) };
+        pixel(ctx, q.x, q.y, c.accessoryShade);
+        if (handle) handle.push(q);
+      }
       rect(ctx, tip.x - 2, tip.y + 1, 6, 2, c.accessoryColor);
     }
     // tangan jauh terlihat di depan badan, menggenggam gagang di bawah tangan dekat
     rect(ctx, low.x, low.y, 2, 2, c.skinShade);
-    naturalArm(ctx, { x: cx + 1, y: shoulderY + 1 }, { target: top }, true);
+    const hand = naturalArm(ctx, { x: cx + 1, y: shoulderY + 1 }, { target: top }, true, { drivers: ['sweep'] });
+    if (handle) {
+      touch('nearHand-handle', box2(hand), { cells: handle });
+      touch('farHand-handle', box2(low), { cells: handle });
+    }
+    // ujung lengan jauh harus sampai di tangan jauh yang digambar di gagang
+    touch('farArm-farHand', box2(farArm), box2(low));
   }
 
   function drawNatural(ctx, e, { time, turn, gesture, blink, breath }) {
     const p = e.params;
+    // penggerak frame ini: gesture dan headTurn kontinu, breath bertangga (0/1)
+    mark('driver', { gesture, headTurn: turn, breath });
     if (e.state === 'walk') {
       const g = walkPose(e.worldX, e.flip ? -1 : 1, { legLen, strideLength: c.strideLength, speed: e.speedX, scale: e.scale });
+      // swing = ayunan lengan, stride = jarak tempuh lokal (naik terus selama berjalan searah)
+      mark('driver', { swing: g.swing, stride: (e.worldX * (e.flip ? -1 : 1)) / (e.scale || 1), drop: g.drop, reach: g.cycle.reach });
       drawNaturalStanding(ctx, p, { front: g.front, back: g.back, drop: g.drop, breath: 0, turn, blink, gesture, swing: g.swing });
     } else if (e.state === 'seated') {
       drawNaturalSeated(ctx, { breath, turn, blink, gesture });
@@ -521,6 +575,23 @@ export function createRigCharacter(def) {
       if (WALK.frontLift[phase] === 0 && phase <= 4) feet.push({ foot: 'front', step: cycle, x: x0 + dir * WALK.frontFoot[phase] * s });
       if (WALK.backLift[phase] === 0) feet.push({ foot: 'back', step: phase >= 4 ? cycle : cycle - 1, x: x0 + dir * WALK.backFoot[phase] * s });
       return { mode: 'classic', strict: false, feet, bob: WALK.bob[phase] };
+    },
+
+    // Data pose untuk pemeriksaan otomatis (T19), hanya gerak natural. draw() dijalankan sekali ke konteks kosong
+    // tanpa cahaya sambil perekam aktif, jadi datanya berasal dari fungsi gambar yang sama dengan render (lihat mark()).
+    // Gerak klasik Tahap 3 dibekukan dan tidak diukur: hasilnya hanya { mode: 'classic' }.
+    // items: body (tinggi pinggul, bahu, kepala), arm (bahu, siku, tangan, titik mentah dan panjang tulang), leg,
+    // feet (lift dan planted), sit (baris duduk), touch (bagian yang harus bersentuhan), driver (penggerak).
+    poseProbe(e) {
+      if ((e.params.motion ?? c.motion) !== 'natural') return { mode: 'classic', state: e.state };
+      const items = [];
+      record = items;
+      try {
+        this.draw(NULL_CTX, { ...e, params: { ...e.params, light: false } }, null);
+      } finally {
+        record = null;
+      }
+      return { mode: 'natural', strict: (e.scale || 1) === 1, state: e.state, box: { w: BOX_W, h: boxH }, items };
     },
 
     draw(ctx, e, fc) {

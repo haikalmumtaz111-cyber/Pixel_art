@@ -2,13 +2,13 @@
 
 Laporan ini dibuat otomatis oleh `npm run validate`.
 
-- Waktu uji: 2026-10-28T04:38:05.845Z
+- Waktu uji: 2026-10-29T02:48:27.539Z
 - Proyek: `train-night-rain`
 - Konfigurasi: `config/train-night-rain.json`
-- Mesin: Pixel History Studio 0.5.0, sidik jari mesin `9420c042aa03f0b9`, pustaka aset `2a6000361daf6301`
+- Mesin: Pixel History Studio 0.5.0, sidik jari mesin `e123d7ea0a4c4025`, pustaka aset `4c60b45add045f40`
 - Video: `output/video/train-night-rain.mp4`
 - Spesifikasi: 480x270 internal, 1920x1080 output (upscale ffmpeg), 30 FPS, 5 detik, 150 frame, seed 1927
-- Lama render frame: 2.6 detik, lama encoding: 6.6 detik
+- Lama render frame: 4.1 detik, lama encoding: 8.9 detik
 
 ## Ringkasan kebutuhan
 
@@ -27,15 +27,18 @@ Laporan ini dibuat otomatis oleh `npm run validate`.
 | 11 | Grid piksel kamera stabil (tanpa crawl) | LULUS |
 | 12 | Aset konsisten antar adegan | TIDAK DIUJI |
 | 13 | Gerak karakter: kaki tidak meluncur, tubuh tidak bergetar | LULUS |
-| 14 | Adegan bisa dirender terpisah | LULUS |
-| 15 | Mesin bersama, modul proyek terisolasi | LULUS |
-| 16 | Video berasal dari render terbaru | LULUS |
-| 17 | Rendering deterministik | LULUS |
-| 18 | FFmpeg membaca seluruh video | LULUS |
-| 19 | Video dapat diputar | LULUS |
-| 20 | Render ulang konsisten | LULUS |
+| 14 | Pose karakter: sendi, panjang lengan dan kaki, sentuhan, duduk, stabil antar-frame | TIDAK DIPERIKSA |
+| 15 | Adegan bisa dirender terpisah | LULUS |
+| 16 | Mesin bersama, modul proyek terisolasi | LULUS |
+| 17 | Video berasal dari render terbaru | LULUS |
+| 18 | Rendering deterministik | LULUS |
+| 19 | FFmpeg membaca seluruh video | LULUS |
+| 20 | Video dapat diputar | LULUS |
+| 21 | Render ulang konsisten | LULUS |
 
-Status akhir: **SEMUA LULUS** (32/32 pemeriksaan)
+Status akhir: **TIDAK ADA YANG GAGAL** (32 lulus, 5 tidak diperiksa, dari 37 pemeriksaan)
+
+KNOWN ISSUE = masalah yang sudah tercatat di `docs/BACKLOG.md` dan tidak memburuk, hanya di proyek, pemeran, dan frame yang tercatat (`src/render/known-issues.cjs`). KNOWN ISSUE "usulan" belum disetujui pemilik. TIDAK DIPERIKSA = tidak ada yang bisa diperiksa di proyek ini. Keduanya bukan LULUS.
 
 ## Timeline
 
@@ -53,7 +56,7 @@ Status akhir: **SEMUA LULUS** (32/32 pemeriksaan)
 |----|-------------|-------|--------|
 | 1 | Interval adegan valid | LULUS | 1 adegan menutup 150/150 frame tanpa celah: train-night-rain [0, 150) |
 | 2 | Transisi berada di dalam durasi film | LULUS | tidak ada transisi |
-| 3 | Render terakhir selesai dengan sukses | LULUS | status complete, selesai 2026-10-28T04:37:51.819Z |
+| 3 | Render terakhir selesai dengan sukses | LULUS | status complete, selesai 2026-10-29T02:44:24.255Z |
 | 4 | Video berasal dari render terbaru (bukan sisa render lama) | LULUS | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest |
 | 5 | File MP4 ada | LULUS | train-night-rain.mp4 (2.19 MB) |
 | 6 | Kontainer MP4 | LULUS | mov,mp4,m4a,3gp,3g2,mj2 |
@@ -80,9 +83,14 @@ Status akhir: **SEMUA LULUS** (32/32 pemeriksaan)
 | 27 | Adegan train-night-rain bisa dirender terpisah | LULUS | frame 0, 75, 149 identik dengan film utuh |
 | 28 | Kaki yang menapak tidak meluncur | LULUS | tidak ada karakter bergerak natural yang berjalan |
 | 29 | Tubuh tidak bergetar saat berjalan | LULUS | tidak ada karakter bergerak natural yang berjalan |
-| 30 | Rendering deterministik (render ulang identik, urutan terbalik) | LULUS | 150/150 frame identik byte demi byte, 3/3 frame identik saat dirender dua kali |
-| 31 | Tidak ada error JavaScript selama rendering | LULUS | 0 error saat render, 0 error saat pengujian |
-| 32 | Encode ulang menghasilkan MP4 identik | LULUS | SHA-256 sama: 28e9a3a3c503dabd... |
+| 30 | Pose karakter: urutan tubuh, sendi di dalam kotak, telapak menapak di tanah | TIDAK DIPERIKSA | tidak ada pose gerak natural skala 1 yang bisa diperiksa: tidak ada karakter rig |
+| 31 | Pose karakter: panjang lengan dan kaki tetap | TIDAK DIPERIKSA | tidak ada pose gerak natural skala 1 yang bisa diperiksa: tidak ada karakter rig |
+| 32 | Pose karakter: tangan, kaki, dan benda yang dipegang bersentuhan | TIDAK DIPERIKSA | tidak ada pose gerak natural skala 1 yang bisa diperiksa: tidak ada karakter rig |
+| 33 | Pose karakter: posisi duduk di sadel atau bangku | TIDAK DIPERIKSA | tidak ada pose gerak natural skala 1 yang bisa diperiksa: tidak ada karakter rig |
+| 34 | Pose karakter: stabil antar-frame (tanpa getar sendi) | TIDAK DIPERIKSA | tidak ada pose gerak natural skala 1 yang bisa diperiksa: tidak ada karakter rig |
+| 35 | Rendering deterministik (render ulang identik, urutan terbalik) | LULUS | 150/150 frame identik byte demi byte, 3/3 frame identik saat dirender dua kali |
+| 36 | Tidak ada error JavaScript selama rendering | LULUS | 0 error saat render, 0 error saat pengujian |
+| 37 | Encode ulang menghasilkan MP4 identik | LULUS | SHA-256 sama: 28e9a3a3c503dabd... |
 
 ## Lembar kontak (preview)
 
@@ -94,7 +102,7 @@ Status akhir: **SEMUA LULUS** (32/32 pemeriksaan)
 
 ## Lingkungan
 
-- Sistem operasi: Linux 6.18.44-fc-v180 (linux/x64)
+- Sistem operasi: Linux 6.18.44-fc-v185 (linux/x64)
 - Node.js: v22.22.0
 - Chromium: 153.0.8010.12
 - ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers
