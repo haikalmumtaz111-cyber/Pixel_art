@@ -1,0 +1,91 @@
+{
+  "testedAt": "2026-10-30T10:11:10.981Z",
+  "allPass": true,
+  "verdict": "TIDAK ADA REGRESI (perbedaan dari versi historis sama persis dengan perubahan yang disetujui)",
+  "passed": 12,
+  "total": 12,
+  "pending": {},
+  "baselines": [
+    {
+      "project": "character-lab",
+      "version": "tahap-5-v29",
+      "official": false,
+      "source": "main@63eab4c",
+      "engineVersion": "0.5.0"
+    }
+  ],
+  "checks": [
+    {
+      "id": "registry:character-lab:files",
+      "name": "character-lab: file baseline cocok dengan SHA-256 di registry",
+      "pass": true,
+      "detail": "3 versi (tahap-5, tahap-5-v29, tahap-5-v30), isi file sama dengan hash di registry"
+    },
+    {
+      "id": "registry:character-lab:official",
+      "name": "character-lab: versi resmi dan riwayat versi tersambung",
+      "pass": true,
+      "detail": "resmi tahap-5-v30; riwayat tahap-5 -> tahap-5-v29 -> tahap-5-v30"
+    },
+    {
+      "id": "registry:character-lab:tahap-5->tahap-5-v29",
+      "name": "character-lab: perubahan tahap-5 -> tahap-5-v29 sama persis dengan catatan persetujuan",
+      "pass": true,
+      "detail": "74 frame berubah (132-205), 286 identik; catatan 74 frame (132-205); semua di rentang terdeklarasi 132-205"
+    },
+    {
+      "id": "registry:character-lab:tahap-5-v29->tahap-5-v30",
+      "name": "character-lab: perubahan tahap-5-v29 -> tahap-5-v30 sama persis dengan catatan persetujuan",
+      "pass": true,
+      "detail": "251 frame berubah (109-359), 109 identik; catatan 251 frame (109-359); semua di rentang terdeklarasi 109-359"
+    },
+    {
+      "id": "character-lab:manifest",
+      "name": "character-lab: hasil render terbaru dan sukses",
+      "pass": true,
+      "detail": "status complete, selesai 2026-10-30T09:58:05.949Z | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest"
+    },
+    {
+      "id": "character-lab:frames",
+      "name": "character-lab: jumlah frame sama",
+      "pass": true,
+      "detail": "360 (baseline 360)"
+    },
+    {
+      "id": "character-lab:frame-size",
+      "name": "character-lab: ukuran frame sama",
+      "pass": true,
+      "detail": "1920x1080 (baseline 1920x1080)"
+    },
+    {
+      "id": "character-lab:pixels",
+      "name": "character-lab: piksel identik di luar perubahan yang disetujui/dideklarasikan",
+      "pass": true,
+      "detail": "109 frame identik; 251 frame berbeda sesuai perubahan yang disetujui di tahap-5-v30 (109-359)"
+    },
+    {
+      "id": "character-lab:approved",
+      "name": "character-lab: perubahan sejak tahap-5-v29 sama persis dengan yang disetujui",
+      "pass": true,
+      "detail": "251 dari 251 frame yang disetujui berubah; 109 frame lain wajib identik dengan tahap-5-v29"
+    },
+    {
+      "id": "character-lab:video-format",
+      "name": "character-lab: format video sama (decoding kompatibel)",
+      "pass": true,
+      "detail": "h264 High level 41, 1920x1080, 30/1, 360 frame, 12 detik, yuv420p"
+    },
+    {
+      "id": "character-lab:decoded",
+      "name": "character-lab: frame hasil decode (informasi, kompresi H.264)",
+      "pass": true,
+      "detail": "279 frame hasil decode berbeda (28 di luar perubahan, karena encoder H.264 memakai frame sekitar sebagai acuan); sumber PNG di luar perubahan identik"
+    },
+    {
+      "id": "character-lab:sha256",
+      "name": "character-lab: file MP4 identik, atau berbeda hanya karena perubahan yang disetujui/dideklarasikan",
+      "pass": true,
+      "detail": "b27d51e067ba6611... (baseline 1545a9f466dc026d...), berbeda karena frame yang disetujui/dideklarasikan berubah"
+    }
+  ]
+}

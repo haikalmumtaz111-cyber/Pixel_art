@@ -1,20 +1,6 @@
 {
   "note": "Perubahan hasil render yang disengaja terhadap baseline resmi. Baseline-nya sendiri TIDAK diubah. \"changes\" = perubahan aktif per proyek yang menunggu persetujuan pemilik, terikat ke versi baseline lewat \"against\"; frame di luar rentang yang dideklarasikan tetap wajib identik. \"resolved\" = riwayat perubahan yang sudah disetujui pemilik dan dijadikan versi baseline baru (lewat npm run baseline). Riwayat tidak dihapus. Panduan: docs/BASELINES.md",
-  "changes": {
-    "character-lab": {
-      "stage": "Perbaikan V30 (bukan tahap baru)",
-      "backlog": "V30",
-      "status": "menunggu persetujuan pemilik",
-      "against": "tahap-5-v29",
-      "reason": "Ujung lengan jauh penyapu (gerak natural) kini sampai ke tangan jauh yang menggenggam gagang sapu (Opsi B, geometri B2, dipilih pemilik dari eksperimen V30): gagang dibuat lebih tegak dan dekat badan (atas cx+2+round(fase), bahu+4; ujung cx+5+round(fase x 6), kaki-3), titik genggam tangan jauh = titik terjauh di gagang yang masih di dalam 85% panjang lengan jauh (sweepGrip), sehingga siku jauh menekuk. Sebelumnya lengan jauh berhenti 2-3 sel sebelum tangan jauh. Hanya sprite penyapu yang berubah (render dengan penyapu disembunyikan identik 360/360). Rentang diambil dari render penuh 360 frame dibanding tahap-5-v29: 251 frame berubah, 109-359 (penyapu tampil di layar). Frame 0-108 tetap identik: penyapu tidak tampil di adegan 1, dan frame 108 adalah frame pertama dissolve yang masih sama persis dengan adegan 1.",
-      "frames": [
-        [
-          109,
-          359
-        ]
-      ]
-    }
-  },
+  "changes": {},
   "resolved": [
     {
       "project": "old-town-morning",
@@ -51,6 +37,24 @@
         "PR #19 (perbaikan V29 Opsi B: kedua tangan pengayuh gerak natural di batang setang) di-merge ke main oleh pemilik pada 2026-10-30 07.01 WIB (00.01 UTC), merge commit 63eab4c",
         "Instruksi pemilik 30 Oktober 2026 (ACC Persiapan Baseline V29): pemilik menyetujui hasil visual V29 Opsi B, memilih nama baseline tahap-5-v29 untuk character-lab, dan mengizinkan perekaman baseline ini",
         "Audit pasca-merge read-only dari clean clone main@63eab4c (PR #19) dan main@3628a29 (PR #20) tanpa FAIL: tepat 74 frame berubah terhadap tahap-5 (132-205), 286 identik, hanya sprite pengayuh yang berubah"
+      ]
+    },
+    {
+      "project": "character-lab",
+      "stage": "Perbaikan V30 (bukan tahap baru)",
+      "backlog": "V30",
+      "status": "disetujui pemilik",
+      "against": "tahap-5-v29",
+      "reason": "Ujung lengan jauh penyapu (gerak natural) kini sampai ke tangan jauh yang menggenggam gagang sapu (Opsi B, geometri B2, dipilih pemilik dari eksperimen V30): gagang dibuat lebih tegak dan dekat badan (atas cx+2+round(fase), bahu+4; ujung cx+5+round(fase x 6), kaki-3), titik genggam tangan jauh = titik terjauh di gagang yang masih di dalam 85% panjang lengan jauh (sweepGrip), sehingga siku jauh menekuk. Sebelumnya lengan jauh berhenti 2-3 sel sebelum tangan jauh. Hanya sprite penyapu yang berubah (render dengan penyapu disembunyikan identik 360/360). Rentang diambil dari render penuh 360 frame dibanding tahap-5-v29: 251 frame berubah, 109-359 (penyapu tampil di layar). Frame 0-108 tetap identik: penyapu tidak tampil di adegan 1, dan frame 108 adalah frame pertama dissolve yang masih sama persis dengan adegan 1.",
+      "frames": [[109, 359]],
+      "approvedAt": "2026-10-30",
+      "resolvedBy": "baseline character-lab versi tahap-5-v30",
+      "changedFrames": [[109, 359]],
+      "changedCount": 251,
+      "evidence": [
+        "PR #23 (perbaikan V30 Opsi B geometri B2: ujung lengan jauh penyapu sampai ke tangan jauh yang menggenggam gagang) di-merge ke main oleh pemilik pada 2026-10-30 16.23 WIB (09.23 UTC), merge commit 4cee5fb, head PR fc84acd",
+        "Instruksi pemilik 30 Oktober 2026 (ACC Persiapan Baseline Resmi V30): pemilik menyetujui hasil visual final V30 Opsi B (B2) dan 251 frame perubahan character-lab (109-359), memilih nama baseline tahap-5-v30, dan mengizinkan perekaman baseline ini",
+        "Audit pasca-merge read-only dari clean clone main@4cee5fb (PR #23): tree merge identik dengan head PR fc84acd, CI push hijau (run 41033037559), tepat 251 frame berubah terhadap tahap-5-v29 (109-359), 109 identik, piksel yang berubah hanya di sekitar penyapu, tanpa FAIL di kode, render, baseline, atau CI"
       ]
     }
   ]
