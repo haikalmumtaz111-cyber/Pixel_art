@@ -1,5 +1,5 @@
 {
-  "testedAt": "2026-10-29T23:23:57.213Z",
+  "testedAt": "2026-10-30T09:07:32.243Z",
   "project": "character-lab",
   "allDetected": true,
   "detected": 61,
@@ -166,9 +166,14 @@
       "detail": "Pose karakter: tangan, kaki, dan benda yang dipegang bersentuhan: GAGAL, 129 pelanggaran: pengayuh frame 108: hand-grip berjarak 3 px, pengayuh frame 109: hand-grip berjarak 3 px, pengayuh frame 110: hand-grip berjarak 3 px, pengayuh frame 111: hand-grip berjarak 3 px, pengayuh frame 112: hand-grip berjarak 3 px, ... (129) | kontrol kode asli: motion-contact LULUS (diharapkan LULUS)"
     },
     {
-      "name": "KNOWN ISSUE V30 memburuk: ujung lengan jauh penyapu makin jauh dari tangannya",
+      "name": "Ujung lengan jauh penyapu lepas 2 piksel dari tangan jauh (pose: sentuhan)",
       "detected": true,
-      "detail": "KNOWN ISSUE V30: Ujung lengan jauh penyapu tidak sampai ke tangan jauh yang menggenggam gagang: GAGAL, MEMBURUK: 252 sentuhan di 252 frame, terburuk 5 px, melebihi batas tercatat 3 px (pemeran penyapu, status sweep, sentuhan farArm-farHand, frame 108-359). Contoh: penyapu frame 108 (4 px), penyapu frame 109 (4 px), penyapu frame 110 (4 px), penyapu frame 111 (4 px), penyapu frame 112 (4 px), ... (252) | kontrol kode asli: known:V30 KNOWN ISSUE (diharapkan KNOWN ISSUE)"
+      "detail": "Pose karakter: tangan, kaki, dan benda yang dipegang bersentuhan: GAGAL, 252 pelanggaran: penyapu frame 108: farArm-farHand berjarak 2 px, penyapu frame 109: farArm-farHand berjarak 2 px, penyapu frame 110: farArm-farHand berjarak 2 px, penyapu frame 111: farArm-farHand berjarak 2 px, penyapu frame 112: farArm-farHand berjarak 2 px, ... (252) | kontrol kode asli: motion-contact LULUS (diharapkan LULUS)"
+    },
+    {
+      "name": "Tangan jauh penyapu lepas 3 piksel dari gagang sapu (pose: sentuhan)",
+      "detected": true,
+      "detail": "Pose karakter: tangan, kaki, dan benda yang dipegang bersentuhan: GAGAL, 203 pelanggaran: penyapu frame 108: farHand-handle berjarak 2 px, penyapu frame 109: farHand-handle berjarak 2 px, penyapu frame 110: farHand-handle berjarak 2 px, penyapu frame 111: farHand-handle berjarak 2 px, penyapu frame 112: farHand-handle berjarak 2 px, ... (203) | kontrol kode asli: motion-contact LULUS (diharapkan LULUS)"
     },
     {
       "name": "KNOWN ISSUE V31 memburuk: kedip lutut yang tercatat melompat 2 piksel",
@@ -191,11 +196,6 @@
       "detail": "Pose karakter: stabil antar-frame (tanpa getar sendi): GAGAL, 126 pelanggaran: darto-pagi frame 3: kaki jauh lutut bolak-balik 1 px dalam 1 frame (sumbu x, getar, gerak mentah 0.978 px), darto-pagi frame 6: kaki jauh lutut bolak-balik 1 px dalam 1 frame (sumbu x, getar, gerak mentah 0.978 px), darto-pagi frame 17: kaki dekat lutut bolak-balik 1 px dalam 1 frame (sumbu x, getar, gerak mentah 0.978 px), darto-pagi frame 18: kaki jauh lutut bolak-balik 1 px dalam 1 frame (sumbu x, getar, gerak mentah 0.795 px), darto-pagi frame 20: kaki dekat lutut bolak-balik 1 px dalam 1 frame (sumbu x, getar, gerak mentah 0.978 px), ... (126) | kontrol kode asli: motion-stable LULUS (diharapkan LULUS)"
     },
     {
-      "name": "Masalah KNOWN ISSUE sentuhan (V30) di pemeran lain (nama pemeran diganti) GAGAL, bukan KNOWN ISSUE",
-      "detected": true,
-      "detail": "Pose karakter: tangan, kaki, dan benda yang dipegang bersentuhan: GAGAL, 252 pelanggaran: penyapu-lain frame 108: farArm-farHand berjarak 2 px, penyapu-lain frame 109: farArm-farHand berjarak 2 px, penyapu-lain frame 110: farArm-farHand berjarak 2 px, penyapu-lain frame 111: farArm-farHand berjarak 2 px, penyapu-lain frame 112: farArm-farHand berjarak 2 px, ... (252) | KNOWN ISSUE V30: Ujung lengan jauh penyapu tidak sampai ke tangan jauh yang menggenggam gagang: GAGAL, TIDAK LAGI TERJADI: tidak ada sentuhan yang cocok (pemeran penyapu, status sweep, sentuhan farArm-farHand, frame 108-359). Perbarui src/render/known-issues.cjs dan docs/BACKLOG.md V30 | motion-contact 252 pelanggaran (sama dengan 252 kejadian KNOWN ISSUE di kode asli) | kontrol kode asli: motion-contact LULUS (diharapkan LULUS), known:V30 KNOWN ISSUE (diharapkan KNOWN ISSUE)"
-    },
-    {
       "name": "Masalah V31 dan V32 di pemeran lain (nama pemeran diganti) GAGAL, bukan KNOWN ISSUE",
       "detected": true,
       "detail": "Pose karakter: stabil antar-frame (tanpa getar sendi): GAGAL, 29 pelanggaran: darto-pagi-lain frame 3: kaki jauh lutut bolak-balik 1 px dalam 1 frame (sumbu y, pembulatan, gerak mentah 0.015 px), darto-pagi-lain frame 17: kaki dekat lutut bolak-balik 1 px dalam 1 frame (sumbu y, pembulatan, gerak mentah 0.015 px), darto-pagi-lain frame 31: kaki jauh lutut bolak-balik 1 px dalam 1 frame (sumbu y, pembulatan, gerak mentah 0.015 px), darto-pagi-lain frame 45: kaki dekat lutut bolak-balik 1 px dalam 1 frame (sumbu y, pembulatan, gerak mentah 0.015 px), darto-pagi-lain frame 59: kaki jauh lutut bolak-balik 1 px dalam 1 frame (sumbu y, pembulatan, gerak mentah 0.015 px), ... (29) | KNOWN ISSUE V31: Lutut dan siku berkedip 1 piksel selama 1 frame saat berjalan (pembulatan): GAGAL, TIDAK LAGI TERJADI: tidak ada dari 19 kejadian tercatat (pembulatan; status walk, pemeran darto-pagi, sumi-pagi, darto-sore, sumi-sore). Perbarui src/render/known-issues.cjs dan docs/BACKLOG.md V31 | KNOWN ISSUE V32: Lutut bergetar di ujung ayunan kaki saat kaki hampir lurus (karakter kecil yang berjalan cepat): GAGAL, TIDAK LAGI TERJADI: tidak ada dari 10 kejadian tercatat (getar; status walk, pemeran anak-sekolah). Perbarui src/render/known-issues.cjs dan docs/BACKLOG.md V32 | motion-stable 29 pelanggaran (sama dengan 29 kejadian KNOWN ISSUE di kode asli) | kontrol kode asli: motion-stable LULUS (diharapkan LULUS), known:V31 KNOWN ISSUE (diharapkan KNOWN ISSUE), known:V32 KNOWN ISSUE (diharapkan KNOWN ISSUE)"
@@ -203,7 +203,7 @@
     {
       "name": "KNOWN ISSUE tidak berlaku di proyek baru (salinan proyek ini dengan id lain) = GAGAL",
       "detected": true,
-      "detail": "Pose karakter: tangan, kaki, dan benda yang dipegang bersentuhan: GAGAL, 252 pelanggaran: penyapu frame 108: farArm-farHand berjarak 2 px, penyapu frame 109: farArm-farHand berjarak 2 px, penyapu frame 110: farArm-farHand berjarak 2 px, penyapu frame 111: farArm-farHand berjarak 2 px, penyapu frame 112: farArm-farHand berjarak 2 px, ... (252) | Pose karakter: stabil antar-frame (tanpa getar sendi): GAGAL, 29 pelanggaran: darto-pagi frame 3: kaki jauh lutut bolak-balik 1 px dalam 1 frame (sumbu y, pembulatan, gerak mentah 0.015 px), darto-pagi frame 17: kaki dekat lutut bolak-balik 1 px dalam 1 frame (sumbu y, pembulatan, gerak mentah 0.015 px), darto-pagi frame 31: kaki jauh lutut bolak-balik 1 px dalam 1 frame (sumbu y, pembulatan, gerak mentah 0.015 px), darto-pagi frame 45: kaki dekat lutut bolak-balik 1 px dalam 1 frame (sumbu y, pembulatan, gerak mentah 0.015 px), darto-pagi frame 59: kaki jauh lutut bolak-balik 1 px dalam 1 frame (sumbu y, pembulatan, gerak mentah 0.015 px), ... (29) | motion-contact 252 pelanggaran (sama dengan 252 kejadian KNOWN ISSUE di kode asli), motion-stable 29 pelanggaran (sama dengan 29 kejadian KNOWN ISSUE di kode asli), baris KNOWN ISSUE di proyek baru: 0 | kontrol kode asli: motion-contact LULUS (diharapkan LULUS), motion-stable LULUS (diharapkan LULUS)"
+      "detail": "Pose karakter: stabil antar-frame (tanpa getar sendi): GAGAL, 29 pelanggaran: darto-pagi frame 3: kaki jauh lutut bolak-balik 1 px dalam 1 frame (sumbu y, pembulatan, gerak mentah 0.015 px), darto-pagi frame 17: kaki dekat lutut bolak-balik 1 px dalam 1 frame (sumbu y, pembulatan, gerak mentah 0.015 px), darto-pagi frame 31: kaki jauh lutut bolak-balik 1 px dalam 1 frame (sumbu y, pembulatan, gerak mentah 0.015 px), darto-pagi frame 45: kaki dekat lutut bolak-balik 1 px dalam 1 frame (sumbu y, pembulatan, gerak mentah 0.015 px), darto-pagi frame 59: kaki jauh lutut bolak-balik 1 px dalam 1 frame (sumbu y, pembulatan, gerak mentah 0.015 px), ... (29) | motion-stable 29 pelanggaran (sama dengan 29 kejadian KNOWN ISSUE di kode asli), baris KNOWN ISSUE di proyek baru: 0 | kontrol kode asli: motion-stable LULUS (diharapkan LULUS)"
     },
     {
       "name": "Skala entitas bukan bilangan bulat (grid piksel rusak)",
@@ -263,7 +263,7 @@
     {
       "name": "Frame hitam disisipkan di frame 162",
       "detected": true,
-      "detail": "Tidak ada frame kosong: GAGAL, frame kosong: 162 | Tidak ada kilatan cahaya mendadak: GAGAL, lompatan kecerahan di frame 162 (-124.2), 163 (124.3)"
+      "detail": "Tidak ada frame kosong: GAGAL, frame kosong: 162 | Tidak ada kilatan cahaya mendadak: GAGAL, lompatan kecerahan di frame 162 (-124.2), 163 (124.2)"
     },
     {
       "name": "Film berakhir di layar hitam",

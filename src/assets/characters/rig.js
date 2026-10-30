@@ -480,16 +480,30 @@ export function createRigCharacter(def) {
     drawAccessory(ctx, hand, hipY, gesture);
   }
 
-  // Menyapu: kedua tangan memegang gagang sapu yang bergerak maju-mundur.
+  // Titik genggam tangan jauh di gagang sapu (V30): titik terjauh dari ujung atas gagang yang masih di dalam 85% panjang
+  // lengan jauh, dicari bertahap 1/400 panjang gagang. Ujung lengan jauh sampai ke tangan, dan sikunya tetap menekuk.
+  function sweepGrip(top, tip, shoulder) {
+    const reach = (upperArm + foreArm) * 0.85;
+    let t = 0;
+    for (let i = 0; i <= 400; i++) {
+      const k = i / 400;
+      if (Math.hypot(lerp(top.x, tip.x, k) - shoulder.x, lerp(top.y, tip.y, k) - shoulder.y) <= reach) t = k;
+      else if (t) break;
+    }
+    return pt({ x: lerp(top.x, tip.x, t), y: lerp(top.y, tip.y, t) });
+  }
+
+  // Menyapu: kedua tangan memegang gagang sapu yang bergerak maju-mundur. Gagang dibuat tegak dan dekat badan (V30 Opsi B),
+  // supaya tangan jauh tetap terjangkau lengan jauh di semua tinggi karakter.
   function drawNaturalSweep(ctx, { time, turn, blink }) {
     const swing = 0.5 + 0.5 * Math.sin(time * 5);
     const footY = boxH;
     const hipY = footY - legLen + 1;
     const shoulderY = hipY - torsoLen;
     const headTop = shoulderY - 9;
-    const top = { x: cx + 3 + Math.round(swing * 2), y: shoulderY + 5 };
-    const tip = { x: cx + 6 + Math.round(swing * 6), y: footY - 3 };
-    const low = pt({ x: lerp(top.x, tip.x, 0.4), y: lerp(top.y, tip.y, 0.4) });
+    const top = { x: cx + 2 + Math.round(swing), y: shoulderY + 4 };
+    const tip = { x: cx + 5 + Math.round(swing * 6), y: footY - 3 };
+    const low = sweepGrip(top, tip, { x: cx - 1, y: shoulderY + 1 });
     mark('body', { pose: 'sweep', footY, hipY, shoulderY, headTop });
     mark('driver', { sweep: swing });
     const farArm = naturalArm(ctx, { x: cx - 1, y: shoulderY + 1 }, { target: low }, false, { hand: false, drivers: ['sweep'] });
