@@ -1,30 +1,16 @@
 {
-  "testedAt": "2026-10-29T23:42:00.750Z",
+  "testedAt": "2026-10-30T05:52:02.594Z",
   "allPass": true,
-  "verdict": "TIDAK ADA REGRESI TAK TERDUGA (ada perubahan terdeklarasi yang menunggu persetujuan)",
-  "passed": 40,
-  "total": 40,
-  "pending": {
-    "character-lab": {
-      "stage": "Perbaikan V29 (bukan tahap baru)",
-      "backlog": "V29",
-      "status": "menunggu persetujuan pemilik",
-      "against": "tahap-5",
-      "reason": "Kedua tangan pengayuh (gerak natural) kini memegang batang setang sepeda (Opsi B, disetujui visual pemilik): target tangan diambil dari letak setang (gripOf, bawaan gripX 7 dan gripDrop 13), tangan tepat di atas batang, siku sedikit menekuk. Sebelumnya kedua tangan melayang 6 piksel art di atas setang. Hanya sprite pengayuh yang berubah. Rentang diambil dari render penuh 360 frame dibanding tahap-5: 74 frame berubah, 132-205 (pengayuh tampil di layar). Frame 108-131 dan 206-236 tetap identik karena pengayuh di luar bingkai kamera.",
-      "frames": [
-        [
-          132,
-          205
-        ]
-      ]
-    }
-  },
+  "verdict": "TIDAK ADA REGRESI",
+  "passed": 39,
+  "total": 39,
+  "pending": {},
   "baselines": [
     {
       "project": "character-lab",
-      "version": "tahap-5",
+      "version": "tahap-5-v29",
       "official": true,
-      "source": "main@e6926d2",
+      "source": "main@63eab4c",
       "engineVersion": "0.5.0"
     },
     {
@@ -54,7 +40,7 @@
       "id": "registry:files",
       "name": "Semua file baseline terdaftar di registry",
       "pass": true,
-      "detail": "5 file baseline terdaftar"
+      "detail": "6 file baseline terdaftar"
     },
     {
       "id": "registry:night-to-dawn:files",
@@ -102,25 +88,25 @@
       "id": "registry:character-lab:files",
       "name": "character-lab: file baseline cocok dengan SHA-256 di registry",
       "pass": true,
-      "detail": "1 versi (tahap-5), isi file sama dengan hash di registry"
+      "detail": "2 versi (tahap-5, tahap-5-v29), isi file sama dengan hash di registry"
     },
     {
       "id": "registry:character-lab:official",
       "name": "character-lab: versi resmi dan riwayat versi tersambung",
       "pass": true,
-      "detail": "resmi tahap-5; riwayat tahap-5"
+      "detail": "resmi tahap-5-v29; riwayat tahap-5 -> tahap-5-v29"
     },
     {
-      "id": "registry:character-lab:pending",
-      "name": "character-lab: perubahan terdeklarasi menunjuk versi resmi",
+      "id": "registry:character-lab:tahap-5->tahap-5-v29",
+      "name": "character-lab: perubahan tahap-5 -> tahap-5-v29 sama persis dengan catatan persetujuan",
       "pass": true,
-      "detail": "entri \"Perbaikan V29 (bukan tahap baru)\" terhadap tahap-5, status menunggu persetujuan pemilik"
+      "detail": "74 frame berubah (132-205), 286 identik; catatan 74 frame (132-205); semua di rentang terdeklarasi 132-205"
     },
     {
       "id": "character-lab:manifest",
       "name": "character-lab: hasil render terbaru dan sukses",
       "pass": true,
-      "detail": "status complete, selesai 2026-10-29T23:15:43.293Z | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest"
+      "detail": "status complete, selesai 2026-10-30T05:38:51.590Z | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest"
     },
     {
       "id": "character-lab:frames",
@@ -136,15 +122,9 @@
     },
     {
       "id": "character-lab:pixels",
-      "name": "character-lab: piksel identik di luar perubahan yang disetujui/dideklarasikan",
+      "name": "character-lab: piksel setiap frame identik",
       "pass": true,
-      "detail": "286 frame identik; 74 frame berubah di rentang terdeklarasi (132-205)"
-    },
-    {
-      "id": "character-lab:pending",
-      "name": "character-lab: perubahan Perbaikan V29 (bukan tahap baru) (V29) menunggu persetujuan pemilik",
-      "pass": true,
-      "detail": "74 frame berubah, alasan: Kedua tangan pengayuh (gerak natural) kini memegang batang setang sepeda (Opsi B, disetujui visual pemilik): target tangan diambil dari letak setang (gripOf, bawaan gripX 7 dan gripDrop 13), tangan tepat di atas batang, siku sedikit menekuk. Sebelumnya kedua tangan melayang 6 piksel art di atas setang. Hanya sprite pengayuh yang berubah. Rentang diambil dari render penuh 360 frame dibanding tahap-5: 74 frame berubah, 132-205 (pengayuh tampil di layar). Frame 108-131 dan 206-236 tetap identik karena pengayuh di luar bingkai kamera."
+      "detail": "360 frame identik piksel demi piksel"
     },
     {
       "id": "character-lab:video-format",
@@ -154,21 +134,21 @@
     },
     {
       "id": "character-lab:decoded",
-      "name": "character-lab: frame hasil decode (informasi, kompresi H.264)",
+      "name": "character-lab: frame hasil decode identik",
       "pass": true,
-      "detail": "138 frame hasil decode berbeda (64 di luar perubahan, karena encoder H.264 memakai frame sekitar sebagai acuan); sumber PNG di luar perubahan identik"
+      "detail": "360 frame identik"
     },
     {
       "id": "character-lab:sha256",
-      "name": "character-lab: file MP4 identik, atau berbeda hanya karena perubahan yang disetujui/dideklarasikan",
+      "name": "character-lab: file MP4 identik byte demi byte",
       "pass": true,
-      "detail": "1545a9f466dc026d... (baseline 819e48df0f7a1450...), berbeda karena frame yang disetujui/dideklarasikan berubah"
+      "detail": "1545a9f466dc026d... (baseline 1545a9f466dc026d...)"
     },
     {
       "id": "night-to-dawn:manifest",
       "name": "night-to-dawn: hasil render terbaru dan sukses",
       "pass": true,
-      "detail": "status complete, selesai 2026-10-29T23:16:44.965Z | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest"
+      "detail": "status complete, selesai 2026-10-30T05:39:59.670Z | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest"
     },
     {
       "id": "night-to-dawn:frames",
@@ -210,7 +190,7 @@
       "id": "old-town-morning:manifest",
       "name": "old-town-morning: hasil render terbaru dan sukses",
       "pass": true,
-      "detail": "status complete, selesai 2026-10-29T23:17:54.709Z | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest"
+      "detail": "status complete, selesai 2026-10-30T05:41:11.438Z | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest"
     },
     {
       "id": "old-town-morning:frames",
@@ -252,7 +232,7 @@
       "id": "train-night-rain:manifest",
       "name": "train-night-rain: hasil render terbaru dan sukses",
       "pass": true,
-      "detail": "status complete, selesai 2026-10-29T23:28:22.147Z | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest"
+      "detail": "status complete, selesai 2026-10-30T05:51:02.416Z | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest"
     },
     {
       "id": "train-night-rain:frames",
