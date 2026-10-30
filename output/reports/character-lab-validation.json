@@ -1,5 +1,5 @@
 {
-  "testedAt": "2026-10-29T02:46:11.644Z",
+  "testedAt": "2026-10-29T23:20:27.200Z",
   "project": "character-lab",
   "config": "config/character-lab.json",
   "includes": [
@@ -16,10 +16,10 @@
   "noFailure": true,
   "passed": 43,
   "failed": 0,
-  "known": 4,
+  "known": 3,
   "proposed": 0,
   "skipped": 0,
-  "total": 47,
+  "total": 46,
   "groups": [
     {
       "title": "Jumlah frame tepat",
@@ -146,7 +146,7 @@
       "id": "manifest:status",
       "name": "Render terakhir selesai dengan sukses",
       "pass": true,
-      "detail": "status complete, selesai 2026-10-29T02:39:23.348Z",
+      "detail": "status complete, selesai 2026-10-29T23:15:43.293Z",
       "status": "pass"
     },
     {
@@ -391,17 +391,8 @@
       "id": "motion-contact",
       "name": "Pose karakter: tangan, kaki, dan benda yang dipegang bersentuhan",
       "pass": true,
-      "detail": "semua bersentuhan (jarak sel paling banyak 1): walk:parcel-hand 279, walk:basket-hand 279, sweep:nearHand-handle 252, sweep:farHand-handle 252, cycle:shoe-pedal 129 | di luar KNOWN ISSUE yang dilaporkan terpisah: V29, V30",
+      "detail": "semua bersentuhan (jarak sel paling banyak 1): walk:parcel-hand 279, walk:basket-hand 279, sweep:nearHand-handle 252, sweep:farHand-handle 252, cycle:shoe-pedal 129, cycle:hand-grip 258 | di luar KNOWN ISSUE yang dilaporkan terpisah: V30",
       "status": "pass"
-    },
-    {
-      "id": "known:V29",
-      "name": "KNOWN ISSUE V29: Tangan pengayuh tidak memegang setang, melayang di atasnya",
-      "pass": false,
-      "detail": "258 sentuhan di 129 frame, terburuk 6 px, tidak lebih buruk dari batas tercatat 6 px (pemeran pengayuh, status cycle, sentuhan hand-grip, frame 108-236; lihat docs/BACKLOG.md V29)",
-      "status": "known",
-      "approval": "disetujui",
-      "count": 258
     },
     {
       "id": "known:V30",
@@ -462,7 +453,7 @@
       "id": "reencode",
       "name": "Encode ulang menghasilkan MP4 identik",
       "pass": true,
-      "detail": "SHA-256 sama: 819e48df0f7a1450...",
+      "detail": "SHA-256 sama: 1545a9f466dc026d...",
       "status": "pass"
     }
   ],
@@ -552,7 +543,7 @@
     "name": "Pixel History Studio",
     "version": "0.5.0",
     "engineHash": "e123d7ea0a4c402570afb69a48b6f1316442ea5370dd5dffad4e54b84930739b",
-    "libraryHash": "4c60b45add045f409a0dfef196ac3583e124e08ddbe7acb7d0b56c6852ecd25e",
+    "libraryHash": "5de59b8af4f9dfa0bf610bd1a6c285c828bae1a1d2b1cd6d497141220fce6187",
     "modules": [
       "/src/assets/common/environment.js",
       "/src/assets/town/buildings.js",
@@ -580,15 +571,15 @@
       "scene": null
     },
     "configFile": "config/character-lab.json",
-    "inputsHash": "f6340df728c598424cc9833b3b9520470601ce23f79f42313fa6f7a994b1d6f3",
+    "inputsHash": "94323d870bc18ecb7f102fa2b6634412438ef17501957e17bd5db276dfdd45ac",
     "engineHash": "e123d7ea0a4c402570afb69a48b6f1316442ea5370dd5dffad4e54b84930739b",
-    "libraryHash": "4c60b45add045f409a0dfef196ac3583e124e08ddbe7acb7d0b56c6852ecd25e",
+    "libraryHash": "5de59b8af4f9dfa0bf610bd1a6c285c828bae1a1d2b1cd6d497141220fce6187",
     "engineVersion": "0.5.0",
     "status": "complete",
-    "startedAt": "2026-10-29T02:38:46.278Z",
-    "finishedAt": "2026-10-29T02:39:23.348Z",
-    "renderSeconds": 22.389,
-    "encodeSeconds": 14.681,
+    "startedAt": "2026-10-29T23:15:23.378Z",
+    "finishedAt": "2026-10-29T23:15:43.293Z",
+    "renderSeconds": 10.83,
+    "encodeSeconds": 9.085,
     "chromiumVersion": "153.0.8010.12",
     "jsErrors": 0,
     "loadedModules": [
@@ -604,9 +595,9 @@
       "width": 1920,
       "height": 1080
     },
-    "framesHash": "ee6b2c15b8807d56ff1e043646c09e3c51c080dbd02ad8f0b85c9c884c0bf376",
+    "framesHash": "3f0b9fc9ac452b180d4eb2ceb80cc9531f2c4116cc6767a2187e5e20daea6445",
     "video": "output/video/character-lab.mp4",
-    "videoSha256": "819e48df0f7a145084b130626a043ce6fb22c5d0810ba134c3b011ac295d8815",
+    "videoSha256": "1545a9f466dc026d79cd5e2b506b16a46cc5f00f2164cd35cf308820900e1ada",
     "ffmpegCommand": "ffmpeg -y -v error -framerate 30 -start_number 0 -i output/frames/character-lab/frame_%04d.png -frames:v 360 -vf scale=1920:1080:flags=neighbor:out_color_matrix=bt709:out_range=tv,format=yuv420p -c:v libx264 -preset slow -crf 16 -tune animation -profile:v high -level:v 4.1 -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv -r 30 -movflags +faststart -f mp4 output/video/character-lab.mp4"
   },
   "lumaSummary": [
@@ -1139,7 +1130,7 @@
       3.1
     ],
     [
-      140.2,
+      140.3,
       0.5
     ],
     [
@@ -1192,7 +1183,7 @@
     ],
     [
       140.3,
-      1
+      1.1
     ],
     [
       140.2,
@@ -1239,7 +1230,7 @@
       0.9
     ],
     [
-      140.2,
+      140.3,
       0.9
     ],
     [
@@ -1251,15 +1242,7 @@
       1
     ],
     [
-      140.2,
-      1
-    ],
-    [
-      140.2,
-      0.9
-    ],
-    [
-      140.2,
+      140.3,
       1
     ],
     [
@@ -1267,31 +1250,11 @@
       0.9
     ],
     [
-      140.3,
-      1.1
-    ],
-    [
-      140.3,
+      140.2,
       1
     ],
     [
-      140.3,
-      1
-    ],
-    [
-      140.4,
-      0.9
-    ],
-    [
-      140.4,
-      1
-    ],
-    [
-      140.3,
-      1
-    ],
-    [
-      140.3,
+      140.2,
       0.9
     ],
     [
@@ -1304,39 +1267,27 @@
     ],
     [
       140.3,
+      1
+    ],
+    [
+      140.4,
+      0.9
+    ],
+    [
+      140.4,
+      1
+    ],
+    [
+      140.3,
+      1
+    ],
+    [
+      140.3,
+      0.9
+    ],
+    [
+      140.3,
       1.1
-    ],
-    [
-      140.3,
-      0.9
-    ],
-    [
-      140.4,
-      1
-    ],
-    [
-      140.4,
-      1
-    ],
-    [
-      140.3,
-      0.9
-    ],
-    [
-      140.3,
-      1.1
-    ],
-    [
-      140.4,
-      1
-    ],
-    [
-      140.4,
-      1
-    ],
-    [
-      140.3,
-      0.9
     ],
     [
       140.3,
@@ -1352,6 +1303,46 @@
     ],
     [
       140.4,
+      1
+    ],
+    [
+      140.4,
+      1
+    ],
+    [
+      140.3,
+      0.9
+    ],
+    [
+      140.4,
+      1.1
+    ],
+    [
+      140.4,
+      1
+    ],
+    [
+      140.4,
+      1
+    ],
+    [
+      140.4,
+      0.9
+    ],
+    [
+      140.3,
+      1
+    ],
+    [
+      140.3,
+      1.1
+    ],
+    [
+      140.4,
+      0.9
+    ],
+    [
+      140.4,
       0.9
     ],
     [
@@ -1391,7 +1382,7 @@
       1
     ],
     [
-      140.2,
+      140.3,
       0.8
     ],
     [

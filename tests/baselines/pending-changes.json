@@ -1,6 +1,15 @@
 {
   "note": "Perubahan hasil render yang disengaja terhadap baseline resmi. Baseline-nya sendiri TIDAK diubah. \"changes\" = perubahan aktif per proyek yang menunggu persetujuan pemilik, terikat ke versi baseline lewat \"against\"; frame di luar rentang yang dideklarasikan tetap wajib identik. \"resolved\" = riwayat perubahan yang sudah disetujui pemilik dan dijadikan versi baseline baru (lewat npm run baseline). Riwayat tidak dihapus. Panduan: docs/BASELINES.md",
-  "changes": {},
+  "changes": {
+    "character-lab": {
+      "stage": "Perbaikan V29 (bukan tahap baru)",
+      "backlog": "V29",
+      "status": "menunggu persetujuan pemilik",
+      "against": "tahap-5",
+      "reason": "Kedua tangan pengayuh (gerak natural) kini memegang batang setang sepeda (Opsi B, disetujui visual pemilik): target tangan diambil dari letak setang (gripOf, bawaan gripX 7 dan gripDrop 13), tangan tepat di atas batang, siku sedikit menekuk. Sebelumnya kedua tangan melayang 6 piksel art di atas setang. Hanya sprite pengayuh yang berubah. Rentang diambil dari render penuh 360 frame dibanding tahap-5: 74 frame berubah, 132-205 (pengayuh tampil di layar). Frame 108-131 dan 206-236 tetap identik karena pengayuh di luar bingkai kamera.",
+      "frames": [[132, 205]]
+    }
+  },
   "resolved": [
     {
       "project": "old-town-morning",

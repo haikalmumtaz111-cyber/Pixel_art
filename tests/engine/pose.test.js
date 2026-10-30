@@ -127,6 +127,49 @@ test('soket sepeda (setang, sadel, pedal) tepat pada piksel yang digambar', () =
   }
 });
 
+test('pengayuh natural (V29): kedua tangan di setang sepeda, siku tetap sedikit menekuk', () => {
+  // pemasangan asli character-lab: pengayuh anak sepeda di posisi relatif cast, keduanya anchor bawah-tengah
+  const config = P.loadProject('character-lab');
+  const mount = config.cast.pengayuh;
+  const bikeCast = config.cast[mount.parent];
+  const bike = vehicleTypes.bicycle.create(config.assets[bikeCast.asset]);
+  const placed = (st, size) => placementOf({ scale: 1, anchor: [0.5, 1] }, st, size);
+  const frameAt = (bx, riderDef, params = {}) => {
+    const rider = createRigCharacter(riderDef);
+    const b = { worldX: bx, worldY: bikeCast.position[1], flip: false, params: {} };
+    const r = { state: 'cycle', worldX: bx + mount.position[0], worldY: b.worldY + mount.position[1], flip: false, speedX: 3.7, scale: 1, time: bx / 111, params: { ...mount.params, ...params } };
+    return {
+      sepeda: { place: placed(b, bike.size()), pose: null, sockets: bike.sockets(b) },
+      pengayuh: { parent: 'sepeda', place: placed(r, rider.size()), pose: rider.poseProbe(r) }
+    };
+  };
+  const frames = Array.from({ length: 40 }, (_, i) => frameAt(250 + i * 3.7, config.assets[mount.asset]));
+  // tanpa daftar KNOWN ISSUE apa pun: kedua tangan wajib di dalam toleransi soket grip (jarak sel paling banyak 1)
+  const res = PC.poseChecks(frames, { knownIssues: [] });
+  const contact = res.find((r) => r.id === 'motion-contact');
+  assert.equal(C.statusOf(contact), 'pass', contact.detail);
+  assert.match(contact.detail, /cycle:hand-grip 80/);
+  for (const id of ['motion-joints', 'motion-limbs', 'motion-seat', 'motion-stable']) assert.equal(C.statusOf(res.find((r) => r.id === id)), 'pass', id);
+  for (const f of frames) {
+    const arms = f.pengayuh.pose.items.filter((it) => it.kind === 'arm');
+    assert.equal(arms.length, 2);
+    for (const a of arms) {
+      // target di dalam jangkauan: tangan tepat di target, bukan lengan lurus yang berhenti sebelum target
+      assert.deepEqual(a.hand, a.target);
+      assert.ok(Math.hypot(a.target.x - a.rawShoulder.x, a.target.y - a.rawShoulder.y) < a.upper + a.lower - 0.25);
+      // siku menekuk: jauh dari garis bahu-tangan, dan tidak lebih rendah dari tangan
+      const [s, e, h] = [a.rawShoulder, a.rawElbow, a.rawHand];
+      const off = Math.abs((h.x - s.x) * (e.y - s.y) - (h.y - s.y) * (e.x - s.x)) / Math.hypot(h.x - s.x, h.y - s.y);
+      assert.ok(off >= 1, `siku hampir lurus (${off.toFixed(2)} px)`);
+      assert.ok(a.elbow.y <= a.hand.y, 'siku lebih rendah dari tangan');
+    }
+  }
+  // gripX/gripDrop menggeser target tangan bersama setangnya: 2 baris lebih tinggi = tangan 2 baris lebih tinggi
+  const hands = (f) => f.pengayuh.pose.items.filter((it) => it.kind === 'arm').map((a) => a.hand);
+  const moved = frameAt(260, config.assets[mount.asset], { gripDrop: 15 });
+  assert.deepEqual(hands(moved), hands(frameAt(260, config.assets[mount.asset])).map((q) => ({ x: q.x, y: q.y - 2 })));
+});
+
 test('soket bangku tepat pada papan dudukan yang digambar', () => {
   const pal = new Proxy({}, { get: (t, k) => (typeof k === 'string' ? `@${k}` : undefined) });
   for (const def of [{}, { width: 24 }]) {
@@ -223,6 +266,14 @@ function riderFrame(g, { entity = 'pengayuh', name = 'hand-grip', state = 'cycle
     ] } }
   };
 }
+// penyapu: ujung lengan jauh (2x2 di baris 30-31) dan tangan jauh 2x2 yang mulai di baris 31 + g, jadi jarak sel = g
+function sweeperFrame(g, { entity = 'penyapu', name = 'farArm-farHand', state = 'sweep' } = {}) {
+  return {
+    [entity]: { place, pose: { mode: 'natural', strict: true, state, box: { w: 26, h: 52 }, items: [
+      { kind: 'touch', name, a: { x: 14, y: 30, w: 2, h: 2 }, b: { x: 14, y: 31 + g, w: 2, h: 2 } }
+    ] } }
+  };
+}
 // satu kaki berjalan selama 5 frame (center - 2 .. center + 2), lutut tergambar `ys`, posisi mentah `raws`
 function walkFrames(center, { entity = 'darto-pagi', front = false, ys = [42, 42, 43, 42, 42], raws = [42.49, 42.49, 42.51, 42.49, 42.49] } = {}) {
   const frames = Array(center - 2).fill({});
@@ -236,15 +287,15 @@ function walkFrames(center, { entity = 'darto-pagi', front = false, ys = [42, 42
 }
 
 test('KNOWN ISSUE: dilaporkan sebagai KNOWN ISSUE, GAGAL bila memburuk atau tidak lagi terjadi', () => {
-  const v29 = (g, frame = 108) => PC.poseChecks(atFrame(frame, riderFrame(g)), LAB).find((r) => r.id === 'known:V29');
-  assert.equal(C.statusOf(v29(6)), 'known');
-  assert.equal(v29(6).approval, 'disetujui');
-  assert.match(v29(6).detail, /terburuk 6 px/);
-  assert.equal(C.statusOf(v29(6, 236)), 'known');
-  assert.equal(C.statusOf(v29(7)), 'fail');
-  assert.match(v29(7).detail, /MEMBURUK/);
-  assert.equal(C.statusOf(v29(1)), 'fail');
-  assert.match(v29(1).detail, /TIDAK LAGI TERJADI/);
+  const v30 = (g, frame = 108) => PC.poseChecks(atFrame(frame, sweeperFrame(g)), LAB).find((r) => r.id === 'known:V30');
+  assert.equal(C.statusOf(v30(3)), 'known');
+  assert.equal(v30(3).approval, 'disetujui');
+  assert.match(v30(3).detail, /terburuk 3 px/);
+  assert.equal(C.statusOf(v30(3, 359)), 'known');
+  assert.equal(C.statusOf(v30(4)), 'fail');
+  assert.match(v30(4).detail, /MEMBURUK/);
+  assert.equal(C.statusOf(v30(1)), 'fail');
+  assert.match(v30(1).detail, /TIDAK LAGI TERJADI/);
   // KNOWN ISSUE gerak: kejadian tercatat persis = KNOWN ISSUE; lompatan lebih besar = GAGAL
   const v31 = (frames) => PC.poseChecks(frames, LAB).find((r) => r.id === 'known:V31');
   const blip = walkFrames(3);
@@ -271,21 +322,28 @@ test('KNOWN ISSUE: dilaporkan sebagai KNOWN ISSUE, GAGAL bila memburuk atau tida
 
 test('KNOWN ISSUE tidak berlaku untuk pemeran, frame, sentuhan, sendi, jenis, atau proyek lain', () => {
   const contact = (frames, opts = LAB) => PC.poseChecks(frames, opts);
-  // sentuhan: sama persis dengan V29 (6 px) di tempat yang tercatat = KNOWN ISSUE, motion-contact tidak ikut gagal
-  assert.equal(statusIn(contact(atFrame(108, riderFrame(6))), 'motion-contact'), 'skip');
-  // pemeran lain dengan masalah sama: GAGAL, dan V29 tidak menelan kasusnya
-  const other = contact(atFrame(108, riderFrame(6, { entity: 'pengayuh-lain' })));
+  // sentuhan: sama persis dengan V30 (3 px) di tempat yang tercatat = KNOWN ISSUE, motion-contact tidak ikut gagal
+  assert.equal(statusIn(contact(atFrame(108, sweeperFrame(3))), 'motion-contact'), 'skip');
+  // pemeran lain dengan masalah sama: GAGAL, dan V30 tidak menelan kasusnya
+  const other = contact(atFrame(108, sweeperFrame(3, { entity: 'penyapu-lain' })));
   assert.equal(statusIn(other, 'motion-contact'), 'fail');
-  assert.match(other.find((r) => r.id === 'motion-contact').detail, /pengayuh-lain frame 108: hand-grip berjarak 6 px/);
-  assert.equal(statusIn(other, 'known:V29'), 'fail');
-  // frame di luar rentang tercatat (sebelum 108, sesudah 236)
-  for (const f of [107, 237]) assert.equal(statusIn(contact(atFrame(f, riderFrame(6))), 'motion-contact'), 'fail', `frame ${f}`);
+  assert.match(other.find((r) => r.id === 'motion-contact').detail, /penyapu-lain frame 108: farArm-farHand berjarak 3 px/);
+  assert.equal(statusIn(other, 'known:V30'), 'fail');
+  // frame di luar rentang tercatat (sebelum 108, sesudah 359)
+  for (const f of [107, 360]) assert.equal(statusIn(contact(atFrame(f, sweeperFrame(3))), 'motion-contact'), 'fail', `frame ${f}`);
   // sentuhan lain atau status lain di pemeran dan frame yang sama
-  assert.equal(statusIn(contact(atFrame(108, riderFrame(6, { name: 'shoe-pedal' }))), 'motion-contact'), 'fail');
-  assert.equal(statusIn(contact(atFrame(108, riderFrame(6, { state: 'seated' }))), 'motion-contact'), 'fail');
+  assert.equal(statusIn(contact(atFrame(108, sweeperFrame(3, { name: 'farHand-handle' }))), 'motion-contact'), 'fail');
+  assert.equal(statusIn(contact(atFrame(108, sweeperFrame(3, { state: 'walk' }))), 'motion-contact'), 'fail');
+  // V29 sudah diperbaiki dan tidak ada di daftar: tangan pengayuh 6 px dari setang di frame dan pemeran aslinya GAGAL
+  const rider = contact(atFrame(108, riderFrame(6)));
+  assert.equal(statusIn(rider, 'motion-contact'), 'fail');
+  assert.match(rider.find((r) => r.id === 'motion-contact').detail, /pengayuh frame 108: hand-grip berjarak 6 px/);
+  assert.equal(statusIn(rider, 'known:V29'), 'tidak ada');
+  assert.equal(statusIn(contact(atFrame(108, riderFrame(2))), 'motion-contact'), 'fail');
+  assert.equal(statusIn(contact(atFrame(108, riderFrame(1))), 'motion-contact'), 'pass');
   // proyek lain atau tanpa proyek: tidak ada KNOWN ISSUE sama sekali
   for (const opts of [{ project: 'proyek-baru' }, {}]) {
-    const r = contact(atFrame(108, riderFrame(6)), opts);
+    const r = contact(atFrame(108, sweeperFrame(3)), opts);
     assert.equal(statusIn(r, 'motion-contact'), 'fail');
     assert.ok(!r.some((x) => x.id.startsWith('known:')), JSON.stringify(opts));
   }
@@ -313,7 +371,7 @@ test('tanpa pose natural semua pemeriksaan pose TIDAK DIPERIKSA, bukan LULUS', (
   for (const r of PC.poseChecks([{}, {}])) assert.equal(C.statusOf(r), 'skip');
   // proyek yang punya KNOWN ISSUE tetapi tanpa pose natural: KNOWN ISSUE-nya ikut TIDAK DIPERIKSA, tidak hilang diam-diam
   const lab = PC.poseChecks([{ a: { place, pose: { mode: 'classic', state: 'walk' } } }], { project: 'character-lab' });
-  assert.deepEqual(lab.filter((r) => r.id.startsWith('known:')).map((r) => [r.id, C.statusOf(r)]), [['known:V29', 'skip'], ['known:V30', 'skip'], ['known:V31', 'skip'], ['known:V32', 'skip']]);
+  assert.deepEqual(lab.filter((r) => r.id.startsWith('known:')).map((r) => [r.id, C.statusOf(r)]), [['known:V30', 'skip'], ['known:V31', 'skip'], ['known:V32', 'skip']]);
   // skala lebih dari 1 tidak diwajibkan
   assert.ok(PC.poseChecks([{ a: { place: { ...place, scale: 2 }, pose: { mode: 'natural', strict: false, state: 'walk', items: [] } } }]).every((r) => C.statusOf(r) === 'skip'));
 });
@@ -345,9 +403,9 @@ test('daftar KNOWN ISSUE: sempit, terukur, dan status persetujuannya tidak berub
   // batas yang sudah diukur dan status persetujuan pemilik: mengubahnya harus disengaja (ubah juga tes ini dan BACKLOG)
   const count = (k) => Object.values(k.occurrences).flatMap((o) => Object.values(o)).reduce((n, f) => n + f.length, 0);
   const brief = Object.fromEntries(KNOWN.map((k) => [k.id, [k.project, k.approval, k.worst, k.check === 'motion-stable' ? count(k) : `${k.entity} ${k.frames.map((r) => r.join('-')).join(',')}`]]));
+  // V29 dikeluarkan bersama perbaikannya (tangan pengayuh di setang, lihat tes pengayuh natural di atas)
   assert.deepEqual(brief, {
-    V29: ['character-lab', 'disetujui', 6, 'pengayuh 108-236'],
-    V30: ['character-lab', 'disetujui', 3, 'penyapu 108-359'],
+    V30:['character-lab', 'disetujui', 3, 'penyapu 108-359'],
     V31: ['character-lab', 'disetujui', 1, 19],
     V32: ['character-lab', 'disetujui', 1, 10]
   });

@@ -18,12 +18,10 @@
 //
 // Hasilnya GAGAL bila lebih buruk dari `worst` (MEMBURUK), atau bila tidak ada lagi kejadian yang cocok
 // (TIDAK LAGI TERJADI, supaya daftar ini dan BACKLOG diperbarui).
+//
+// V29 (tangan pengayuh melayang 6 px di atas setang) dikeluarkan dari daftar ini bersama perbaikannya (Opsi B, lihat
+// docs/BACKLOG.md V29): kedua tangan pengayuh wajib di dalam toleransi soket grip seperti sentuhan lain.
 module.exports = [
-  {
-    id: 'V29', approval: 'disetujui', check: 'motion-contact', project: 'character-lab',
-    entity: 'pengayuh', state: 'cycle', touch: 'hand-grip', frames: [[108, 236]], worst: 6,
-    title: 'Tangan pengayuh tidak memegang setang, melayang di atasnya'
-  },
   {
     id: 'V30', approval: 'disetujui', check: 'motion-contact', project: 'character-lab',
     entity: 'penyapu', state: 'sweep', touch: 'farArm-farHand', frames: [[108, 359]], worst: 3,
