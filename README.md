@@ -69,7 +69,7 @@ Validator kini juga memeriksa pose karakter gerak natural di setiap frame, dari 
 
 Laporan validasi kini punya empat status: **LULUS**, **GAGAL**, **KNOWN ISSUE** (masalah yang sudah tercatat di BACKLOG dan tidak memburuk, hanya di proyek, pemeran, dan frame yang tercatat; masalah serupa di tempat lain tetap GAGAL), dan **TIDAK DIPERIKSA** (tidak ada yang bisa diperiksa, misalnya gerak klasik yang dibekukan). Dua status terakhir tidak dihitung LULUS. Contoh: `character-lab` "TIDAK ADA YANG GAGAL (43 lulus, 3 KNOWN ISSUE, dari 46 pemeriksaan)" (sebelum perbaikan V29: 43 lulus, 4 KNOWN ISSUE, dari 47).
 
-Pemeriksaan ini menemukan empat masalah kecil di gerak yang sudah ada, dicatat sebagai V29-V32 di [`docs/BACKLOG.md`](docs/BACKLOG.md): tangan pengayuh 6 piksel di atas setang (juga di Project B), ujung lengan jauh penyapu tidak sampai ke tangannya, kedip pembulatan lutut dan siku 1 piksel, dan getar lutut anak sekolah di ujung ayunan kaki. Memperbaikinya mengubah render, jadi dikerjakan terpisah setelah disetujui. Perbaikan V29 (Opsi B, kedua tangan di atas batang setang) diajukan lewat PR terpisah yang belum di-merge; V30-V32 tetap KNOWN ISSUE.
+Pemeriksaan ini menemukan empat masalah kecil di gerak yang sudah ada, dicatat sebagai V29-V32 di [`docs/BACKLOG.md`](docs/BACKLOG.md): tangan pengayuh 6 piksel di atas setang (juga di Project B), ujung lengan jauh penyapu tidak sampai ke tangannya, kedip pembulatan lutut dan siku 1 piksel, dan getar lutut anak sekolah di ujung ayunan kaki. Memperbaikinya mengubah render, jadi dikerjakan terpisah setelah disetujui. Perbaikan V29 (Opsi B, kedua tangan di atas batang setang) sudah di-merge lewat PR #19 (30 Oktober 2026) dan berlaku di `character-lab`; Project B masih memakai gerak klasik dan menunggu keputusan V26, dan baseline resmi `character-lab` tetap `tahap-5` (perubahan 74 frame masih pending). V30-V32 tetap KNOWN ISSUE.
 
 ## Hasil Tahap 4: kamera pixel-perfect
 
@@ -249,7 +249,7 @@ output/                         video, laporan, cuplikan, bahan pembanding (comp
 - Fitur gerak natural dan pencahayaan karakter Tahap 5 baru dipakai demo `character-lab`. Project B masih memakai gerak klasik dan warna tetap sampai pemilik memutuskan (V26). Batas lainnya: V27 (gerak) dan V28 (cahaya: belum ada bayangan dan cahaya lampu lokal).
 - Determinisme dijamin di lingkungan yang sama (versi Chromium dan FFmpeg yang sama).
 - CI di GitHub hanya menjalankan pemeriksaan ringan. Render penuh dan pengujian lengkap dijalankan lokal atau di sesi Claude Code.
-- Pemeriksaan pose (PR D) menemukan V29-V32 (tangan pengayuh di atas setang, lengan jauh penyapu, kedip dan getar lutut). Dilaporkan sebagai KNOWN ISSUE sampai diperbaiki (perbaikan V29 diajukan lewat PR terpisah yang belum di-merge). Gerak klasik (Project B) tidak diperiksa pose-nya.
+- Pemeriksaan pose (PR D) menemukan V29-V32 (tangan pengayuh di atas setang, lengan jauh penyapu, kedip dan getar lutut). Dilaporkan sebagai KNOWN ISSUE sampai diperbaiki (V29 sudah diperbaiki di `character-lab` lewat PR #19; Project B menunggu V26). Gerak klasik (Project B) tidak diperiksa pose-nya.
 - `main` dan branch Tahap 1-5 dilindungi ruleset GitHub, dan pola `tahap-6-*` sudah disiapkan untuk branch Tahap 6 yang belum dibuat (lihat [`docs/BASELINES.md`](docs/BASELINES.md)). Konfigurasinya aktif, tetapi penolakan push nyata belum diuji, dan PR yang mengubah workflow CI tetap perlu ditinjau manual (BACKLOG T18).
 
 Daftar lengkap beserta prioritas dan ide perbaikannya ada di [`docs/BACKLOG.md`](docs/BACKLOG.md).
