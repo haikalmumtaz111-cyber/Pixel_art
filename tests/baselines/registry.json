@@ -87,7 +87,7 @@
       }
     },
     "character-lab": {
-      "official": "tahap-5",
+      "official": "tahap-5-v29",
       "versions": {
         "tahap-5": {
           "file": "character-lab.tahap-5.json",
@@ -102,6 +102,34 @@
             "date": "2026-10-28",
             "evidence": [
               "Pemilik proyek menyetujui perekaman baseline resmi character-lab versi tahap-5 dari hasil Tahap 5 yang telah di-merge melalui PR #9, setelah audit pasca-merge PR #11 menyatakan seluruh pemeriksaan wajib lulus."
+            ]
+          }
+        },
+        "tahap-5-v29": {
+          "file": "character-lab.tahap-5-v29.json",
+          "sha256": "5673578023f36c24adf3b73dbfe3f7580fda4637abdc7d935dae1b76f61b4617",
+          "source": "main@63eab4c",
+          "engineVersion": "0.5.0",
+          "frames": 360,
+          "previous": "tahap-5",
+          "changes": {
+            "stage": "Perbaikan V29 (bukan tahap baru)",
+            "backlog": "V29",
+            "reason": "Kedua tangan pengayuh (gerak natural) kini memegang batang setang sepeda (Opsi B, disetujui visual pemilik): target tangan diambil dari letak setang (gripOf, bawaan gripX 7 dan gripDrop 13), tangan tepat di atas batang, siku sedikit menekuk. Sebelumnya kedua tangan melayang 6 piksel art di atas setang. Hanya sprite pengayuh yang berubah. Rentang diambil dari render penuh 360 frame dibanding tahap-5: 74 frame berubah, 132-205 (pengayuh tampil di layar). Frame 108-131 dan 206-236 tetap identik karena pengayuh di luar bingkai kamera.",
+            "declared": [[132, 205]],
+            "changed": [[132, 205]],
+            "changedCount": 74,
+            "unchangedCount": 286
+          },
+          "note": "Perbaikan V29 Opsi B (kedua tangan pengayuh natural di batang setang), dirender ulang dari kode render main@63eab4c (merge PR #19); 74 frame berubah dari tahap-5 (132-205)",
+          "mergedVideo": "identik dengan output/video/character-lab.mp4 di 63eab4c",
+          "approval": {
+            "by": "pemilik",
+            "date": "2026-10-30",
+            "evidence": [
+              "PR #19 (perbaikan V29 Opsi B: kedua tangan pengayuh gerak natural di batang setang) di-merge ke main oleh pemilik pada 2026-10-30 07.01 WIB (00.01 UTC), merge commit 63eab4c",
+              "Instruksi pemilik 30 Oktober 2026 (ACC Persiapan Baseline V29): pemilik menyetujui hasil visual V29 Opsi B, memilih nama baseline tahap-5-v29 untuk character-lab, dan mengizinkan perekaman baseline ini",
+              "Audit pasca-merge read-only dari clean clone main@63eab4c (PR #19) dan main@3628a29 (PR #20) tanpa FAIL: tepat 74 frame berubah terhadap tahap-5 (132-205), 286 identik, hanya sprite pengayuh yang berubah"
             ]
           }
         }

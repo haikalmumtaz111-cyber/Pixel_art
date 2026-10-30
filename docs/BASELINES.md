@@ -19,11 +19,14 @@ Kondisi saat ini:
 | `train-night-rain` (prototipe) | `tahap-2` | `train-night-rain.json` | `main@cfed35a` | 0.2.0 | resmi. Piksel PNG sama dengan hasil Tahap 1; MP4 di-encode ulang di Tahap 2 |
 | `old-town-morning` (Project B) | `tahap-3` | `old-town-morning.json` | `main@9d7a144` | 0.3.0 | historis |
 | `old-town-morning` (Project B) | `tahap-4` | `old-town-morning.tahap-4.json` | `main@a1fd4a1` | 0.4.0 | resmi, 124 frame berubah dari `tahap-3` (85-130, 262-339) |
-| `character-lab` (demo Tahap 5) | `tahap-5` | `character-lab.tahap-5.json` | `main@e6926d2` | 0.5.0 | resmi, baseline pertama |
+| `character-lab` (demo Tahap 5) | `tahap-5` | `character-lab.tahap-5.json` | `main@e6926d2` | 0.5.0 | historis, baseline pertama |
+| `character-lab` (demo Tahap 5) | `tahap-5-v29` | `character-lab.tahap-5-v29.json` | `main@63eab4c` | 0.5.0 | resmi, 74 frame berubah dari `tahap-5` (132-205, perbaikan V29) |
 
 Perintah `npm run baseline` menampilkan tabel ini langsung dari registry.
 
 Proyek demo Tahap 5 `character-lab` mendapat baseline pertamanya, versi `tahap-5`, setelah pemilik menyetujui dan memerintahkannya (lihat riwayat di bawah). Sejak itu uji regresi dan uji asap CI juga mencocokkannya dengan baseline. Tahap 5 tidak mengubah hasil render ketiga proyek lama, jadi tidak ada entri baru di `pending-changes.json`.
+
+Setelah perbaikan V29 (PR #19), pemilik menyetujui perubahan 74 frame `character-lab` dan memerintahkan versi resmi baru `tahap-5-v29`. Versi ini direkam di branch `baseline-character-lab-tahap-5-v29` dan diajukan lewat PR yang belum di-merge. Selama PR itu belum di-merge, `main` masih memakai `tahap-5` dengan entri pending V29. `tahap-5` tetap tersimpan sebagai versi historis (lihat riwayat di bawah).
 
 ## Aturan
 
@@ -124,4 +127,15 @@ Usulan lanjutan dan statusnya: T18 di [`BACKLOG.md`](BACKLOG.md).
 - Baseline direkam lewat `npm run baseline` dari render ulang dengan kode render `main@e6926d2`. Kode render di `main` saat perekaman identik dengan commit itu. MP4-nya identik byte demi byte dengan `output/video/character-lab.mp4` di `e6926d2`.
 - Verifikasi sebelum merekam: render dari clone `e6926d2` dan render dari branch kerja identik di 360 dari 360 frame (piksel dan byte PNG), frame hasil decode, dan MP4. `--dry-run` lulus lebih dulu.
 - Proyek ini belum punya versi sebelumnya, jadi tidak ada entri pending. Perubahan visual `character-lab` berikutnya (misalnya perbaikan V27 atau V28) wajib dideklarasikan di `pending-changes.json` terhadap `tahap-5` dan disetujui terpisah.
-- Perubahan aktif (perbaikan V29, di-merge ke `main` lewat PR #19, merge commit `63eab4c`, 30 Oktober 2026 07.01 WIB): `changes.character-lab` terhadap `tahap-5`, frame 132-205 (74 frame, tangan pengayuh di setang), status menunggu persetujuan pemilik. Baseline `tahap-5` tetap versi resmi; perubahan 74 frame ini belum disetujui sebagai baseline baru, dan versi baru hanya dibuat setelah pemilik menyetujui dan memerintahkannya.
+- Perbaikan V29 (di-merge ke `main` lewat PR #19, merge commit `63eab4c`, 30 Oktober 2026 07.01 WIB) dideklarasikan sebagai `changes.character-lab` terhadap `tahap-5`, frame 132-205 (74 frame, tangan pengayuh di setang), status menunggu persetujuan pemilik. Entri itu kemudian disetujui dan dipindah ke `resolved` lewat versi `tahap-5-v29` (riwayat di bawah).
+
+## Riwayat: `character-lab` V29 (`tahap-5-v29`)
+
+Status: direkam di branch `baseline-character-lab-tahap-5-v29` (dari `main@3628a29`) dan diajukan lewat PR, **belum di-merge**. Sebelum PR itu di-merge, versi resmi di `main` tetap `tahap-5`.
+
+- Perbaikan V29 Opsi B (kedua tangan pengayuh gerak natural di batang setang) di-merge ke `main` lewat PR #19 (`63eab4c`, 30 Oktober 2026 07.01 WIB). Audit pasca-merge PR #19 dan PR #20 (clean clone `main@63eab4c` dan `main@3628a29`) tidak menemukan FAIL.
+- Pada 30 Oktober 2026 pemilik menyetujui hasil visual V29 Opsi B, memilih nama versi `tahap-5-v29`, mengizinkan perekamannya, lalu memberi ACC commit, push, dan PR. Teks persetujuannya tersimpan di `approval` registry dan di `evidence` entri `resolved`.
+- Baseline direkam lewat `npm run baseline -- --project character-lab --version tahap-5-v29 --source main@63eab4c --approved-at 2026-10-30 --evidence ...` (tiga bukti persetujuan) dari render ulang dengan kode render `main@63eab4c`. Kode render (`src/engine`, `src/assets`, `src/scenes`, `config`) di branch kerja identik dengan commit itu. MP4-nya identik byte demi byte dengan `output/video/character-lab.mp4` di `63eab4c`. `--dry-run` lulus lebih dulu.
+- Verifikasi: tepat 74 frame berbeda dari `tahap-5` (132-205, sama dengan rentang yang disetujui), 286 identik, 0 di luar rentang. Hanya sprite pengayuh yang berubah. File baseline baru juga identik 360/360 dengan render terpisah dari clean clone `main@3628a29`.
+- Entri pending V29 pindah ke `resolved` (`resolvedBy` = baseline `character-lab` versi `tahap-5-v29`), dan `changes` kini kosong. Kelima file baseline lama, termasuk `character-lab.tahap-5.json`, tidak berubah (SHA-256 sama), sehingga `tahap-5` tetap bisa dipakai dengan `--baseline tahap-5`.
+- Perubahan visual `character-lab` berikutnya (misalnya V27, V28, V30-V32) wajib dideklarasikan di `pending-changes.json` terhadap `tahap-5-v29` dan disetujui terpisah. V29 di Project B (gerak klasik) tetap belum diperbaiki dan menunggu V26.
