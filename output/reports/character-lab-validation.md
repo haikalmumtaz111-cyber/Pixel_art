@@ -2,13 +2,13 @@
 
 Laporan ini dibuat otomatis oleh `npm run validate`.
 
-- Waktu uji: 2026-10-29T23:20:27.200Z
+- Waktu uji: 2026-10-30T09:04:10.971Z
 - Proyek: `character-lab`
 - Konfigurasi: `config/character-lab.json` (+ 8 file $include)
-- Mesin: Pixel History Studio 0.5.0, sidik jari mesin `e123d7ea0a4c4025`, pustaka aset `5de59b8af4f9dfa0`
+- Mesin: Pixel History Studio 0.5.0, sidik jari mesin `e123d7ea0a4c4025`, pustaka aset `dbbcce618cb038a8`
 - Video: `output/video/character-lab.mp4`
 - Spesifikasi: 480x270 internal, 1920x1080 output (upscale browser), 30 FPS, 12 detik, 360 frame, seed 2026
-- Lama render frame: 10.8 detik, lama encoding: 9.1 detik
+- Lama render frame: 10.6 detik, lama encoding: 9.4 detik
 
 ## Ringkasan kebutuhan
 
@@ -36,7 +36,7 @@ Laporan ini dibuat otomatis oleh `npm run validate`.
 | 20 | Video dapat diputar | LULUS |
 | 21 | Render ulang konsisten | LULUS |
 
-Status akhir: **TIDAK ADA YANG GAGAL** (43 lulus, 3 KNOWN ISSUE, dari 46 pemeriksaan)
+Status akhir: **TIDAK ADA YANG GAGAL** (43 lulus, 2 KNOWN ISSUE, dari 45 pemeriksaan)
 
 KNOWN ISSUE = masalah yang sudah tercatat di `docs/BACKLOG.md` dan tidak memburuk, hanya di proyek, pemeran, dan frame yang tercatat (`src/render/known-issues.cjs`). KNOWN ISSUE "usulan" belum disetujui pemilik. TIDAK DIPERIKSA = tidak ada yang bisa diperiksa di proyek ini. Keduanya bukan LULUS.
 
@@ -60,9 +60,9 @@ KNOWN ISSUE = masalah yang sudah tercatat di `docs/BACKLOG.md` dan tidak memburu
 |----|-------------|-------|--------|
 | 1 | Interval adegan valid | LULUS | 4 adegan menutup 360/360 frame tanpa celah: s01-langkah [0, 120), s02-pose [120, 225), s03-sore [225, 288), s04-malam [288, 360) |
 | 2 | Transisi berada di dalam durasi film | LULUS | dissolve 108-131, dissolve 213-236 |
-| 3 | Render terakhir selesai dengan sukses | LULUS | status complete, selesai 2026-10-29T23:15:43.293Z |
+| 3 | Render terakhir selesai dengan sukses | LULUS | status complete, selesai 2026-10-30T09:00:01.932Z |
 | 4 | Video berasal dari render terbaru (bukan sisa render lama) | LULUS | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest |
-| 5 | File MP4 ada | LULUS | character-lab.mp4 (4.13 MB) |
+| 5 | File MP4 ada | LULUS | character-lab.mp4 (4.12 MB) |
 | 6 | Kontainer MP4 | LULUS | mov,mp4,m4a,3gp,3g2,mj2 |
 | 7 | Codec video H.264 | LULUS | h264 (High) |
 | 8 | Resolusi output | LULUS | 1920x1080 |
@@ -76,7 +76,7 @@ KNOWN ISSUE = masalah yang sudah tercatat di `docs/BACKLOG.md` dan tidak memburu
 | 16 | Tidak ada frame yang hilang saat decode | LULUS | 360 frame ter-decode, 360 frame terukur |
 | 17 | Tidak ada frame kosong | LULUS | kecerahan rata-rata terendah 62.8, rentang terendah 169 |
 | 18 | Animasi bergerak (bukan gambar statis) | LULUS | 360 frame unik, 0 pasang frame berurutan identik |
-| 19 | Frame terakhir valid | LULUS | frame 359: kecerahan rata-rata 62.9, rentang 199 |
+| 19 | Frame terakhir valid | LULUS | frame 359: kecerahan rata-rata 62.9, rentang 200 |
 | 20 | Tidak ada kilatan cahaya mendadak | LULUS | perubahan kecerahan terbesar antar frame 2.9 (batas 8) |
 | 21 | Tidak ada potongan kasar (hard cut) | LULUS | semua pergantian gambar berlangsung bertahap |
 | 22 | Grid piksel stabil saat kamera bergerak dan zoom (tidak merayap) | LULUS | mode zoom "anchored", 0 frame zoom pecahan, 0 perubahan ukuran saat zoom tetap (crawl), 0 bolak-balik dari 173108 perbandingan kolom/baris dunia |
@@ -95,15 +95,14 @@ KNOWN ISSUE = masalah yang sudah tercatat di `docs/BACKLOG.md` dan tidak memburu
 | 35 | Tubuh tidak bergetar saat berjalan | LULUS | 1050 frame jalan natural diperiksa, pinggul tidak pernah bolak-balik dalam 1 frame |
 | 36 | Pose karakter: urutan tubuh, sendi di dalam kotak, telapak menapak di tanah | LULUS | 1947 pose dari 10 karakter natural: urutan tubuh benar, 16380 titik sendi di dalam kotak gambar, 2070 telapak menapak tepat di garis tanah |
 | 37 | Pose karakter: panjang lengan dan kaki tetap | LULUS | 3894 lengan dan 1566 kaki: panjang tulang tepat sama dengan desain, ruas tergambar paling jauh 0.901 px dari tulangnya (batas 1.514), regangan betis terbesar 1.038 px (di dalam batas jangkauan langkah) / kaki duduk dan mengayuh bentuk Tahap 3 tidak diukur di 381 pose (keterbatasan, V19); kaki bersarung bentuk Tahap 3 tidak diukur di 783 pose (keterbatasan, V27) |
-| 38 | Pose karakter: tangan, kaki, dan benda yang dipegang bersentuhan | LULUS | semua bersentuhan (jarak sel paling banyak 1): walk:parcel-hand 279, walk:basket-hand 279, sweep:nearHand-handle 252, sweep:farHand-handle 252, cycle:shoe-pedal 129, cycle:hand-grip 258 / di luar KNOWN ISSUE yang dilaporkan terpisah: V30 |
-| 39 | KNOWN ISSUE V30: Ujung lengan jauh penyapu tidak sampai ke tangan jauh yang menggenggam gagang | KNOWN ISSUE | 252 sentuhan di 252 frame, terburuk 3 px, tidak lebih buruk dari batas tercatat 3 px (pemeran penyapu, status sweep, sentuhan farArm-farHand, frame 108-359; lihat docs/BACKLOG.md V30) |
-| 40 | Pose karakter: posisi duduk di sadel atau bangku | LULUS | 381 pose duduk: badan bawah tepat di tempat duduk (sadel induk atau bangku di bawahnya) |
-| 41 | Pose karakter: stabil antar-frame (tanpa getar sendi) | LULUS | 20389 titik sendi x 3 frame diperiksa, tanpa getar 1 frame di luar KNOWN ISSUE (29 kejadian dilaporkan terpisah: V31, V32); 20522 langkah frame: sendi yang penggeraknya diam bergerak paling banyak 1 px; 48 dikecualikan karena penggerak sendi itu sendiri berbalik arah dengan mulus di frame itu: bu-sari frame 182 lengan dekat siku y (titik balik gesture), bu-sari frame 182 lengan dekat tangan x (titik balik gesture), bu-sari frame 182 lengan dekat tangan y (titik balik gesture), bu-sari frame 188 lengan dekat siku x (titik balik gesture), bu-sari frame 188 lengan dekat siku y (titik balik gesture), bu-sari frame 188 lengan dekat tangan x (titik balik gesture), ... (48) / lompatan terbesar saat penggerak bergerak (informasi): walk 4 px, gesture 4 px, sweep 1 px |
-| 42 | KNOWN ISSUE V31: Lutut dan siku berkedip 1 piksel selama 1 frame saat berjalan (pembulatan) | KNOWN ISSUE | 19 dari 19 kejadian tercatat (pembulatan) di 4 pemeran, terbesar 1 px, tidak lebih buruk dari batas tercatat 1 px (status walk, pemeran darto-pagi, sumi-pagi, darto-sore, sumi-sore); contoh darto-pagi frame 3 kaki jauh lutut y, darto-pagi frame 17 kaki dekat lutut y, darto-pagi frame 31 kaki jauh lutut y, ... (19); lihat docs/BACKLOG.md V31 |
-| 43 | KNOWN ISSUE V32: Lutut bergetar di ujung ayunan kaki saat kaki hampir lurus (karakter kecil yang berjalan cepat) | KNOWN ISSUE | 10 dari 10 kejadian tercatat (getar) di 1 pemeran, terbesar 1 px, tidak lebih buruk dari batas tercatat 1 px (status walk, pemeran anak-sekolah); contoh anak-sekolah frame 147 kaki dekat lutut x, anak-sekolah frame 147 kaki dekat lutut y, anak-sekolah frame 162 kaki dekat lutut x, ... (10); lihat docs/BACKLOG.md V32 |
-| 44 | Rendering deterministik (render ulang identik, urutan terbalik) | LULUS | 360/360 frame identik byte demi byte, 3/3 frame identik saat dirender dua kali |
-| 45 | Tidak ada error JavaScript selama rendering | LULUS | 0 error saat render, 0 error saat pengujian |
-| 46 | Encode ulang menghasilkan MP4 identik | LULUS | SHA-256 sama: 1545a9f466dc026d... |
+| 38 | Pose karakter: tangan, kaki, dan benda yang dipegang bersentuhan | LULUS | semua bersentuhan (jarak sel paling banyak 1): walk:parcel-hand 279, walk:basket-hand 279, sweep:nearHand-handle 252, sweep:farHand-handle 252, sweep:farArm-farHand 252, cycle:shoe-pedal 129, cycle:hand-grip 258 |
+| 39 | Pose karakter: posisi duduk di sadel atau bangku | LULUS | 381 pose duduk: badan bawah tepat di tempat duduk (sadel induk atau bangku di bawahnya) |
+| 40 | Pose karakter: stabil antar-frame (tanpa getar sendi) | LULUS | 20389 titik sendi x 3 frame diperiksa, tanpa getar 1 frame di luar KNOWN ISSUE (29 kejadian dilaporkan terpisah: V31, V32); 20522 langkah frame: sendi yang penggeraknya diam bergerak paling banyak 1 px; 48 dikecualikan karena penggerak sendi itu sendiri berbalik arah dengan mulus di frame itu: bu-sari frame 182 lengan dekat siku y (titik balik gesture), bu-sari frame 182 lengan dekat tangan x (titik balik gesture), bu-sari frame 182 lengan dekat tangan y (titik balik gesture), bu-sari frame 188 lengan dekat siku x (titik balik gesture), bu-sari frame 188 lengan dekat siku y (titik balik gesture), bu-sari frame 188 lengan dekat tangan x (titik balik gesture), ... (48) / lompatan terbesar saat penggerak bergerak (informasi): walk 4 px, gesture 4 px, sweep 2 px |
+| 41 | KNOWN ISSUE V31: Lutut dan siku berkedip 1 piksel selama 1 frame saat berjalan (pembulatan) | KNOWN ISSUE | 19 dari 19 kejadian tercatat (pembulatan) di 4 pemeran, terbesar 1 px, tidak lebih buruk dari batas tercatat 1 px (status walk, pemeran darto-pagi, sumi-pagi, darto-sore, sumi-sore); contoh darto-pagi frame 3 kaki jauh lutut y, darto-pagi frame 17 kaki dekat lutut y, darto-pagi frame 31 kaki jauh lutut y, ... (19); lihat docs/BACKLOG.md V31 |
+| 42 | KNOWN ISSUE V32: Lutut bergetar di ujung ayunan kaki saat kaki hampir lurus (karakter kecil yang berjalan cepat) | KNOWN ISSUE | 10 dari 10 kejadian tercatat (getar) di 1 pemeran, terbesar 1 px, tidak lebih buruk dari batas tercatat 1 px (status walk, pemeran anak-sekolah); contoh anak-sekolah frame 147 kaki dekat lutut x, anak-sekolah frame 147 kaki dekat lutut y, anak-sekolah frame 162 kaki dekat lutut x, ... (10); lihat docs/BACKLOG.md V32 |
+| 43 | Rendering deterministik (render ulang identik, urutan terbalik) | LULUS | 360/360 frame identik byte demi byte, 3/3 frame identik saat dirender dua kali |
+| 44 | Tidak ada error JavaScript selama rendering | LULUS | 0 error saat render, 0 error saat pengujian |
+| 45 | Encode ulang menghasilkan MP4 identik | LULUS | SHA-256 sama: b27d51e067ba6611... |
 
 ## Lembar kontak (preview)
 

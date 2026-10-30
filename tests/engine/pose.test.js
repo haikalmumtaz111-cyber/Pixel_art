@@ -170,6 +170,42 @@ test('pengayuh natural (V29): kedua tangan di setang sepeda, siku tetap sedikit 
   assert.deepEqual(hands(moved), hands(frameAt(260, config.assets[mount.asset])).map((q) => ({ x: q.x, y: q.y - 2 })));
 });
 
+test('penyapu natural (V30): ujung lengan jauh sampai ke tangan jauh di gagang, siku menekuk, di semua tinggi dan bentuk badan', () => {
+  const config = P.loadProject('character-lab');
+  const sweeper = config.assets[config.cast.penyapu.asset];
+  for (const height of [30, 34, 38, 41, 44, 48, 52, 56]) {
+    for (const build of ['slim', 'regular', 'stout']) {
+      const rig = createRigCharacter({ ...sweeper, height, build, light: null });
+      const size = rig.size();
+      for (const flip of [false, true]) {
+        // 45 frame = lebih dari satu siklus sapu (periode 2 pi / 5 detik)
+        const frames = Array.from({ length: 45 }, (_, i) => {
+          const st = { state: 'sweep', worldX: 506, worldY: 204, speedX: 0, flip, scale: 1, time: i / 30, params: {} };
+          return { penyapu: { place: placementOf({ scale: 1, anchor: [0.5, 1] }, st, size), pose: rig.poseProbe(st) } };
+        });
+        // tanpa daftar KNOWN ISSUE apa pun: semua sentuhan di dalam toleransi, tanpa getar
+        const res = PC.poseChecks(frames, { knownIssues: [] });
+        const where = `tinggi ${height} ${build}${flip ? ' cermin' : ''}`;
+        for (const id of ['motion-joints', 'motion-limbs', 'motion-contact', 'motion-stable']) {
+          const r = res.find((x) => x.id === id);
+          assert.equal(C.statusOf(r), 'pass', `${where}: ${id} ${r.detail}`);
+        }
+        assert.match(res.find((r) => r.id === 'motion-contact').detail, /sweep:farArm-farHand 45/);
+        for (const f of frames) {
+          const far = f.penyapu.pose.items.find((it) => it.kind === 'arm' && !it.front);
+          // titik genggam di dalam 85% panjang lengan (titiknya dibulatkan ke piksel): ujung lengan tepat di tangan jauh
+          assert.deepEqual(far.hand, far.target, where);
+          assert.ok(Math.hypot(far.target.x - far.rawShoulder.x, far.target.y - far.rawShoulder.y) <= (far.upper + far.lower) * 0.85 + Math.SQRT1_2, where);
+          // siku jauh menekuk: jauh dari garis bahu-tangan
+          const [s, e, h] = [far.rawShoulder, far.rawElbow, far.rawHand];
+          const off = Math.abs((h.x - s.x) * (e.y - s.y) - (h.y - s.y) * (e.x - s.x)) / Math.hypot(h.x - s.x, h.y - s.y);
+          assert.ok(off >= 1, `${where}: siku jauh hampir lurus (${off.toFixed(2)} px)`);
+        }
+      }
+    }
+  }
+});
+
 test('soket bangku tepat pada papan dudukan yang digambar', () => {
   const pal = new Proxy({}, { get: (t, k) => (typeof k === 'string' ? `@${k}` : undefined) });
   for (const def of [{}, { width: 24 }]) {
@@ -248,6 +284,14 @@ test('motion-stable: titik balik gesture hanya mengecualikan sendi yang digerakk
 
 // KNOWN ISSUE hanya berlaku di proyek, pemeran, dan frame yang tercatat: data buatan diletakkan di frame aslinya
 const LAB = { project: 'character-lab' };
+// Sejak V29 dan V30 diperbaiki, daftar resmi tidak punya KNOWN ISSUE sentuhan. Mekanismenya diuji dengan entri uji
+// di file ini saja (bentuknya sama dengan entri V30 sebelum diperbaiki), bukan lewat known-issues.cjs.
+const TOUCH_KNOWN = {
+  id: 'UJI-SENTUH', approval: 'disetujui', check: 'motion-contact', project: 'character-lab',
+  entity: 'penyapu', state: 'sweep', touch: 'farArm-farHand', frames: [[108, 359]], worst: 3,
+  title: 'Entri uji: ujung lengan jauh penyapu 3 px dari tangan jauh'
+};
+const LAB_TOUCH = { ...LAB, knownIssues: [...KNOWN, TOUCH_KNOWN] };
 const atFrame = (n, entries) => [...Array(n).fill({}), entries];
 const statusIn = (results, id) => {
   const r = results.find((x) => x.id === id);
@@ -287,15 +331,15 @@ function walkFrames(center, { entity = 'darto-pagi', front = false, ys = [42, 42
 }
 
 test('KNOWN ISSUE: dilaporkan sebagai KNOWN ISSUE, GAGAL bila memburuk atau tidak lagi terjadi', () => {
-  const v30 = (g, frame = 108) => PC.poseChecks(atFrame(frame, sweeperFrame(g)), LAB).find((r) => r.id === 'known:V30');
-  assert.equal(C.statusOf(v30(3)), 'known');
-  assert.equal(v30(3).approval, 'disetujui');
-  assert.match(v30(3).detail, /terburuk 3 px/);
-  assert.equal(C.statusOf(v30(3, 359)), 'known');
-  assert.equal(C.statusOf(v30(4)), 'fail');
-  assert.match(v30(4).detail, /MEMBURUK/);
-  assert.equal(C.statusOf(v30(1)), 'fail');
-  assert.match(v30(1).detail, /TIDAK LAGI TERJADI/);
+  const touchKnown = (g, frame = 108) => PC.poseChecks(atFrame(frame, sweeperFrame(g)), LAB_TOUCH).find((r) => r.id === 'known:UJI-SENTUH');
+  assert.equal(C.statusOf(touchKnown(3)), 'known');
+  assert.equal(touchKnown(3).approval, 'disetujui');
+  assert.match(touchKnown(3).detail, /terburuk 3 px/);
+  assert.equal(C.statusOf(touchKnown(3, 359)), 'known');
+  assert.equal(C.statusOf(touchKnown(4)), 'fail');
+  assert.match(touchKnown(4).detail, /MEMBURUK/);
+  assert.equal(C.statusOf(touchKnown(1)), 'fail');
+  assert.match(touchKnown(1).detail, /TIDAK LAGI TERJADI/);
   // KNOWN ISSUE gerak: kejadian tercatat persis = KNOWN ISSUE; lompatan lebih besar = GAGAL
   const v31 = (frames) => PC.poseChecks(frames, LAB).find((r) => r.id === 'known:V31');
   const blip = walkFrames(3);
@@ -321,14 +365,14 @@ test('KNOWN ISSUE: dilaporkan sebagai KNOWN ISSUE, GAGAL bila memburuk atau tida
 });
 
 test('KNOWN ISSUE tidak berlaku untuk pemeran, frame, sentuhan, sendi, jenis, atau proyek lain', () => {
-  const contact = (frames, opts = LAB) => PC.poseChecks(frames, opts);
-  // sentuhan: sama persis dengan V30 (3 px) di tempat yang tercatat = KNOWN ISSUE, motion-contact tidak ikut gagal
+  const contact = (frames, opts = LAB_TOUCH) => PC.poseChecks(frames, opts);
+  // sentuhan: sama persis dengan entri uji (3 px) di tempat yang tercatat = KNOWN ISSUE, motion-contact tidak ikut gagal
   assert.equal(statusIn(contact(atFrame(108, sweeperFrame(3))), 'motion-contact'), 'skip');
-  // pemeran lain dengan masalah sama: GAGAL, dan V30 tidak menelan kasusnya
+  // pemeran lain dengan masalah sama: GAGAL, dan entri uji tidak menelan kasusnya
   const other = contact(atFrame(108, sweeperFrame(3, { entity: 'penyapu-lain' })));
   assert.equal(statusIn(other, 'motion-contact'), 'fail');
   assert.match(other.find((r) => r.id === 'motion-contact').detail, /penyapu-lain frame 108: farArm-farHand berjarak 3 px/);
-  assert.equal(statusIn(other, 'known:V30'), 'fail');
+  assert.equal(statusIn(other, 'known:UJI-SENTUH'), 'fail');
   // frame di luar rentang tercatat (sebelum 108, sesudah 359)
   for (const f of [107, 360]) assert.equal(statusIn(contact(atFrame(f, sweeperFrame(3))), 'motion-contact'), 'fail', `frame ${f}`);
   // sentuhan lain atau status lain di pemeran dan frame yang sama
@@ -341,6 +385,14 @@ test('KNOWN ISSUE tidak berlaku untuk pemeran, frame, sentuhan, sendi, jenis, at
   assert.equal(statusIn(rider, 'known:V29'), 'tidak ada');
   assert.equal(statusIn(contact(atFrame(108, riderFrame(2))), 'motion-contact'), 'fail');
   assert.equal(statusIn(contact(atFrame(108, riderFrame(1))), 'motion-contact'), 'pass');
+  // V30 juga sudah diperbaiki dan tidak ada di daftar resmi: lengan jauh penyapu 3 px dari tangannya di frame dan pemeran
+  // aslinya GAGAL, tanpa baris KNOWN ISSUE V30
+  const sweeper = contact(atFrame(108, sweeperFrame(3)), LAB);
+  assert.equal(statusIn(sweeper, 'motion-contact'), 'fail');
+  assert.match(sweeper.find((r) => r.id === 'motion-contact').detail, /penyapu frame 108: farArm-farHand berjarak 3 px/);
+  assert.equal(statusIn(sweeper, 'known:V30'), 'tidak ada');
+  assert.equal(statusIn(contact(atFrame(108, sweeperFrame(2)), LAB), 'motion-contact'), 'fail');
+  assert.equal(statusIn(contact(atFrame(108, sweeperFrame(1)), LAB), 'motion-contact'), 'pass');
   // proyek lain atau tanpa proyek: tidak ada KNOWN ISSUE sama sekali
   for (const opts of [{ project: 'proyek-baru' }, {}]) {
     const r = contact(atFrame(108, sweeperFrame(3)), opts);
@@ -371,7 +423,7 @@ test('tanpa pose natural semua pemeriksaan pose TIDAK DIPERIKSA, bukan LULUS', (
   for (const r of PC.poseChecks([{}, {}])) assert.equal(C.statusOf(r), 'skip');
   // proyek yang punya KNOWN ISSUE tetapi tanpa pose natural: KNOWN ISSUE-nya ikut TIDAK DIPERIKSA, tidak hilang diam-diam
   const lab = PC.poseChecks([{ a: { place, pose: { mode: 'classic', state: 'walk' } } }], { project: 'character-lab' });
-  assert.deepEqual(lab.filter((r) => r.id.startsWith('known:')).map((r) => [r.id, C.statusOf(r)]), [['known:V30', 'skip'], ['known:V31', 'skip'], ['known:V32', 'skip']]);
+  assert.deepEqual(lab.filter((r) => r.id.startsWith('known:')).map((r) => [r.id, C.statusOf(r)]), [['known:V31', 'skip'], ['known:V32', 'skip']]);
   // skala lebih dari 1 tidak diwajibkan
   assert.ok(PC.poseChecks([{ a: { place: { ...place, scale: 2 }, pose: { mode: 'natural', strict: false, state: 'walk', items: [] } } }]).every((r) => C.statusOf(r) === 'skip'));
 });
@@ -403,9 +455,9 @@ test('daftar KNOWN ISSUE: sempit, terukur, dan status persetujuannya tidak berub
   // batas yang sudah diukur dan status persetujuan pemilik: mengubahnya harus disengaja (ubah juga tes ini dan BACKLOG)
   const count = (k) => Object.values(k.occurrences).flatMap((o) => Object.values(o)).reduce((n, f) => n + f.length, 0);
   const brief = Object.fromEntries(KNOWN.map((k) => [k.id, [k.project, k.approval, k.worst, k.check === 'motion-stable' ? count(k) : `${k.entity} ${k.frames.map((r) => r.join('-')).join(',')}`]]));
-  // V29 dikeluarkan bersama perbaikannya (tangan pengayuh di setang, lihat tes pengayuh natural di atas)
+  // V29 dan V30 dikeluarkan bersama perbaikannya (tangan pengayuh di setang dan lengan jauh penyapu sampai ke tangannya,
+  // lihat tes pengayuh dan penyapu natural di atas)
   assert.deepEqual(brief, {
-    V30:['character-lab', 'disetujui', 3, 'penyapu 108-359'],
     V31: ['character-lab', 'disetujui', 1, 19],
     V32: ['character-lab', 'disetujui', 1, 10]
   });

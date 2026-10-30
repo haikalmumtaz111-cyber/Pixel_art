@@ -1,5 +1,5 @@
 {
-  "testedAt": "2026-10-29T23:20:27.200Z",
+  "testedAt": "2026-10-30T09:04:10.971Z",
   "project": "character-lab",
   "config": "config/character-lab.json",
   "includes": [
@@ -16,10 +16,10 @@
   "noFailure": true,
   "passed": 43,
   "failed": 0,
-  "known": 3,
+  "known": 2,
   "proposed": 0,
   "skipped": 0,
-  "total": 46,
+  "total": 45,
   "groups": [
     {
       "title": "Jumlah frame tepat",
@@ -146,7 +146,7 @@
       "id": "manifest:status",
       "name": "Render terakhir selesai dengan sukses",
       "pass": true,
-      "detail": "status complete, selesai 2026-10-29T23:15:43.293Z",
+      "detail": "status complete, selesai 2026-10-30T09:00:01.932Z",
       "status": "pass"
     },
     {
@@ -160,7 +160,7 @@
       "id": "file",
       "name": "File MP4 ada",
       "pass": true,
-      "detail": "character-lab.mp4 (4.13 MB)",
+      "detail": "character-lab.mp4 (4.12 MB)",
       "status": "pass"
     },
     {
@@ -258,7 +258,7 @@
       "id": "end-frame",
       "name": "Frame terakhir valid",
       "pass": true,
-      "detail": "frame 359: kecerahan rata-rata 62.9, rentang 199",
+      "detail": "frame 359: kecerahan rata-rata 62.9, rentang 200",
       "status": "pass"
     },
     {
@@ -391,17 +391,8 @@
       "id": "motion-contact",
       "name": "Pose karakter: tangan, kaki, dan benda yang dipegang bersentuhan",
       "pass": true,
-      "detail": "semua bersentuhan (jarak sel paling banyak 1): walk:parcel-hand 279, walk:basket-hand 279, sweep:nearHand-handle 252, sweep:farHand-handle 252, cycle:shoe-pedal 129, cycle:hand-grip 258 | di luar KNOWN ISSUE yang dilaporkan terpisah: V30",
+      "detail": "semua bersentuhan (jarak sel paling banyak 1): walk:parcel-hand 279, walk:basket-hand 279, sweep:nearHand-handle 252, sweep:farHand-handle 252, sweep:farArm-farHand 252, cycle:shoe-pedal 129, cycle:hand-grip 258",
       "status": "pass"
-    },
-    {
-      "id": "known:V30",
-      "name": "KNOWN ISSUE V30: Ujung lengan jauh penyapu tidak sampai ke tangan jauh yang menggenggam gagang",
-      "pass": false,
-      "detail": "252 sentuhan di 252 frame, terburuk 3 px, tidak lebih buruk dari batas tercatat 3 px (pemeran penyapu, status sweep, sentuhan farArm-farHand, frame 108-359; lihat docs/BACKLOG.md V30)",
-      "status": "known",
-      "approval": "disetujui",
-      "count": 252
     },
     {
       "id": "motion-seat",
@@ -414,7 +405,7 @@
       "id": "motion-stable",
       "name": "Pose karakter: stabil antar-frame (tanpa getar sendi)",
       "pass": true,
-      "detail": "20389 titik sendi x 3 frame diperiksa, tanpa getar 1 frame di luar KNOWN ISSUE (29 kejadian dilaporkan terpisah: V31, V32); 20522 langkah frame: sendi yang penggeraknya diam bergerak paling banyak 1 px; 48 dikecualikan karena penggerak sendi itu sendiri berbalik arah dengan mulus di frame itu: bu-sari frame 182 lengan dekat siku y (titik balik gesture), bu-sari frame 182 lengan dekat tangan x (titik balik gesture), bu-sari frame 182 lengan dekat tangan y (titik balik gesture), bu-sari frame 188 lengan dekat siku x (titik balik gesture), bu-sari frame 188 lengan dekat siku y (titik balik gesture), bu-sari frame 188 lengan dekat tangan x (titik balik gesture), ... (48) | lompatan terbesar saat penggerak bergerak (informasi): walk 4 px, gesture 4 px, sweep 1 px",
+      "detail": "20389 titik sendi x 3 frame diperiksa, tanpa getar 1 frame di luar KNOWN ISSUE (29 kejadian dilaporkan terpisah: V31, V32); 20522 langkah frame: sendi yang penggeraknya diam bergerak paling banyak 1 px; 48 dikecualikan karena penggerak sendi itu sendiri berbalik arah dengan mulus di frame itu: bu-sari frame 182 lengan dekat siku y (titik balik gesture), bu-sari frame 182 lengan dekat tangan x (titik balik gesture), bu-sari frame 182 lengan dekat tangan y (titik balik gesture), bu-sari frame 188 lengan dekat siku x (titik balik gesture), bu-sari frame 188 lengan dekat siku y (titik balik gesture), bu-sari frame 188 lengan dekat tangan x (titik balik gesture), ... (48) | lompatan terbesar saat penggerak bergerak (informasi): walk 4 px, gesture 4 px, sweep 2 px",
       "status": "pass"
     },
     {
@@ -453,7 +444,7 @@
       "id": "reencode",
       "name": "Encode ulang menghasilkan MP4 identik",
       "pass": true,
-      "detail": "SHA-256 sama: 1545a9f466dc026d...",
+      "detail": "SHA-256 sama: b27d51e067ba6611...",
       "status": "pass"
     }
   ],
@@ -543,7 +534,7 @@
     "name": "Pixel History Studio",
     "version": "0.5.0",
     "engineHash": "e123d7ea0a4c402570afb69a48b6f1316442ea5370dd5dffad4e54b84930739b",
-    "libraryHash": "5de59b8af4f9dfa0bf610bd1a6c285c828bae1a1d2b1cd6d497141220fce6187",
+    "libraryHash": "dbbcce618cb038a825d881035702c27b7e735136a89d9bc08f067b2193920d5c",
     "modules": [
       "/src/assets/common/environment.js",
       "/src/assets/town/buildings.js",
@@ -573,13 +564,13 @@
     "configFile": "config/character-lab.json",
     "inputsHash": "94323d870bc18ecb7f102fa2b6634412438ef17501957e17bd5db276dfdd45ac",
     "engineHash": "e123d7ea0a4c402570afb69a48b6f1316442ea5370dd5dffad4e54b84930739b",
-    "libraryHash": "5de59b8af4f9dfa0bf610bd1a6c285c828bae1a1d2b1cd6d497141220fce6187",
+    "libraryHash": "dbbcce618cb038a825d881035702c27b7e735136a89d9bc08f067b2193920d5c",
     "engineVersion": "0.5.0",
     "status": "complete",
-    "startedAt": "2026-10-29T23:15:23.378Z",
-    "finishedAt": "2026-10-29T23:15:43.293Z",
-    "renderSeconds": 10.83,
-    "encodeSeconds": 9.085,
+    "startedAt": "2026-10-30T08:59:41.917Z",
+    "finishedAt": "2026-10-30T09:00:01.932Z",
+    "renderSeconds": 10.631,
+    "encodeSeconds": 9.384,
     "chromiumVersion": "153.0.8010.12",
     "jsErrors": 0,
     "loadedModules": [
@@ -595,9 +586,9 @@
       "width": 1920,
       "height": 1080
     },
-    "framesHash": "3f0b9fc9ac452b180d4eb2ceb80cc9531f2c4116cc6767a2187e5e20daea6445",
+    "framesHash": "e93246b2be442f9841c89fea38e99419ee2bba28f9ec161f9a098ebd2a69b78f",
     "video": "output/video/character-lab.mp4",
-    "videoSha256": "1545a9f466dc026d79cd5e2b506b16a46cc5f00f2164cd35cf308820900e1ada",
+    "videoSha256": "b27d51e067ba66112f86fd1704ea4095ae8ead5da01eb26ed66a0b9abce11cf0",
     "ffmpegCommand": "ffmpeg -y -v error -framerate 30 -start_number 0 -i output/frames/character-lab/frame_%04d.png -frames:v 360 -vf scale=1920:1080:flags=neighbor:out_color_matrix=bt709:out_range=tv,format=yuv420p -c:v libx264 -preset slow -crf 16 -tune animation -profile:v high -level:v 4.1 -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv -r 30 -movflags +faststart -f mp4 output/video/character-lab.mp4"
   },
   "lumaSummary": [
@@ -1106,7 +1097,7 @@
       3.4
     ],
     [
-      138.9,
+      138.8,
       3.3
     ],
     [
@@ -1119,7 +1110,7 @@
     ],
     [
       139.8,
-      3.4
+      3.3
     ],
     [
       139.7,
@@ -1130,7 +1121,7 @@
       3.1
     ],
     [
-      140.3,
+      140.2,
       0.5
     ],
     [
@@ -1219,15 +1210,11 @@
     ],
     [
       140.3,
-      1.1
+      1
     ],
     [
       140.3,
       1.1
-    ],
-    [
-      140.3,
-      0.9
     ],
     [
       140.3,
@@ -1235,10 +1222,14 @@
     ],
     [
       140.2,
+      0.9
+    ],
+    [
+      140.2,
       1.1
     ],
     [
-      140.3,
+      140.2,
       1
     ],
     [
@@ -1290,7 +1281,7 @@
       1.1
     ],
     [
-      140.3,
+      140.2,
       1
     ],
     [
@@ -1347,7 +1338,7 @@
     ],
     [
       140.4,
-      1
+      0.9
     ],
     [
       140.4,
@@ -1367,7 +1358,7 @@
     ],
     [
       140.4,
-      0.9
+      1
     ],
     [
       140.4,
@@ -1382,7 +1373,7 @@
       1
     ],
     [
-      140.3,
+      140.2,
       0.8
     ],
     [
@@ -1447,7 +1438,7 @@
     ],
     [
       140.6,
-      0.5
+      0.4
     ],
     [
       140.5,
@@ -1459,7 +1450,7 @@
     ],
     [
       140.9,
-      3.4
+      3.5
     ],
     [
       140.8,
@@ -1526,11 +1517,11 @@
       3.7
     ],
     [
-      142.2,
+      142.1,
       4.6
     ],
     [
-      142.3,
+      142.2,
       0.6
     ],
     [
@@ -1622,7 +1613,7 @@
       0.5
     ],
     [
-      132.2,
+      132.3,
       1.4
     ],
     [
@@ -1658,7 +1649,7 @@
       0.5
     ],
     [
-      127.3,
+      127.2,
       1.4
     ],
     [
@@ -1718,12 +1709,12 @@
       0.4
     ],
     [
-      121,
+      120.9,
       0.4
     ],
     [
       121,
-      0.3
+      0.2
     ],
     [
       121,
@@ -1846,7 +1837,7 @@
       2.9
     ],
     [
-      97.5,
+      97.6,
       0.3
     ],
     [
@@ -1871,7 +1862,7 @@
     ],
     [
       85.3,
-      2.7
+      2.8
     ],
     [
       85.3,

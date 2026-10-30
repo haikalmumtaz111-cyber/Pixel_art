@@ -21,12 +21,9 @@
 //
 // V29 (tangan pengayuh melayang 6 px di atas setang) dikeluarkan dari daftar ini bersama perbaikannya (Opsi B, lihat
 // docs/BACKLOG.md V29): kedua tangan pengayuh wajib di dalam toleransi soket grip seperti sentuhan lain.
+// V30 (ujung lengan jauh penyapu tidak sampai ke tangan jauh) dikeluarkan dengan cara yang sama bersama perbaikannya
+// (Opsi B, geometri B2, lihat docs/BACKLOG.md V30): ujung lengan jauh wajib di dalam toleransi sentuhan seperti sentuhan lain.
 module.exports = [
-  {
-    id: 'V30', approval: 'disetujui', check: 'motion-contact', project: 'character-lab',
-    entity: 'penyapu', state: 'sweep', touch: 'farArm-farHand', frames: [[108, 359]], worst: 3,
-    title: 'Ujung lengan jauh penyapu tidak sampai ke tangan jauh yang menggenggam gagang'
-  },
   {
     id: 'V31', approval: 'disetujui', check: 'motion-stable', project: 'character-lab', state: 'walk', kind: 'pembulatan', worst: 1,
     occurrences: {

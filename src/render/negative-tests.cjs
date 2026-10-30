@@ -405,9 +405,15 @@ async function main() {
       return brokenPose(RIG, [['const backTarget = pedal ? { x: pedal.grip.x - 1, y: pedal.grip.y - 2 }', 'const backTarget = pedal ? { x: pedal.grip.x - 1, y: pedal.grip.y - 4 }']], 'motion-contact');
     });
 
-    await test('KNOWN ISSUE V30 memburuk: ujung lengan jauh penyapu makin jauh dari tangannya', () => {
+    // V30 sudah diperbaiki (tidak ada lagi KNOWN ISSUE-nya): lengan jauh atau tangan jauh penyapu yang lepas GAGAL
+    await test('Ujung lengan jauh penyapu lepas 2 piksel dari tangan jauh (pose: sentuhan)', () => {
       if (!naturalIn(['sweep'], (a) => a.accessory === 'broom')) return skipPose('penyapu bersapu');
-      return brokenPose(RIG, [["{ target: low }, false, { hand: false, drivers: ['sweep'] }", "{ target: { x: low.x + 6, y: low.y } }, false, { hand: false, drivers: ['sweep'] }"]], 'known:V30', 'known');
+      return brokenPose(RIG, [["{ target: low }, false, { hand: false, drivers: ['sweep'] }", "{ target: { x: low.x, y: low.y - 3 } }, false, { hand: false, drivers: ['sweep'] }"]], 'motion-contact');
+    });
+
+    await test('Tangan jauh penyapu lepas 3 piksel dari gagang sapu (pose: sentuhan)', () => {
+      if (!naturalIn(['sweep'], (a) => a.accessory === 'broom')) return skipPose('penyapu bersapu');
+      return brokenPose(RIG, [['    const low = sweepGrip(top, tip, { x: cx - 1, y: shoulderY + 1 });\n', '    const low = sweepGrip(top, tip, { x: cx - 1, y: shoulderY + 1 });\n    low.x -= 3;\n']], 'motion-contact');
     });
 
     await test('KNOWN ISSUE V31 memburuk: kedip lutut yang tercatat melompat 2 piksel', () => {
@@ -432,7 +438,7 @@ async function main() {
       return brokenPose(RIG, [['      const ankle = { x: hipX + f.dx, y: footY - 1 - f.lift };\n      const bone', '      const ankle = { x: hipX + f.dx, y: footY - 1 - f.lift };\n      const bone = twoBone(hip, { x: ankle.x + (ankle.x % 2 ? 3 : 0), y: ankle.y }, span / 2, span / 2, -1);\n      const unused']], 'motion-stable');
     });
 
-    await test('Masalah KNOWN ISSUE sentuhan (V30) di pemeran lain (nama pemeran diganti) GAGAL, bukan KNOWN ISSUE', () => {
+    await test('Masalah KNOWN ISSUE sentuhan di pemeran lain (nama pemeran diganti) GAGAL, bukan KNOWN ISSUE', () => {
       const names = knownCast('motion-contact');
       if (!names.length) return { skipped: 'proyek tanpa KNOWN ISSUE sentuhan' };
       const ids = knownHere.filter((k) => k.check === 'motion-contact').map((k) => `known:${k.id}`);

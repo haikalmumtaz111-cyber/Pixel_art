@@ -1,6 +1,20 @@
 {
   "note": "Perubahan hasil render yang disengaja terhadap baseline resmi. Baseline-nya sendiri TIDAK diubah. \"changes\" = perubahan aktif per proyek yang menunggu persetujuan pemilik, terikat ke versi baseline lewat \"against\"; frame di luar rentang yang dideklarasikan tetap wajib identik. \"resolved\" = riwayat perubahan yang sudah disetujui pemilik dan dijadikan versi baseline baru (lewat npm run baseline). Riwayat tidak dihapus. Panduan: docs/BASELINES.md",
-  "changes": {},
+  "changes": {
+    "character-lab": {
+      "stage": "Perbaikan V30 (bukan tahap baru)",
+      "backlog": "V30",
+      "status": "menunggu persetujuan pemilik",
+      "against": "tahap-5-v29",
+      "reason": "Ujung lengan jauh penyapu (gerak natural) kini sampai ke tangan jauh yang menggenggam gagang sapu (Opsi B, geometri B2, dipilih pemilik dari eksperimen V30): gagang dibuat lebih tegak dan dekat badan (atas cx+2+round(fase), bahu+4; ujung cx+5+round(fase x 6), kaki-3), titik genggam tangan jauh = titik terjauh di gagang yang masih di dalam 85% panjang lengan jauh (sweepGrip), sehingga siku jauh menekuk. Sebelumnya lengan jauh berhenti 2-3 sel sebelum tangan jauh. Hanya sprite penyapu yang berubah (render dengan penyapu disembunyikan identik 360/360). Rentang diambil dari render penuh 360 frame dibanding tahap-5-v29: 251 frame berubah, 109-359 (penyapu tampil di layar). Frame 0-108 tetap identik: penyapu tidak tampil di adegan 1, dan frame 108 adalah frame pertama dissolve yang masih sama persis dengan adegan 1.",
+      "frames": [
+        [
+          109,
+          359
+        ]
+      ]
+    }
+  },
   "resolved": [
     {
       "project": "old-town-morning",

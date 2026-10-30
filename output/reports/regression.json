@@ -1,10 +1,24 @@
 {
-  "testedAt": "2026-10-30T05:52:02.594Z",
+  "testedAt": "2026-10-30T09:12:22.807Z",
   "allPass": true,
-  "verdict": "TIDAK ADA REGRESI",
-  "passed": 39,
-  "total": 39,
-  "pending": {},
+  "verdict": "TIDAK ADA REGRESI TAK TERDUGA (ada perubahan terdeklarasi yang menunggu persetujuan)",
+  "passed": 41,
+  "total": 41,
+  "pending": {
+    "character-lab": {
+      "stage": "Perbaikan V30 (bukan tahap baru)",
+      "backlog": "V30",
+      "status": "menunggu persetujuan pemilik",
+      "against": "tahap-5-v29",
+      "reason": "Ujung lengan jauh penyapu (gerak natural) kini sampai ke tangan jauh yang menggenggam gagang sapu (Opsi B, geometri B2, dipilih pemilik dari eksperimen V30): gagang dibuat lebih tegak dan dekat badan (atas cx+2+round(fase), bahu+4; ujung cx+5+round(fase x 6), kaki-3), titik genggam tangan jauh = titik terjauh di gagang yang masih di dalam 85% panjang lengan jauh (sweepGrip), sehingga siku jauh menekuk. Sebelumnya lengan jauh berhenti 2-3 sel sebelum tangan jauh. Hanya sprite penyapu yang berubah (render dengan penyapu disembunyikan identik 360/360). Rentang diambil dari render penuh 360 frame dibanding tahap-5-v29: 251 frame berubah, 109-359 (penyapu tampil di layar). Frame 0-108 tetap identik: penyapu tidak tampil di adegan 1, dan frame 108 adalah frame pertama dissolve yang masih sama persis dengan adegan 1.",
+      "frames": [
+        [
+          109,
+          359
+        ]
+      ]
+    }
+  },
   "baselines": [
     {
       "project": "character-lab",
@@ -103,10 +117,16 @@
       "detail": "74 frame berubah (132-205), 286 identik; catatan 74 frame (132-205); semua di rentang terdeklarasi 132-205"
     },
     {
+      "id": "registry:character-lab:pending",
+      "name": "character-lab: perubahan terdeklarasi menunjuk versi resmi",
+      "pass": true,
+      "detail": "entri \"Perbaikan V30 (bukan tahap baru)\" terhadap tahap-5-v29, status menunggu persetujuan pemilik"
+    },
+    {
       "id": "character-lab:manifest",
       "name": "character-lab: hasil render terbaru dan sukses",
       "pass": true,
-      "detail": "status complete, selesai 2026-10-30T05:38:51.590Z | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest"
+      "detail": "status complete, selesai 2026-10-30T09:00:01.932Z | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest"
     },
     {
       "id": "character-lab:frames",
@@ -122,9 +142,15 @@
     },
     {
       "id": "character-lab:pixels",
-      "name": "character-lab: piksel setiap frame identik",
+      "name": "character-lab: piksel identik di luar perubahan yang disetujui/dideklarasikan",
       "pass": true,
-      "detail": "360 frame identik piksel demi piksel"
+      "detail": "109 frame identik; 251 frame berubah di rentang terdeklarasi (109-359)"
+    },
+    {
+      "id": "character-lab:pending",
+      "name": "character-lab: perubahan Perbaikan V30 (bukan tahap baru) (V30) menunggu persetujuan pemilik",
+      "pass": true,
+      "detail": "251 frame berubah, alasan: Ujung lengan jauh penyapu (gerak natural) kini sampai ke tangan jauh yang menggenggam gagang sapu (Opsi B, geometri B2, dipilih pemilik dari eksperimen V30): gagang dibuat lebih tegak dan dekat badan (atas cx+2+round(fase), bahu+4; ujung cx+5+round(fase x 6), kaki-3), titik genggam tangan jauh = titik terjauh di gagang yang masih di dalam 85% panjang lengan jauh (sweepGrip), sehingga siku jauh menekuk. Sebelumnya lengan jauh berhenti 2-3 sel sebelum tangan jauh. Hanya sprite penyapu yang berubah (render dengan penyapu disembunyikan identik 360/360). Rentang diambil dari render penuh 360 frame dibanding tahap-5-v29: 251 frame berubah, 109-359 (penyapu tampil di layar). Frame 0-108 tetap identik: penyapu tidak tampil di adegan 1, dan frame 108 adalah frame pertama dissolve yang masih sama persis dengan adegan 1."
     },
     {
       "id": "character-lab:video-format",
@@ -134,21 +160,21 @@
     },
     {
       "id": "character-lab:decoded",
-      "name": "character-lab: frame hasil decode identik",
+      "name": "character-lab: frame hasil decode (informasi, kompresi H.264)",
       "pass": true,
-      "detail": "360 frame identik"
+      "detail": "279 frame hasil decode berbeda (28 di luar perubahan, karena encoder H.264 memakai frame sekitar sebagai acuan); sumber PNG di luar perubahan identik"
     },
     {
       "id": "character-lab:sha256",
-      "name": "character-lab: file MP4 identik byte demi byte",
+      "name": "character-lab: file MP4 identik, atau berbeda hanya karena perubahan yang disetujui/dideklarasikan",
       "pass": true,
-      "detail": "1545a9f466dc026d... (baseline 1545a9f466dc026d...)"
+      "detail": "b27d51e067ba6611... (baseline 1545a9f466dc026d...), berbeda karena frame yang disetujui/dideklarasikan berubah"
     },
     {
       "id": "night-to-dawn:manifest",
       "name": "night-to-dawn: hasil render terbaru dan sukses",
       "pass": true,
-      "detail": "status complete, selesai 2026-10-30T05:39:59.670Z | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest"
+      "detail": "status complete, selesai 2026-10-30T09:01:03.255Z | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest"
     },
     {
       "id": "night-to-dawn:frames",
@@ -190,7 +216,7 @@
       "id": "old-town-morning:manifest",
       "name": "old-town-morning: hasil render terbaru dan sukses",
       "pass": true,
-      "detail": "status complete, selesai 2026-10-30T05:41:11.438Z | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest"
+      "detail": "status complete, selesai 2026-10-30T09:02:17.982Z | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest"
     },
     {
       "id": "old-town-morning:frames",
@@ -232,7 +258,7 @@
       "id": "train-night-rain:manifest",
       "name": "train-night-rain: hasil render terbaru dan sukses",
       "pass": true,
-      "detail": "status complete, selesai 2026-10-30T05:51:02.416Z | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest"
+      "detail": "status complete, selesai 2026-10-30T09:11:30.590Z | konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest"
     },
     {
       "id": "train-night-rain:frames",
