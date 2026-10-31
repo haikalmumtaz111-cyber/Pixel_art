@@ -25,7 +25,7 @@ Kondisi saat ini:
 
 Perintah `npm run baseline` menampilkan tabel ini langsung dari registry.
 
-Tahap 6A-1 (waktu relatif adegan, di-merge ke `main` lewat PR #26, `1c34331`) tidak mengubah tabel ini: keempat baseline resmi dan semua versi historis tetap sama. Walaupun kodenya sudah di `main`, sintaks waktu barunya belum boleh dipakai untuk merekam baseline resmi sampai uji browser 6A-2b dan persetujuan pemilik (keputusan D6). Tahap 6A-2a (branch lokal `tahap-6-a-compiled-hash`, belum di-commit) menambahkan `compiledHash` ke manifest render sehingga perubahan kompiler Node yang mengubah hasil kompilasi terdeteksi (eksperimen E1), dan juga tidak mengubah tabel ini. V31 dan V32 tetap KNOWN ISSUE.
+Tahap 6A-1 (waktu relatif adegan, di-merge ke `main` lewat PR #26, `1c34331`) tidak mengubah tabel ini: keempat baseline resmi dan semua versi historis tetap sama. Walaupun kodenya sudah di `main`, sintaks waktu barunya belum boleh dipakai untuk merekam baseline resmi sampai uji browser 6A-2b dan persetujuan pemilik (keputusan D6). Tahap 6A-2a (di-merge ke `main` lewat PR #28, `f1febb3832652a2cf11032bf75f5e3c18f7c08b2`) menambahkan `compiledHash` ke manifest render sehingga perubahan kompiler Node yang mengubah hasil kompilasi terdeteksi (eksperimen E1), dan juga tidak mengubah tabel ini. V31 dan V32 tetap KNOWN ISSUE.
 
 Proyek demo Tahap 5 `character-lab` mendapat baseline pertamanya, versi `tahap-5`, setelah pemilik menyetujui dan memerintahkannya (lihat riwayat di bawah). Sejak itu uji regresi dan uji asap CI juga mencocokkannya dengan baseline. Tahap 5 tidak mengubah hasil render ketiga proyek lama, jadi tidak ada entri baru di `pending-changes.json`.
 
