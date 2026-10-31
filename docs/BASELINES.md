@@ -25,7 +25,7 @@ Kondisi saat ini:
 
 Perintah `npm run baseline` menampilkan tabel ini langsung dari registry.
 
-Tahap 6A-1 (waktu relatif adegan, branch `tahap-6-a-timeline`, dibuka sebagai PR, belum di-merge) tidak mengubah tabel ini: keempat baseline resmi dan semua versi historis tetap sama. Sintaks waktu barunya belum boleh dipakai untuk merekam baseline resmi sampai manifest render mencatat hasil kompilasi (`compiledHash`, direncanakan di 6A-2, BACKLOG T22), karena manifest sekarang tidak mendeteksi perubahan kode kompiler (eksperimen E1). V31 dan V32 tetap KNOWN ISSUE.
+Tahap 6A-1 (waktu relatif adegan, di-merge ke `main` lewat PR #26, `1c34331`) tidak mengubah tabel ini: keempat baseline resmi dan semua versi historis tetap sama. Walaupun kodenya sudah di `main`, sintaks waktu barunya belum boleh dipakai untuk merekam baseline resmi sampai manifest render mencatat hasil kompilasi (`compiledHash`, direncanakan di 6A-2, BACKLOG T22), karena manifest sekarang tidak mendeteksi perubahan kode kompiler (eksperimen E1). V31 dan V32 tetap KNOWN ISSUE.
 
 Proyek demo Tahap 5 `character-lab` mendapat baseline pertamanya, versi `tahap-5`, setelah pemilik menyetujui dan memerintahkannya (lihat riwayat di bawah). Sejak itu uji regresi dan uji asap CI juga mencocokkannya dengan baseline. Tahap 5 tidak mengubah hasil render ketiga proyek lama, jadi tidak ada entri baru di `pending-changes.json`.
 
@@ -109,7 +109,7 @@ Kode: `src/render/baselines.cjs` (registry, pemeriksaannya, dan aturan penjaga),
 | Ruleset | ID | Target | Aturan |
 |---------|----|--------|--------|
 | Protect main - Pixel History Studio | 26005617 | `main` (`~DEFAULT_BRANCH`) | wajib PR (0 approval), hanya merge commit, dua check CI wajib ("Lint, unit test, validasi konfigurasi", "Uji asap render dan lab zoom") dengan mode strict (branch PR harus up to date), tidak boleh dihapus, tidak boleh force push, tanpa bypass |
-| Protect historical stages | 26006150 | `refs/heads/tahap-[1-4]-*` dan `refs/heads/tahap-5-*` (lima branch Tahap 1-5), serta `refs/heads/tahap-6-*` (untuk Tahap 6, belum ada branch-nya) | tidak boleh dihapus, tidak boleh force push, tanpa bypass |
+| Protect historical stages | 26006150 | `refs/heads/tahap-[1-4]-*` dan `refs/heads/tahap-5-*` (lima branch Tahap 1-5), serta `refs/heads/tahap-6-*` (untuk Tahap 6. Saat verifikasi 29 Oktober 2026 belum ada branch-nya. `tahap-6-a-timeline` dibuat 31 Oktober 2026 dan namanya cocok dengan pola ini, tetapi aturan efektifnya belum dibaca ulang lewat API) | tidak boleh dihapus, tidak boleh force push, tanpa bypass |
 
 - **Terbukti:** kedua ruleset berstatus `active`; API aturan efektif menampilkan aturan itu untuk `main` dan kelima branch historis (dan tidak untuk branch lain); nama dan aplikasi check wajib cocok dengan check run CI di `main`. Pola `tahap-5-*` ditambahkan pemilik setelah Tahap 5 di-merge dan diverifikasi ulang lewat API pada hari yang sama: `tahap-5-character-animation` kini `protected`, aturan `main` tidak berubah. Pola `tahap-6-*` ditambahkan pemilik pada 29 Oktober 2026 sebelum Tahap 6 dimulai dan diverifikasi read-only lewat API: ruleset tetap `active`, bypass kosong, aturan kelima branch Tahap 1-5 identik dengan sebelumnya, nama uji `tahap-6-cek-pola` (branch tidak dibuat) kena larangan hapus dan force push sedangkan `tahap6-cek` dan `tahap-7-cek` tidak, dan ruleset `main` identik byte dengan sebelumnya.
 - **Belum terbukti:** penolakan push nyata. Sampai verifikasi terakhir belum pernah ada push yang ditolak, jadi enforcement-nya belum pernah teramati menolak.
