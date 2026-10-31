@@ -1,0 +1,14 @@
+{
+  "sky": {"type": "gradient-sky", "horizon": 128, "sunX": 64, "sunY": 120, "sunRadius": 11, "sunGlow": 20},
+  "sky-bukit": {"type": "gradient-sky", "horizon": 140, "sunX": 380, "sunY": 60, "sunRadius": 8, "sunGlow": 14},
+  "volcano": {"type": "ridge", "shape": "volcano", "peakX": 300, "peakY": 62, "crater": 7, "slope": 0.42, "base": 122, "amp": 8, "freq": 0.012, "color": "mountainFar", "rim": "mountainFarRim", "bottom": 280},
+  "hills": {"type": "ridge", "shape": "hills", "base": 114, "amp": 20, "freq": 0.018, "color": "mountain", "rim": "mountainRim", "bottom": 280, "seedOffset": 3},
+  "skyline": {"type": "skyline", "base": 118, "color": "farRoof", "light": "farRoofLight", "tree": "farTree"},
+  "ruko": {"type": "shophouse", "width": 72, "floors": 2, "roof": "tile", "wall": "wallCream", "trim": "trimWhite", "shutter": "shutterGreen", "awning": "none", "windows": 2, "plants": false},
+  "lamp": {"type": "street-lamp", "height": 74},
+  "kiosk": {"type": "kiosk", "width": 46, "sign": "KOPI"},
+  "bench": {"type": "bench", "width": 30},
+  "street": {"type": "street", "sidewalkTop": 196, "curbTop": 213, "roadTop": 217, "roadBottom": 254, "bottom": 280},
+  "bicycle": {"type": "bicycle", "wheelRadius": 8, "color": "bikeFrame"},
+  "pengayuh": {"type": "rig-character", "height": 42, "build": "slim", "sleeves": "long", "skin": "#b47a50", "skinShade": "#87563a", "hair": "#1f1611", "shirt": "#4a6aa0", "shirtShade": "#34508a", "collar": "#6a8ac0", "pants": "#3a3a40", "pantsShade": "#2a2a30", "shoes": "#2a211b", "seed": 66, "motion": "natural"}
+}

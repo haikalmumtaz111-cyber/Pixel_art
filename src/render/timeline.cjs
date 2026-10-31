@@ -85,6 +85,51 @@ function checkWorld(raw, ctx, issues) {
   return index;
 }
 
+// Cakupan rujukan satu adegan tersusun (Tahap 6A-2b, Blueprint 6A v2 A12 dan A13).
+// Browser (composer.js) hanya mengenal entitas stage adegan itu, seluruh film.cast, dan scene.entities. Pemeriksaan
+// global di checkWorld memakai gabungan semua stage dan tidak melihat scene.entities, jadi rujukan lintas stage,
+// induk entitas adegan yang tidak ada, dan induk entitas adegan yang berputar dulu lolos validasi lalu baru gagal saat render.
+// - A12: setiap entitas yang tampil dan target kamera follow-entity, beserta seluruh rantai induknya, harus bisa
+//   diselesaikan di dalam adegan itu, dan rantai induknya tidak boleh berputar
+// - A13: setiap id hanya boleh muncul sekali di daftar tampil adegan (composer menggambar setiap kemunculan)
+function checkSceneScope(raw, scene, stage, cam, label, issues) {
+  // sama dengan urutan `defs` di composer.js: definisi yang ditulis belakangan menimpa yang lebih awal
+  const defs = new Map();
+  for (const e of stage.entities || []) defs.set(e.id, e);
+  for (const [id, def] of Object.entries(raw.cast || {})) defs.set(id, { ...def, id });
+  for (const e of scene.entities || []) defs.set(e?.id, e);
+  const where = `stage ${scene.stage}, cast, atau entitas adegan`;
+
+  // daftar tampil = urutan `shown` di composer.js
+  const shown = [...(stage.entities || []).map((e) => e.id), ...(scene.cast || []), ...(scene.entities || []).map((e) => e?.id)];
+  const counts = new Map();
+  for (const id of shown) if (id !== undefined) counts.set(id, (counts.get(id) || 0) + 1);
+  for (const [id, n] of counts) if (n > 1) issues.push(`${label}: entitas "${id}" tampil ${n} kali di daftar tampil adegan ini; setiap id hanya boleh sekali (A13)`);
+
+  const roots = [...counts.keys()].filter((id) => defs.has(id));
+  if (cam && cam.type === 'follow-entity' && cam.entity !== undefined) {
+    if (!defs.has(cam.entity)) issues.push(`${label} kamera: entitas yang diikuti "${cam.entity}" tidak ada di adegan ini (${where}) (A12)`);
+    else if (!roots.includes(cam.entity)) roots.push(cam.entity);
+  }
+  for (const id of roots) {
+    const chain = [id];
+    let current = defs.get(id);
+    while (current && current.parent !== undefined) {
+      const parent = current.parent;
+      if (!defs.has(parent)) {
+        issues.push(`${label}: entitas "${id}": induk "${parent}" tidak ada di adegan ini (${where}) (A12)`);
+        break;
+      }
+      if (chain.includes(parent)) {
+        issues.push(`${label}: entitas "${id}": rantai induk berputar (${[...chain, parent].join(' -> ')}) (A12)`);
+        break;
+      }
+      chain.push(parent);
+      current = defs.get(parent);
+    }
+  }
+}
+
 function normalizeTimeline(raw, ctx) {
   const issues = [];
   const { totalFrames, fps, root } = ctx;
@@ -182,6 +227,7 @@ function normalizeTimeline(raw, ctx) {
       if (scene.camera?.track && !cam) issues.push(`${label}: track kamera "${scene.camera.track}" tidak ditemukan`);
       else S.checkCamera(cam, `${label} kamera`, ctx, issues, local);
       checkLighting(scene.lighting, `${label} pencahayaan`);
+      if (stage) checkSceneScope(raw, scene, stage, cam, label, issues);
       // setiap warna yang dibutuhkan aset harus ada di palet yang dipakai adegan ini
       const lighting = scene.lighting || raw.lighting;
       const paletteNames = lighting ? [lighting.from, lighting.to] : ['default'];
@@ -264,6 +310,19 @@ function normalizeTimeline(raw, ctx) {
   for (let i = 1; i < transitions.length; i++) {
     if (transitions[i].startFrame < transitions[i - 1].endFrame) issues.push(`Transisi ${transitions[i].id} tumpang tindih dengan ${transitions[i - 1].id}`);
   }
+  // N24 (Tahap 6A-2b, Blueprint 6A v2 A9): dua adegan tersusun berurutan dengan stage berbeda wajib disambung dissolve.
+  // Potongan langsung (cut) atau tanpa transisi membuat gambar melompat. Potongan yang disengaja (keputusan O1) belum
+  // didukung. Yang diperiksa jenis transisi yang ditulis, jadi dissolve yang angkanya salah tetap dilaporkan oleh
+  // pemeriksaan transisi di atas, bukan sebagai "tanpa transisi".
+  scenes.forEach((scene, i) => {
+    const next = scenes[i + 1];
+    if (!next || !ctx.engine.builtinScenes.includes(scene.module) || !ctx.engine.builtinScenes.includes(next.module)) return;
+    if (scene.stage === next.stage) return;
+    const type = scene.transitionOut ? scene.transitionOut.type : null;
+    if (type !== 'dissolve') {
+      issues.push(`Adegan ${scene.id} -> ${next.id}: pergantian stage "${scene.stage}" ke "${next.stage}" wajib memakai transisi dissolve, bukan ${type ? `"${type}"` : 'tanpa transisi'} (N24; potongan disengaja belum didukung)`);
+    }
+  });
 
   for (const [i, rule] of (raw.validation?.consistency || []).entries()) {
     const label = `Aturan konsistensi ${i + 1}`;
