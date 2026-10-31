@@ -24,6 +24,7 @@
     "test:baseline-guard": "node src/render/baseline-guard.cjs",
     "test:projects": "node src/render/project-tests.cjs",
     "test:zoom": "node src/render/zoom-tests.cjs",
+    "test:fixtures": "node src/render/fixture-tests.cjs",
     "demo:zoom": "node src/render/zoom-demo.cjs",
     "demo:character": "node src/render/character-demo.cjs",
     "test:ci": "npm run lint && npm run test:engine && npm run test:smoke"
