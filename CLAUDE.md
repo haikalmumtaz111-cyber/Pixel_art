@@ -87,6 +87,8 @@ Semua perintah proyek memakai `--project <id>` (`old-town-morning`, `night-to-da
   - Unit test `tests/engine/scene-scope.test.js` dan `tests/engine/fixture-6a2b.test.js` (golden `runtimeView` penuh, tabel literal, kontrol sensitivitas 1 frame, mutasi kompiler Kelas A/B, penjaga isolasi fixture, D6).
   - `src/engine`, `src/assets`, `src/scenes`, `config/`, baseline, registry, pending, known issues, CI, `.gitignore`, semantik `timing.cjs`, definisi `runtimeView`, LOCKED, dan manifest/MP4 resmi tidak berubah.
 
+  Hasil uji (clean clone commit `a8752cb`): lint lulus, unit test 193/193, penjaga 3/3, `build:all` 4/4, `npm test` 13/13 langkah tanpa kegagalan (validasi dan uji negatif sama dengan `main`, regresi 40/40), `test:ci` dan `build:prototype` lulus, regresi historis B vs `tahap-3` 11/11 dan `character-lab` vs `tahap-5-v29`/`tahap-5` 12/12, MP4 keempat proyek identik byte, framemd5 1.320/1.320, file baseline dan `compiledHash` LOCKED tidak berubah.
+
   PR 2 (runner browser fixture: AC12, AC13, AC14 piksel, AC16, A13 per frame, M5, NT-STALE-2B, dan blok uji asap CI) belum dikerjakan. AC2b-01 sampai AC2b-23 baru dinilai lengkap setelah PR 2. D6 tetap berlaku apa adanya: sintaks waktu relatif adegan belum boleh dipakai untuk produksi atau perekaman baseline resmi. Usulan U1-U7 dari audit delta bukan kebijakan pemilik.
 
 ## Cara melanjutkan di sesi baru
