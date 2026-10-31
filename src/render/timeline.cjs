@@ -4,19 +4,17 @@
 // - adegan memakai interval setengah terbuka [start, end): frame awal ikut, frame akhir tidak
 // - adegan berurutan tanpa celah dan tanpa tumpang tindih, menutup seluruh durasi film
 // Konfigurasi lama tanpa "timeline" (prototipe Tahap 1) otomatis menjadi timeline satu adegan.
+// Adegan juga boleh ditulis dengan "duration" dan waktu relatif adegan; timing.cjs mengubahnya menjadi frame film
+// lebih dulu, lalu semua pemeriksaan di bawah berjalan pada hasil konversi itu.
 const fs = require('fs');
 const path = require('path');
 const S = require('./schema.cjs');
+const T = require('./timing.cjs');
+
+const { toFrames } = T;
 
 function moduleFile(root, module) {
   return module.startsWith('/') ? path.join(root, module.endsWith('.js') ? module : `${module}.js`) : path.join(root, 'src', 'scenes', `${module}.js`);
-}
-
-// Detik -> frame bulat. Mengembalikan null bila tidak pas.
-function toFrames(seconds, fps) {
-  if (!S.isNum(seconds)) return null;
-  const frames = Math.round(seconds * fps);
-  return Math.abs(frames - seconds * fps) < 1e-6 ? frames : null;
 }
 
 function legacyTimeline(raw, totalFrames) {
@@ -94,6 +92,8 @@ function normalizeTimeline(raw, ctx) {
     const timeline = legacyTimeline(raw, totalFrames);
     if (!raw.sceneModule) issues.push('Konfigurasi tanpa timeline wajib punya "sceneModule".');
     else if (!fs.existsSync(moduleFile(root, raw.sceneModule))) issues.push(`Modul adegan tidak ditemukan: ${raw.sceneModule}`);
+    if (raw.timing !== undefined) issues.push('Konfigurasi tanpa timeline tidak mendukung "timing" (hanya untuk adegan di timeline).');
+    T.checkTimingKeys(raw, issues);
     return { timeline, issues };
   }
 
@@ -113,34 +113,44 @@ function normalizeTimeline(raw, ctx) {
   checkLighting(raw.lighting, 'Pencahayaan proyek');
   for (const [key, track] of Object.entries(raw.cameraTracks || {})) S.checkCamera(track, `Track kamera "${key}"`, ctx, issues, entityIds);
 
-  const scenes = (raw.timeline.scenes || []).map((s) => ({ ...s }));
+  // posisi adegan/transisi (mode start/end atau duration) dan konversi track milik adegan ke frame film
+  T.checkGlobalTracks(raw, issues);
+  T.checkTimingKeys(raw, issues);
+  const plan = T.planTimeline(raw, ctx, issues);
+  const scenes = T.compileScenes(raw, plan, ctx, issues);
   if (scenes.length === 0) issues.push('Timeline belum punya adegan.');
+  const required = { legacy: ['start', 'end'], duration: ['duration'], mixed: [] }[plan.mode];
   const ids = new Set();
   const effects = new Set(Object.values(ctx.catalog).flatMap((t) => t.effects || []));
   let cursor = 0;
 
   scenes.forEach((scene, i) => {
     const label = `Adegan ${i + 1} (${scene.id || 'tanpa id'})`;
-    for (const field of ['id', 'name', 'module', 'start', 'end']) if (scene[field] === undefined) issues.push(`${label}: field "${field}" belum diisi`);
+    for (const field of ['id', 'name', 'module', ...required]) if (scene[field] === undefined) issues.push(`${label}: field "${field}" belum diisi`);
     if (scene.id !== undefined && !S.isSlug(scene.id)) issues.push(`${label}: id hanya boleh huruf kecil, angka, dan tanda hubung`);
     if (ids.has(scene.id)) issues.push(`${label}: id adegan ganda`);
     ids.add(scene.id);
 
-    const start = toFrames(scene.start, fps);
-    const end = toFrames(scene.end, fps);
-    if (scene.start !== undefined && start === null) issues.push(`${label}: start ${scene.start} detik tidak menjadi frame bulat pada ${fps} FPS`);
-    if (scene.end !== undefined && end === null) issues.push(`${label}: end ${scene.end} detik tidak menjadi frame bulat pada ${fps} FPS`);
-    if (start !== null && end !== null) {
-      if (end <= start) issues.push(`${label}: durasi tidak valid (end harus lebih besar dari start)`);
-      if (start !== cursor) {
-        issues.push(start > cursor
-          ? `${label}: ada celah, adegan seharusnya mulai di frame ${cursor} tetapi mulai di ${start}`
-          : `${label}: tumpang tindih, adegan mulai di frame ${start} padahal adegan sebelumnya berakhir di ${cursor}`);
+    if (plan.mode === 'legacy') {
+      const start = toFrames(scene.start, fps);
+      const end = toFrames(scene.end, fps);
+      if (scene.start !== undefined && start === null) issues.push(`${label}: start ${scene.start} detik tidak menjadi frame bulat pada ${fps} FPS`);
+      if (scene.end !== undefined && end === null) issues.push(`${label}: end ${scene.end} detik tidak menjadi frame bulat pada ${fps} FPS`);
+      if (start !== null && end !== null) {
+        if (end <= start) issues.push(`${label}: durasi tidak valid (end harus lebih besar dari start)`);
+        if (start !== cursor) {
+          issues.push(start > cursor
+            ? `${label}: ada celah, adegan seharusnya mulai di frame ${cursor} tetapi mulai di ${start}`
+            : `${label}: tumpang tindih, adegan mulai di frame ${start} padahal adegan sebelumnya berakhir di ${cursor}`);
+        }
+        scene.startFrame = start;
+        scene.endFrame = end;
+        scene.durationFrames = end - start;
+        cursor = end;
       }
-      scene.startFrame = start;
-      scene.endFrame = end;
-      scene.durationFrames = end - start;
-      cursor = end;
+    } else if (plan.scenes[i]) {
+      // mode duration: posisi dari jumlah frame adegan sebelumnya (masalahnya dilaporkan timing.cjs)
+      Object.assign(scene, plan.scenes[i]);
     }
 
     // lensa: zoom tambahan untuk adegan jenis apa pun (butuh upscale "browser" agar piksel tetap tajam)
@@ -208,7 +218,7 @@ function normalizeTimeline(raw, ctx) {
       if (scene.camera?.panKeys) S.checkNumericKeys(scene.camera.panKeys, `${label} kamera panKeys`, ctx, issues);
     }
   });
-  if (scenes.length && cursor !== totalFrames) issues.push(`Adegan terakhir harus berakhir tepat di akhir film (frame ${totalFrames}), bukan ${cursor}`);
+  if (plan.mode === 'legacy' && scenes.length && cursor !== totalFrames) issues.push(`Adegan terakhir harus berakhir tepat di akhir film (frame ${totalFrames}), bukan ${cursor}`);
 
   const transitions = [];
   scenes.forEach((scene, i) => {
@@ -222,11 +232,21 @@ function normalizeTimeline(raw, ctx) {
     const next = scenes[i + 1];
     if (!ctx.engine.transitions.includes(out.type)) issues.push(`${label}: jenis "${out.type}" tidak dikenal (pilihan: ${ctx.engine.transitions.join(', ')})`);
     if (out.to !== undefined && out.to !== next.id) issues.push(`${label}: harus menuju adegan berikutnya (${next.id}), bukan ${out.to}`);
-    const start = toFrames(out.start, fps);
-    const duration = toFrames(out.duration, fps);
-    if (start === null || duration === null || duration < 2) {
-      issues.push(`${label}: start dan duration (detik) wajib diisi, menjadi frame bulat, dan durasi minimal 2 frame`);
-      return;
+    let start;
+    let duration;
+    if (plan.mode === 'legacy') {
+      start = toFrames(out.start, fps);
+      duration = toFrames(out.duration, fps);
+      if (start === null || duration === null || duration < 2) {
+        issues.push(`${label}: start dan duration (detik) wajib diisi, menjadi frame bulat, dan durasi minimal 2 frame`);
+        return;
+      }
+    } else {
+      // mode duration: start = batas adegan - lead (masalahnya dilaporkan timing.cjs)
+      const t = plan.transitions[i];
+      if (!t) return;
+      start = t.startFrame;
+      duration = t.durationFrames;
     }
     const end = start + duration;
     if (next.startFrame !== undefined && !(start < next.startFrame && end > next.startFrame)) {
