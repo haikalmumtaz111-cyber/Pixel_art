@@ -160,7 +160,7 @@ Pixel art dibesarkan tanpa blur, jadi satu piksel art selalu berukuran bulat di 
 
 ### Waktu relatif adegan (Tahap 6A-1, belum untuk produksi)
 
-**Status:** kompilernya (`src/render/timing.cjs`) sudah di-merge ke `main` (PR #26) dan diuji lewat unit test, tetapi manifest render belum mencatat hasil kompilasinya (`compiledHash` dan uji NT-STALE-2, direncanakan di 6A-2, BACKLOG T22). Selama itu sintaks ini belum aman untuk proyek produksi dan belum boleh dipakai untuk merekam baseline resmi. Proyek yang tidak memakainya tidak berubah sama sekali.
+**Status:** kompilernya (`src/render/timing.cjs`) sudah di-merge ke `main` (PR #26) dan diuji lewat unit test. Sidik kompilasi manifest (`compiledHash` dan uji NT-STALE-2, Tahap 6A-2a, BACKLOG T22) sedang dikerjakan di branch lokal dan belum di-commit. Sintaks ini belum aman untuk proyek produksi dan belum boleh dipakai untuk merekam baseline resmi sampai uji browser 6A-2b lulus dan pemilik menyetujuinya. Proyek yang tidak memakainya tidak berubah sama sekali.
 
 Alih-alih menulis `start`/`end` dan keyframe dalam frame film, adegan boleh ditulis dengan durasi dan waktu yang dihitung dari awal adegan:
 

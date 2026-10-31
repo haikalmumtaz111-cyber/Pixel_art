@@ -66,19 +66,43 @@ function ffmpegArgs(config, { framesDir, count, video, overrides = {} }) {
   ];
 }
 
+// Encode ke file sementara di folder tujuan (.<nama>.partial) tanpa mengganti MP4 lama.
+// Gagal: file sementara dihapus. Sukses: { temp, command }, dan pemanggil memutuskan kapan file itu dipasang.
+function encodeToTemp(config, job) {
+  fs.mkdirSync(path.dirname(job.video), { recursive: true });
+  const temp = path.join(path.dirname(job.video), `.${path.basename(job.video)}.partial`);
+  const args = ffmpegArgs(config, { ...job, video: temp });
+  let result;
+  try {
+    result = run(FFMPEG, args);
+  } catch (error) {
+    fs.rmSync(temp, { force: true });
+    throw error;
+  }
+  if (result.status !== 0) {
+    fs.rmSync(temp, { force: true });
+    throw new Error(`FFmpeg gagal:\n${result.stderr}`);
+  }
+  return { temp, command: [FFMPEG, ...ffmpegArgs(config, job)].join(' ') };
+}
+
+// Pasang file sementara menggantikan target dengan rename di folder yang sama: target lama tetap utuh
+// atau file baru terpasang penuh. Gagal: target tidak berubah dan file sementara dihapus.
+function replaceFile(temp, target) {
+  try {
+    fs.renameSync(temp, target);
+  } catch (error) {
+    fs.rmSync(temp, { force: true });
+    throw error;
+  }
+}
+
 // MP4 ditulis ke file sementara dulu, lalu diganti namanya setelah FFmpeg sukses.
 // Dengan begitu MP4 lama tidak pernah tertimpa setengah jadi bila encoding gagal.
 function encodeVideo(config, job) {
-  fs.mkdirSync(path.dirname(job.video), { recursive: true });
-  const partial = path.join(path.dirname(job.video), `.${path.basename(job.video)}.partial`);
-  const args = ffmpegArgs(config, { ...job, video: partial });
-  const result = run(FFMPEG, args);
-  if (result.status !== 0) {
-    if (fs.existsSync(partial)) fs.rmSync(partial);
-    throw new Error(`FFmpeg gagal:\n${result.stderr}`);
-  }
-  fs.renameSync(partial, job.video);
-  return [FFMPEG, ...ffmpegArgs(config, job)].join(' ');
+  const { temp, command } = encodeToTemp(config, job);
+  replaceFile(temp, job.video);
+  return command;
 }
 
-module.exports = { FFMPEG, FFPROBE, run, renderFrames, encodeVideo };
+module.exports = { FFMPEG, FFPROBE, run, renderFrames, encodeToTemp, replaceFile, encodeVideo };
