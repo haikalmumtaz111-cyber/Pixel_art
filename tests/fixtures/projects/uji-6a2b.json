@@ -1,0 +1,55 @@
+{
+  "id": "uji-6a2b",
+  "name": "uji-6a2b",
+  "title": "Fixture uji multi-stage Tahap 6A-2b (sintaks waktu relatif adegan)",
+  "seed": 7,
+  "width": 480, "height": 270, "outputWidth": 1920, "outputHeight": 1080, "aspectRatio": "16:9",
+  "fps": 30,
+  "durationSeconds": 9,
+  "rendering": { "upscale": "browser" },
+  "output": { "framesDir": "output/frames/uji-6a2b/frames", "video": "output/frames/uji-6a2b/uji-6a2b.mp4", "reportDir": "output/frames/uji-6a2b/reports" },
+  "palettes": { "$include": "uji-6a2b/palettes.json" },
+  "assets": { "$include": "uji-6a2b/assets.json" },
+  "stages": { "$include": "uji-6a2b/stages.json" },
+  "environment": { "tetap": [[0, 0]] },
+  "timing": { "unit": "seconds", "base": "scene" },
+  "timeline": {
+    "scenes": [
+      {
+        "id": "a", "name": "Pasar pagi, pengayuh", "module": "compose", "stage": "pasar", "duration": 3,
+        "lighting": { "from": "pagi", "to": "pagi", "track": "tetap" },
+        "camera": { "type": "keys", "x": [[0, 0], [3.1, 93]], "y": [[0, 30]] },
+        "entities": [
+          { "id": "sepeda-a", "asset": "bicycle", "layer": "road", "anchor": "bottom-center", "position": [100, 244],
+            "motion": { "x": [[0, 100], [3.1, 348]], "y": { "unit": "frames", "base": "film", "keys": [[0, 244]] } } },
+          { "id": "pengayuh-a", "asset": "pengayuh", "layer": "road", "anchor": "bottom-center", "parent": "sepeda-a",
+            "position": [-3, -7], "state": "cycle", "z": 1, "params": { "phaseOffset": 3 } }
+        ],
+        "transitionOut": { "type": "dissolve", "duration": 0.8, "lead": 0.3, "params": { "easing": "linear" } }
+      },
+      {
+        "id": "b", "name": "Bukit malam", "module": "compose", "stage": "bukit", "duration": 3,
+        "timing": { "unit": "frames" },
+        "lighting": { "from": "malam", "to": "malam", "track": "tetap" },
+        "camera": { "type": "keys", "x": [[-6, 303], [95, 404]], "y": [[0, 20]] },
+        "lens": { "zoom": { "unit": "seconds", "keys": [[0, 1], [2, 1.5, "inOutSine"]] } },
+        "entities": [
+          { "id": "lampu-b", "asset": "lamp", "layer": "sidewalk", "anchor": "bottom-center", "position": [380, 214], "color": [[0, "off"], [30, "on"]] },
+          { "id": "sepeda-b", "asset": "bicycle", "layer": "road", "anchor": "bottom-center", "position": [350, 244],
+            "motion": { "x": { "unit": "seconds", "keys": [[0, 350], [3.1, 610]] } }, "flip": [[0, false], [60, true]] }
+        ],
+        "transitionOut": { "type": "dissolve", "duration": 0.6, "params": { "easing": "linear" } }
+      },
+      {
+        "id": "c", "name": "Pasar siang", "module": "compose", "stage": "pasar", "duration": 3,
+        "timing": { "unit": "frames", "base": "scene" },
+        "lighting": { "from": "siang", "to": "siang", "track": "tetap" },
+        "camera": { "type": "keys", "x": [[-6, 503], [89, 598]], "y": [[0, 30]], "zoom": [[0, 1.25], [80, 1]] },
+        "entities": [
+          { "id": "kios-c", "asset": "kiosk", "layer": "sidewalk", "anchor": "bottom-center", "position": [620, 209], "paramTracks": { "open": [[0, 0], [60, 1]] } },
+          { "id": "lampu-c", "asset": "lamp", "layer": "sidewalk", "anchor": "bottom-center", "position": [700, 214], "color": "on", "visible": { "unit": "seconds", "keys": [[0, true], [2, false]] } }
+        ]
+      }
+    ]
+  }
+}

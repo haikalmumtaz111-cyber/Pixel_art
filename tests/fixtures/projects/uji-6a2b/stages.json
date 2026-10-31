@@ -1,0 +1,39 @@
+{
+  "pasar": {
+    "layers": [
+      { "id": "sky", "parallax": 0 }, { "id": "far", "parallax": 0.06 }, { "id": "hills", "parallax": 0.14 },
+      { "id": "town-far", "parallax": 0.32 }, { "id": "buildings", "parallax": 1 }, { "id": "street", "parallax": 1 },
+      { "id": "sidewalk", "parallax": 1, "sortByY": true }, { "id": "road", "parallax": 1, "sortByY": true }
+    ],
+    "entities": [
+      { "id": "pasar-sky", "asset": "sky", "layer": "sky" },
+      { "id": "pasar-hills", "asset": "hills", "layer": "hills" },
+      { "id": "pasar-skyline", "asset": "skyline", "layer": "town-far" },
+      { "id": "pasar-ruko-1", "asset": "ruko", "layer": "buildings", "position": [16, 196], "anchor": "bottom-left", "params": { "sign": "TOKO", "seedOffset": 1 } },
+      { "id": "pasar-ruko-2", "asset": "ruko", "layer": "buildings", "position": [140, 196], "anchor": "bottom-left", "params": { "wall": "wallOchre", "sign": "ROTI", "seedOffset": 2 } },
+      { "id": "pasar-ruko-3", "asset": "ruko", "layer": "buildings", "position": [300, 196], "anchor": "bottom-left", "params": { "wall": "wallMint", "sign": "JAMU", "seedOffset": 3 } },
+      { "id": "pasar-ruko-4", "asset": "ruko", "layer": "buildings", "position": [470, 196], "anchor": "bottom-left", "params": { "wall": "wallRose", "sign": "BATIK", "seedOffset": 4 } },
+      { "id": "pasar-ruko-5", "asset": "ruko", "layer": "buildings", "position": [640, 196], "anchor": "bottom-left", "params": { "wall": "wallSky", "sign": "KAIN", "seedOffset": 5 } },
+      { "id": "pasar-ruko-6", "asset": "ruko", "layer": "buildings", "position": [800, 196], "anchor": "bottom-left", "params": { "sign": "JAHIT", "seedOffset": 6 } },
+      { "id": "pasar-street", "asset": "street", "layer": "street" },
+      { "id": "pasar-lamp-1", "asset": "lamp", "layer": "sidewalk", "position": [156, 214], "anchor": "bottom-center", "color": "off" },
+      { "id": "pasar-lamp-2", "asset": "lamp", "layer": "sidewalk", "position": [560, 214], "anchor": "bottom-center", "color": "off" },
+      { "id": "pasar-bench", "asset": "bench", "layer": "sidewalk", "position": [440, 208], "anchor": "bottom-center" }
+    ]
+  },
+  "bukit": {
+    "layers": [
+      { "id": "sky", "parallax": 0 }, { "id": "far", "parallax": 0.06 }, { "id": "hills", "parallax": 0.14 },
+      { "id": "street", "parallax": 1 }, { "id": "sidewalk", "parallax": 1, "sortByY": true }, { "id": "road", "parallax": 1, "sortByY": true }
+    ],
+    "entities": [
+      { "id": "bukit-sky", "asset": "sky-bukit", "layer": "sky" },
+      { "id": "bukit-volcano", "asset": "volcano", "layer": "far" },
+      { "id": "bukit-hills", "asset": "hills", "layer": "hills", "params": { "seedOffset": 9 } },
+      { "id": "bukit-street", "asset": "street", "layer": "street" },
+      { "id": "bukit-lamp-1", "asset": "lamp", "layer": "sidewalk", "position": [260, 214], "anchor": "bottom-center", "color": "on" },
+      { "id": "bukit-lamp-2", "asset": "lamp", "layer": "sidewalk", "position": [520, 214], "anchor": "bottom-center", "color": "on" },
+      { "id": "bukit-lamp-3", "asset": "lamp", "layer": "sidewalk", "position": [760, 214], "anchor": "bottom-center", "color": "on" }
+    ]
+  }
+}

@@ -132,12 +132,12 @@ Yang bisa diatur tanpa kode:
 | Ingin... | Tulis di |
 |----------|----------|
 | menambah adegan | entri baru di `timeline.scenes` dengan `start`/`end` dalam detik. Adegan harus menyambung tanpa celah |
-| transisi antar adegan | `transitionOut: { "type": "dissolve", "start": 3.6, "duration": 0.8 }` (`cut`, `dissolve`, `portal`) |
+| transisi antar adegan | `transitionOut: { "type": "dissolve", "start": 3.6, "duration": 0.8 }` (`cut`, `dissolve`, `portal`). Pindah ke stage lain antar adegan tersusun wajib `dissolve`; `cut` atau tanpa transisi ditolak (Tahap 6A-2b) |
 | karakter berjalan, duduk, menyapu, mengayuh | `state`: `walk`, `seated`, `sweep`, `cycle`, `idle`, `stand`, `gesture`, atau keyframe `[[0, "idle"], [90, "walk"]]` |
 | menoleh, melambai | `paramTracks: { "headTurn": [[...]], "gesture": [[...]] }` (-1 menoleh ke belakang, 1 ke kamera) |
 | gerak karakter lebih natural (siku, lutut, kaki menempel di tanah) | `"motion": "natural"` di aset karakter atau di `params` entitas (lihat bagian karakter di bawah) |
 | warna karakter ikut pagi, siang, sore, malam | `"light": "figure"` di aset karakter + warna `figureLight`, `figureLift`, `figureRim` di setiap palet (lihat bagian karakter di bawah) |
-| benda ikut benda lain (pengendara di sepeda) | `"parent": "sepeda"` + `position` relatif |
+| benda ikut benda lain (pengendara di sepeda) | `"parent": "sepeda"` + `position` relatif. Induk (dan kamera `follow-entity`) harus ada di adegan itu: entitas stage adegan itu, pemeran `cast`, atau `scene.entities`. Entitas stage lain dan rantai induk yang berputar ditolak saat validasi (Tahap 6A-2b) |
 | toko buka, lampu padam | `state: [[0, "closed"], [96, "open"]]`, `color: [[0, "on"], [70, "off"]]` |
 | kamera pan, push-in, pullback | `camera: { "type": "keys", "x": [...], "y": [...], "zoom": [...] }` (zoom butuh `rendering.upscale: "browser"`, lihat bagian zoom di bawah) |
 | zoom untuk adegan kustom | `"lens": { "zoom": [[frame, zoom], ...] }` di entri adegan |
@@ -160,7 +160,7 @@ Pixel art dibesarkan tanpa blur, jadi satu piksel art selalu berukuran bulat di 
 
 ### Waktu relatif adegan (Tahap 6A-1, belum untuk produksi)
 
-**Status:** kompilernya (`src/render/timing.cjs`) sudah di-merge ke `main` (PR #26) dan diuji lewat unit test. Sidik kompilasi manifest (`compiledHash`, uji NT-STALE-2L dan NT-STALE-2S, Tahap 6A-2a, BACKLOG T22) sudah di-merge ke `main` lewat PR #28 (`f1febb3832652a2cf11032bf75f5e3c18f7c08b2`). Sintaks ini belum aman untuk proyek produksi dan belum boleh dipakai untuk merekam baseline resmi sampai uji browser 6A-2b lulus dan pemilik menyetujuinya. Proyek yang tidak memakainya tidak berubah sama sekali.
+**Status:** kompilernya (`src/render/timing.cjs`) sudah di-merge ke `main` (PR #26) dan diuji lewat unit test. Sidik kompilasi manifest (`compiledHash`, uji NT-STALE-2L dan NT-STALE-2S, Tahap 6A-2a, BACKLOG T22) sudah di-merge ke `main` lewat PR #28 (`f1febb3832652a2cf11032bf75f5e3c18f7c08b2`). Sintaks ini belum aman untuk proyek produksi dan belum boleh dipakai untuk merekam baseline resmi sampai uji browser 6A-2b lulus dan pemilik menyetujuinya. Proyek yang tidak memakainya tidak berubah sama sekali. Contoh lengkap bersama kembarannya dalam format lama ada di fixture uji `tests/fixtures/projects/uji-6a2b.json` (Tahap 6A-2b PR 1, lihat `tests/fixtures/projects/README.md`); fixture itu bukan proyek produksi.
 
 Alih-alih menulis `start`/`end` dan keyframe dalam frame film, adegan boleh ditulis dengan durasi dan waktu yang dihitung dari awal adegan:
 
