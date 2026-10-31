@@ -1,8 +1,8 @@
 # Riwayat Perubahan
 
-## Tahap 6A-2a: sidik kompilasi manifest dan `--encode-only` yang aman (branch lokal `tahap-6-a-compiled-hash`, belum di-commit)
+## Tahap 6A-2a: sidik kompilasi manifest dan `--encode-only` yang aman (PR #28, branch `tahap-6-a-compiled-hash`)
 
-Pemilik meninjau review kesiapan 6A-2, rekonsiliasi, dan addendum `--encode-only`, lalu memecah 6A-2 menjadi 6A-2a (sidik kompilasi), 6A-2b (fixture browser multi-stage), dan 6A-2c (`castOverrides` dan kontinuitas). Pemilik memberi ACC terbatas implementasi lokal 6A-2a dengan keputusan D1-D8 (31 Oktober 2026). Dikerjakan dari `main@ffc8273`.
+Pemilik meninjau review kesiapan 6A-2, rekonsiliasi, dan addendum `--encode-only`, lalu memecah 6A-2 menjadi 6A-2a (sidik kompilasi), 6A-2b (fixture browser multi-stage), dan 6A-2c (`castOverrides` dan kontinuitas). Pemilik memberi ACC terbatas implementasi lokal 6A-2a dengan keputusan D1-D8 (31 Oktober 2026). Dikerjakan dari `main@ffc8273`. Setelah audit independen, pemilik memberi ACC terbatas untuk commit, push, dan satu PR, lalu me-merge PR #28 ke `main` lewat merge commit `f1febb3832652a2cf11032bf75f5e3c18f7c08b2` (31 Oktober 2026 12.17 WIB).
 
 Yang tidak berubah: mesin inti, aset, adegan, konfigurasi proyek, baseline, registry, `pending-changes.json`, known issues, workflow CI, semantik kompiler 6A-1, dan nilai LOCKED. Versi mesin tetap 0.5.0.
 
@@ -33,7 +33,8 @@ Yang tidak berubah: mesin inti, aset, adegan, konfigurasi proyek, baseline, regi
   - penjaga 3/3 vs `origin/main` dan vs `ffc8273`.
 
   Keempat proyek identik dengan baseline resminya: framemd5 mandiri 1.320/1.320 dan MP4 4/4 SHA-256 penuh sama dengan `main`. Ketujuh file baseline, `registry.json`, `pending-changes.json`, dan `known-issues.cjs` identik byte.
-- **Manifest calon (D4):** keempat `output/reports/*-render.json` dibuat ulang dengan `compiledHash` = nilai LOCKED dan `manifest:fresh` LULUS. Disiapkan sebagai calon perubahan, belum di-commit.
+- **Manifest calon (D4):** keempat `output/reports/*-render.json` dibuat ulang dengan `compiledHash` = nilai LOCKED dan `manifest:fresh` LULUS. Disiapkan sebagai calon perubahan, lalu ikut di-commit di PR #28 setelah audit.
+- **Merge dan status pasca-merge:** commit `d63b27febcbca92a79958f44f2aae48459806d18` (19 file, diff identik dengan patch final v2 yang diaudit, SHA-256 `490c566e8ff0ac635d52a58bb8496d9f2a21de2c36c8a4aca2d338be27d5f3bd`) dibuka sebagai PR #28. CI PR (run 41170986918) hijau di kedua job. Parent merge `ffc8273` dan `d63b27f`, tree merge identik dengan head PR, dan CI push `main@f1febb3` (run 41171984604) hijau di kedua job (unit test 164/164, penjaga 3/3 terhadap `ffc8273`, uji asap 4/4, lab zoom 10/10). Audit independen pasca-merge oleh pemilik: LULUS. Status yang masih tertulis belum di-commit dikoreksi lewat koreksi dokumentasi susulan tanpa perubahan kode (branch `docs-status-merge-pr28`). Sintaks waktu relatif adegan tetap belum boleh dipakai untuk produksi atau perekaman baseline sampai uji browser 6A-2b dan ACC pemilik berikutnya (D6).
 - **Belum dikerjakan:**
   - 6A-2b (fixture browser, NT-STALE-2B, izin produksi sintaks baru, D6), 6A-2c, 6A-3, 6B, dan 6C.
   - Mitigasi pipeline M-a dan M-b (BACKLOG T24, butuh ACC terpisah). Regresi atas frame lama tetap tidak mendeteksi perubahan kode pipeline Node yang tidak ter-hash.
