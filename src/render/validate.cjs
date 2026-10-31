@@ -244,7 +244,7 @@ async function main() {
       add(await B.poseChecks(studio, config));
       if (png.checks[0].pass) {
         console.log('Render ulang seluruh frame dengan urutan terbalik untuk uji determinisme...');
-        add(await B.determinismChecks(studio, png.hashes, {}));
+        add(C.withNodeDriftHint(checks, await B.determinismChecks(studio, png.hashes, {})));
       }
       add(B.jsErrorChecks(renderInfo, studio));
     } finally {
@@ -253,7 +253,7 @@ async function main() {
   }
   if (fs.existsSync(config.paths.video) && png.checks[0].pass) {
     console.log('Encode ulang untuk uji konsistensi MP4...');
-    add(reencodeCheck(config));
+    add(C.withNodeDriftHint(checks, reencodeCheck(config)));
   }
 
   const sheets = fs.existsSync(path.join(config.paths.frames, 'frame_0000.png')) ? contactSheets(config) : [];

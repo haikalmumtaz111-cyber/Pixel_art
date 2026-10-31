@@ -208,8 +208,11 @@ function manifestChecks(config, manifest, { framesDir = config.paths.frames, vid
   }
   const out = [result('manifest:status', 'Render terakhir selesai dengan sukses', manifest.status === 'complete',
     manifest.status === 'complete' ? `status complete, selesai ${manifest.finishedAt}` : `status "${manifest.status}"${manifest.error ? `: ${manifest.error}` : ''}`)];
+  // compiledHash wajib (Tahap 6A-2a, opsi B): manifest lama tanpa field ini dianggap kedaluwarsa dan harus dirender ulang
+  const compiledLabel = manifest.compiledHash ? 'hasil kompilasi' : 'sidik kompilasi tidak ada (manifest lama, render ulang)';
   const current = {
     'konfigurasi proyek': [manifest.inputsHash, M.inputsHash(config.configFile)],
+    [compiledLabel]: [manifest.compiledHash, M.compiledHash(config)],
     'mesin inti': [manifest.engineHash, M.engineHash()],
     'pustaka aset': [manifest.libraryHash, M.libraryHash()],
     'frame PNG': [manifest.framesHash, fs.existsSync(framesDir) ? M.framesHash(framesDir, config.totalFrames) : 'tidak ada'],
@@ -217,8 +220,18 @@ function manifestChecks(config, manifest, { framesDir = config.paths.frames, vid
   };
   const changed = Object.entries(current).filter(([, [then, now]]) => !then || then !== now).map(([what]) => what);
   out.push(result('manifest:fresh', 'Video berasal dari render terbaru (bukan sisa render lama)', changed.length === 0,
-    changed.length ? `berubah sejak render terakhir: ${changed.join(', ')}` : 'konfigurasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest'));
+    changed.length ? `berubah sejak render terakhir: ${changed.join(', ')}` : 'konfigurasi, hasil kompilasi, mesin, pustaka aset, frame, dan MP4 cocok dengan manifest'));
   return out;
+}
+
+// Render ulang (determinisme) atau encode ulang berbeda padahal manifest masih segar: penyebab yang paling mungkin adalah
+// kode Node pipeline (src/render) yang berubah sejak render terakhir dan tidak tercakup sidik jari manifest (BACKLOG T24).
+// Hanya menambah keterangan pada pemeriksaan yang sudah GAGAL; tidak mengubah status apa pun.
+const NODE_DRIFT_HINT = 'manifest masih segar, jadi kemungkinan kode Node (src/render) berubah sejak render terakhir dan tidak tercakup sidik jari manifest: render ulang penuh (BACKLOG T24)';
+function withNodeDriftHint(previous, list) {
+  const fresh = previous.find((c) => c.id === 'manifest:fresh');
+  if (!fresh || !fresh.pass) return list;
+  return list.map((c) => (['determinism', 'reencode'].includes(c.id) && statusOf(c) === 'fail' ? { ...c, detail: `${c.detail} | ${NODE_DRIFT_HINT}` } : c));
 }
 
 // ---------- grid piksel saat kamera bergerak dan zoom ----------
@@ -304,5 +317,5 @@ function pngChecks(framesDir, count, width, height) {
 
 module.exports = {
   LIMITS, sha256, result, known, skipped, statusOf, STATUS_LABEL, knownText, validationVerdict, timelineChecks, probeVideo, videoChecks, decodeChecks,
-  lumaStats, frameHashes, frameChecks, lumaEvents, transitionLumaChecks, manifestChecks, gridChecks, pngChecks
+  lumaStats, frameHashes, frameChecks, lumaEvents, transitionLumaChecks, manifestChecks, withNodeDriftHint, NODE_DRIFT_HINT, gridChecks, pngChecks
 };

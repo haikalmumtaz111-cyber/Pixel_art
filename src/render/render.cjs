@@ -12,7 +12,8 @@ const path = require('path');
 const { loadConfig, frameFile } = require('./config.cjs');
 const { describeProjects } = require('./projects.cjs');
 const { parseArgs } = require('./cli.cjs');
-const { renderFrames, encodeVideo, run, FFMPEG } = require('./pipeline.cjs');
+const { renderFrames, encodeVideo, encodeToTemp, replaceFile, run, FFMPEG } = require('./pipeline.cjs');
+const { probe } = require('./fingerprint.cjs');
 const M = require('./manifest.cjs');
 
 function planJob(config, args) {
@@ -54,6 +55,93 @@ function makeHdStills(config, job) {
   return dir;
 }
 
+// Pemeriksaan pasca-render (AC2a-07): konfigurasi yang dikirim ke browser tidak boleh berubah selama render,
+// karena compiledHash di manifest dicatat sebelum render dimulai.
+function assertCompiledUnchanged(config, recorded) {
+  if (M.compiledHash(config) !== recorded) throw new Error('konfigurasi hasil kompilasi berubah selama render');
+}
+
+// Penolakan --encode-only sebelum ada file yang ditulis (TK1-TK6): manifest, MP4, dan frame tidak disentuh.
+class EncodeRefused extends Error {}
+
+// --encode-only: MP4 baru dari frame PNG yang sudah ada (Tahap 6A-2a). Frame hanya boleh di-encode ulang kalau terbukti
+// berasal dari kode dan konfigurasi saat ini, jadi sidik jari manifest lama diperiksa dulu (TK1-TK6) lalu diwariskan,
+// tidak pernah dihitung ulang lalu ditulis. MP4 dan manifest lama tidak berubah sebelum semua pemeriksaan lulus.
+// Keduanya diganti lewat dua rename atomik terpisah (MP4 dulu, lalu manifest), bukan satu transaksi.
+// deps hanya untuk pengujian (pengganti encodeToTemp, replaceFile, writeManifest, probe).
+function encodeOnlyFilm(config, { manifestFile, framesDir = config.paths.frames, video = config.paths.video, deps = {} }) {
+  const d = { encodeToTemp, replaceFile, writeManifest: M.writeManifest, probe, ...deps };
+  const count = config.totalFrames;
+  const refuse = (code, message) => {
+    throw new EncodeRefused(`${code}: ${message}, jalankan render penuh dulu`);
+  };
+
+  // A. praperiksa
+  let old;
+  try {
+    old = M.readManifest(manifestFile);
+  } catch (error) {
+    refuse('TK1', `manifest lama tidak bisa dibaca (${error.message})`);
+  }
+  if (!old) refuse('TK1', 'tidak ada render sebelumnya');
+  if (!['frames-only', 'complete'].includes(old.status)) refuse('TK2', `render sebelumnya tidak selesai (status "${old.status}")`);
+  if (old.job?.kind !== 'film' || old.job.first !== 0 || old.job.count !== count) refuse('TK3', 'frame di manifest lama bukan film penuh');
+  const missing = M.FINGERPRINT_KEYS.filter((k) => !old[k]);
+  if (missing.length) refuse('TK4', `manifest lama tanpa ${missing.join(', ')}`);
+  const now = M.fingerprints(config);
+  const differ = M.FINGERPRINT_KEYS.filter((k) => old[k] !== now[k]);
+  if (differ.length) refuse('TK5', `frame dibuat dari kode atau konfigurasi lain (${differ.join(', ')} berubah)`);
+  if (!old.framesHash || M.framesHash(framesDir, count) !== old.framesHash) refuse('TK6', 'frame PNG berubah sejak render');
+
+  const inherited = {
+    project: old.project, name: old.name, job: old.job, configFile: old.configFile,
+    ...Object.fromEntries(M.FINGERPRINT_KEYS.map((k) => [k, old[k]])), engineVersion: old.engineVersion,
+    renderSeconds: old.renderSeconds, chromiumVersion: old.chromiumVersion, jsErrors: old.jsErrors, loadedModules: old.loadedModules,
+    frameSize: old.frameSize, framesHash: old.framesHash, segments: old.segments, encodeOnly: true
+  };
+  const startedAt = new Date().toISOString();
+  const encodeStart = Date.now();
+  let temp = null;
+  let command;
+  let videoSha256;
+  try {
+    // B. encode ke file sementara
+    ({ temp, command } = d.encodeToTemp(config, { framesDir, count, video, startNumber: 0 }));
+    // C. verifikasi file sementara sebelum MP4 lama disentuh
+    if (!fs.existsSync(temp) || fs.statSync(temp).size === 0) throw new Error('C1: MP4 sementara tidak ada atau kosong');
+    if (M.framesHash(framesDir, count) !== old.framesHash) throw new Error('C2: frame PNG berubah selama encode');
+    const info = d.probe(temp);
+    if (info.codec !== 'h264' || info.width !== config.outputWidth || info.height !== config.outputHeight || info.frames !== count) {
+      throw new Error(`C3: MP4 sementara tidak utuh (${info.codec}, ${info.width}x${info.height}, ${info.frames} frame; seharusnya h264, ${config.outputWidth}x${config.outputHeight}, ${count} frame)`);
+    }
+    videoSha256 = M.sha256(fs.readFileSync(temp));
+    // D. titik komit: MP4 diganti secara atomik
+    d.replaceFile(temp, video);
+    temp = null;
+  } catch (error) {
+    if (temp) fs.rmSync(temp, { force: true });
+    // catatan percobaan yang gagal; bila pencatatan ini ikut gagal, manifest dan MP4 lama tetap seperti sebelum dijalankan
+    try {
+      d.writeManifest(manifestFile, { ...inherited, status: 'failed', startedAt, failedAt: new Date().toISOString(), error: error.message });
+    } catch (recordError) {
+      error.message += ` (status "failed" juga gagal dicatat: ${recordError.message}; manifest dan MP4 lama tidak berubah)`;
+    }
+    throw error;
+  }
+  // E. catat: manifest diganti secara atomik
+  try {
+    d.writeManifest(manifestFile, {
+      ...inherited, status: 'complete', startedAt, framesFinishedAt: old.framesFinishedAt ?? old.finishedAt,
+      finishedAt: new Date().toISOString(), encodeSeconds: (Date.now() - encodeStart) / 1000,
+      video: rel(config, video), videoSha256, ffmpegCommand: command.replaceAll(config.paths.root + path.sep, '')
+    });
+  } catch (error) {
+    error.message = `MP4 baru sudah terpasang, tetapi manifest gagal ditulis: ${error.message}. Jalankan ulang --encode-only`;
+    throw error;
+  }
+  return { videoSha256 };
+}
+
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   if (!args.project) {
@@ -63,10 +151,19 @@ async function main() {
   }
   const config = loadConfig(args.project);
   const job = planJob(config, args);
+  if (args.encodeOnly) {
+    if (job.kind !== 'film') throw new Error('--encode-only hanya untuk film penuh (tanpa --scene, --frame, atau --frames).');
+    if (!args.encode) throw new Error('--encode-only tidak bisa dipakai bersama --no-encode.');
+    console.log(`Proyek "${config.title}" (${config.id}): MP4 dari ${job.count} frame PNG yang sudah ada (--encode-only)`);
+    encodeOnlyFilm(config, { manifestFile: M.manifestFile(config, job.manifestName), framesDir: job.framesDir, video: job.video });
+    const size = fs.statSync(job.video).size;
+    console.log(`Video jadi: ${rel(config, job.video)} (${(size / 1024 / 1024).toFixed(2)} MB)`);
+    return;
+  }
   const manifestFile = job.manifestName ? M.manifestFile(config, job.manifestName) : null;
   const base = {
     project: config.id, name: job.manifestName, job: { kind: job.kind, first: job.first, count: job.count, scene: job.sceneId || null },
-    configFile: config.configFile, inputsHash: M.inputsHash(args.project), engineHash: M.engineHash(), libraryHash: M.libraryHash(), engineVersion: config.engine.engineVersion
+    configFile: config.configFile, ...M.fingerprints(config), engineVersion: config.engine.engineVersion
   };
   console.log(`Proyek "${config.title}" (${config.id}), ${job.label}: ${job.count} frame, ${config.width}x${config.height} -> ${config.outputWidth}x${config.outputHeight}, ${config.fps} FPS`);
 
@@ -74,14 +171,13 @@ async function main() {
   const start = Date.now();
   if (manifestFile) M.writeManifest(manifestFile, { ...base, status: 'rendering', startedAt: new Date().toISOString() });
   try {
-    if (!args.encodeOnly) {
-      result = await renderFrames(config, {
-        first: job.first, count: job.count, framesDir: job.framesDir, sceneId: job.sceneId, globalNames: job.globalNames,
-        onProgress: (done, total) => {
-          if (done % 30 === 0 || done === total) console.log(`  frame ${done}/${total}`);
-        }
-      });
-    }
+    result = await renderFrames(config, {
+      first: job.first, count: job.count, framesDir: job.framesDir, sceneId: job.sceneId, globalNames: job.globalNames,
+      onProgress: (done, total) => {
+        if (done % 30 === 0 || done === total) console.log(`  frame ${done}/${total}`);
+      }
+    });
+    assertCompiledUnchanged(config, base.compiledHash);
     const renderSeconds = (Date.now() - start) / 1000;
     if (job.kind === 'stills') {
       // mode upscale "browser" sudah menghasilkan PNG ukuran output, jadi tidak perlu salinan HD
@@ -128,7 +224,11 @@ async function main() {
   }
 }
 
-main().catch((error) => {
-  console.error(`\nRENDER GAGAL: ${error.message}`);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch((error) => {
+    console.error(`\nRENDER GAGAL: ${error.message}`);
+    process.exit(1);
+  });
+}
+
+module.exports = { planJob, assertCompiledUnchanged, encodeOnlyFilm, EncodeRefused };

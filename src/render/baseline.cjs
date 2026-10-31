@@ -27,7 +27,8 @@ const C = require('./checks.cjs');
 const M = require('./manifest.cjs');
 const B = require('./baselines.cjs');
 
-const RENDER_INPUTS = ['src/engine', 'src/assets', 'src/scenes', 'config'];
+// kode yang menentukan hasil render: mesin, aset, adegan, konfigurasi, dan kompiler Node yang membentuk konfigurasi browser (D5, Tahap 6A-2a)
+const RENDER_INPUTS = ['src/engine', 'src/assets', 'src/scenes', 'config', 'src/render/timeline.cjs', 'src/render/timing.cjs', 'src/render/projects.cjs', 'src/render/schema.cjs'];
 
 // argumen dibaca sendiri (bukan cli.cjs) supaya urutan --project dan nilai teks bebas tidak tertukar
 function options(argv) {
@@ -60,6 +61,15 @@ function list(project) {
     if (active) console.log(`    perubahan terdeklarasi aktif: ${active.stage} (${active.backlog}) terhadap ${active.against || info.official}, frame ${B.formatRanges(active.frames)}, status ${active.status}`);
   }
   console.log('\n* = versi resmi. Versi lain = referensi historis (npm run test:regression -- --project <id> --baseline <versi>).');
+}
+
+// Sidik jari render yang ikut dicatat di file baseline baru. compiledHash ditambahkan sejak Tahap 6A-2a;
+// file baseline lama tidak diubah.
+function renderBlock(manifest) {
+  return {
+    chromiumVersion: manifest.chromiumVersion, inputsHash: manifest.inputsHash, engineHash: manifest.engineHash,
+    libraryHash: manifest.libraryHash, compiledHash: manifest.compiledHash, framesHash: manifest.framesHash
+  };
 }
 
 function capture(project, opt) {
@@ -118,7 +128,7 @@ function capture(project, opt) {
     source: { branch, commit, note: opt.note || `Baseline resmi ${project} versi ${opt.version}` },
     capturedAt: new Date().toISOString(),
     engineVersion: manifest.engineVersion,
-    render: { chromiumVersion: manifest.chromiumVersion, inputsHash: manifest.inputsHash, engineHash: manifest.engineHash, libraryHash: manifest.libraryHash, framesHash: manifest.framesHash },
+    render: renderBlock(manifest),
     frameCount: fp.frameCount,
     frameSize: fp.frameSize,
     pixelMd5: fp.pixelMd5,
@@ -169,12 +179,16 @@ function capture(project, opt) {
   console.log(`\nSelesai: tests/baselines/${file} menjadi baseline resmi ${project}. Versi sebelumnya tetap tersimpan sebagai referensi historis.`);
 }
 
-try {
-  const opt = options(process.argv.slice(2));
-  if (!opt.version) list(opt.project);
-  else if (!opt.project) throw new Error('--version harus dipakai bersama --project <id>.');
-  else capture(opt.project, opt);
-} catch (error) {
-  console.error(`\nBASELINE GAGAL: ${error.message}`);
-  process.exit(1);
+if (require.main === module) {
+  try {
+    const opt = options(process.argv.slice(2));
+    if (!opt.version) list(opt.project);
+    else if (!opt.project) throw new Error('--version harus dipakai bersama --project <id>.');
+    else capture(opt.project, opt);
+  } catch (error) {
+    console.error(`\nBASELINE GAGAL: ${error.message}`);
+    process.exit(1);
+  }
 }
+
+module.exports = { RENDER_INPUTS, renderBlock };

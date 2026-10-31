@@ -25,7 +25,7 @@ Kondisi saat ini:
 
 Perintah `npm run baseline` menampilkan tabel ini langsung dari registry.
 
-Tahap 6A-1 (waktu relatif adegan, di-merge ke `main` lewat PR #26, `1c34331`) tidak mengubah tabel ini: keempat baseline resmi dan semua versi historis tetap sama. Walaupun kodenya sudah di `main`, sintaks waktu barunya belum boleh dipakai untuk merekam baseline resmi sampai manifest render mencatat hasil kompilasi (`compiledHash`, direncanakan di 6A-2, BACKLOG T22), karena manifest sekarang tidak mendeteksi perubahan kode kompiler (eksperimen E1). V31 dan V32 tetap KNOWN ISSUE.
+Tahap 6A-1 (waktu relatif adegan, di-merge ke `main` lewat PR #26, `1c34331`) tidak mengubah tabel ini: keempat baseline resmi dan semua versi historis tetap sama. Walaupun kodenya sudah di `main`, sintaks waktu barunya belum boleh dipakai untuk merekam baseline resmi sampai uji browser 6A-2b dan persetujuan pemilik (keputusan D6). Tahap 6A-2a (branch lokal `tahap-6-a-compiled-hash`, belum di-commit) menambahkan `compiledHash` ke manifest render sehingga perubahan kompiler Node yang mengubah hasil kompilasi terdeteksi (eksperimen E1), dan juga tidak mengubah tabel ini. V31 dan V32 tetap KNOWN ISSUE.
 
 Proyek demo Tahap 5 `character-lab` mendapat baseline pertamanya, versi `tahap-5`, setelah pemilik menyetujui dan memerintahkannya (lihat riwayat di bawah). Sejak itu uji regresi dan uji asap CI juga mencocokkannya dengan baseline. Tahap 5 tidak mengubah hasil render ketiga proyek lama, jadi tidak ada entri baru di `pending-changes.json`.
 
@@ -70,10 +70,10 @@ Setelah perbaikan V29 (PR #19), pemilik menyetujui perubahan 74 frame `character
      --approved-at <YYYY-MM-DD> --evidence "PR #.. di-merge pemilik ..." --evidence "instruksi pemilik ..." --dry-run
    ```
 6. Bila ringkasannya cocok dengan deklarasi, jalankan lagi tanpa `--dry-run`. Alat ini:
-   - menolak bila render tidak terbaru, bila kode render (`src/engine`, `src/assets`, `src/scenes`, `config`) berbeda dari commit `--source`, atau bila MP4 hasil render berbeda dari MP4 di commit itu;
+   - menolak bila render tidak terbaru (termasuk `compiledHash`, sejak Tahap 6A-2a), bila kode render (`src/engine`, `src/assets`, `src/scenes`, `config`, dan sejak Tahap 6A-2a kompiler Node `src/render/timeline.cjs`, `timing.cjs`, `projects.cjs`, `schema.cjs`) berbeda dari commit `--source`, atau bila MP4 hasil render berbeda dari MP4 di commit itu;
    - menolak bila ada frame berbeda dari versi resmi tanpa entri pending, atau di luar rentang entri itu;
    - menolak menimpa versi atau file yang sudah ada;
-   - menulis `<proyek>.<versi>.json`, mendaftarkannya di registry (SHA-256, sumber, perubahan, bukti persetujuan), memindahkan versi resmi, dan memindahkan entri pending ke `resolved`.
+   - menulis `<proyek>.<versi>.json`, mendaftarkannya di registry (SHA-256, sumber, perubahan, bukti persetujuan), memindahkan versi resmi, dan memindahkan entri pending ke `resolved`. Sejak Tahap 6A-2a, blok `render` file baseline baru juga memuat `compiledHash`. File baseline lama tidak diubah.
 7. `npm test` (termasuk `npm run test:baseline-guard`, yang harus melaporkan file lama identik dan versi baru sebagai tambahan), lalu buat PR khusus baseline. Merge hanya dengan persetujuan pemilik.
 
 **Proyek baru**: setelah proyeknya disetujui, rekam baseline pertamanya dengan perintah yang sama. Tanpa versi sebelumnya, tidak perlu entri pending.
@@ -98,6 +98,9 @@ Perbandingan dengan versi historis lulus hanya bila frame yang berbeda **sama pe
 | Entri pending aktif menunjuk versi resmi | lint, regresi | tidak |
 | Render terbaru identik dengan versi resmi (atau berbeda hanya di rentang pending) | `npm run test:regression` | ya |
 | Frame contoh identik dengan versi resmi | `npm run test:smoke` (CI) | render kecil |
+| Render di disk berasal dari konfigurasi, hasil kompilasi (`compiledHash`), mesin, dan pustaka saat ini (manifest segar) | regresi, `npm run baseline`, validasi | tidak |
+
+Regresi membandingkan frame dan MP4 yang **sudah ada di disk** dengan baseline, tanpa render ulang. Jadi regresi tidak mendeteksi perubahan kode pipeline Node yang tidak tercakup sidik jari manifest (`render.cjs`, `pipeline.cjs`, `browser.cjs`, `server.cjs`, BACKLOG T24). Perubahan seperti itu hanya tertangkap oleh render atau encode ulang: validasi lengkap (`build:all`, `npm test`) dan, untuk beberapa frame contoh, uji asap CI.
 | Isolasi antar-proyek dan lab zoom memakai versi resmi Project A | `npm run test:projects`, `npm run test:zoom` | ya / render kecil |
 
 Kode: `src/render/baselines.cjs` (registry, pemeriksaannya, dan aturan penjaga), `src/render/baseline.cjs` (`npm run baseline`), `src/render/baseline-guard.cjs` (`npm run test:baseline-guard`), `src/render/regression.cjs`. Unit test: `tests/engine/baselines.test.js`.

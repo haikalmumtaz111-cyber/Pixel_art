@@ -15,7 +15,8 @@ Dokumen ini menjelaskan cara mesin animasi bekerja sejak Tahap 3 (mesin reusable
 | Baseline regresi | Versi per proyek di `tests/baselines/registry.json` ([`BASELINES.md`](BASELINES.md)). Resmi: Project A dan prototipe `tahap-2` (`main@cfed35a`), Project B `tahap-4` (`main@a1fd4a1`, perubahan 124 frame Tahap 4 yang disetujui pemilik), demo `character-lab` `tahap-5-v30` (`main@4cee5fb`, perubahan 251 frame V30 yang disetujui pemilik, di-merge lewat PR #24, `e64a473`). Historis: Project B `tahap-3` (`main@9d7a144`), `character-lab` `tahap-5` (`main@e6926d2`) dan `tahap-5-v29` (`main@63eab4c`, 74 frame V29, PR #21, `a03f98d`). File baseline tidak pernah diubah; perubahan yang disengaja dicatat di `tests/baselines/pending-changes.json` dan versi baru dibuat lewat `npm run baseline` setelah pemilik menyetujui |
 | Proteksi branch | Ruleset GitHub aktif untuk `main` (26005617: wajib PR, hanya merge commit, dua check CI wajib, tidak boleh dihapus atau force push) dan branch `tahap-1` sampai `tahap-5` (26006150, pola `tahap-[1-4]-*`, `tahap-5-*`, dan `tahap-6-*` yang ditambahkan 29 Oktober 2026 sebelum Tahap 6 dimulai: tidak boleh dihapus atau force push). Konfigurasi terverifikasi lewat API GitHub; penolakan push nyata belum diuji. Detail: [`BASELINES.md`](BASELINES.md), BACKLOG T18 |
 | Keterbatasan yang diketahui | [`BACKLOG.md`](BACKLOG.md), termasuk V23 (dua ukuran piksel di zoom pecahan), V24 (warna baru dari lapisan semi-transparan), V25 (batas antar lapisan memotong piksel art), V26-V28 (batas gerak dan cahaya karakter Tahap 5), V29-V32 (temuan pemeriksaan pose PR D; V29 diperbaiki di `character-lab` lewat PR #19, Project B menunggu V26; V30 diperbaiki lewat PR #23 (`4cee5fb`) dan baseline resmi `tahap-5-v30`-nya direkam lewat PR #24; V31 dan V32 dilaporkan sebagai KNOWN ISSUE), T13 (deteksi tokoh "pop"), dan T19 (cakupan pemeriksaan gerak) |
-| Waktu relatif adegan (Tahap 6A-1) | Kompiler Node `src/render/timing.cjs`: adegan berbasis `duration`, transisi `duration` + `lead`, `timing.unit`/`timing.base` di proyek, adegan, atau per track. Dikerjakan di branch `tahap-6-a-timeline` dari `main@b37862c` atas ACC terbatas pemilik (implementasi 30 Oktober 2026, commit, push, dan PR 31 Oktober 2026), lalu di-merge ke `main` lewat PR #26 (`1c34331`, 31 Oktober 2026). Keempat proyek resmi tidak memakainya dan representasi runtime-nya identik dengan `main@b37862c`. Kodenya sudah di `main`, tetapi sintaksnya belum aman untuk produksi atau perekaman baseline sampai `compiledHash` manifest dan uji NT-STALE-2 (6A-2, BACKLOG T22) |
+| Waktu relatif adegan (Tahap 6A-1) | Kompiler Node `src/render/timing.cjs`: adegan berbasis `duration`, transisi `duration` + `lead`, `timing.unit`/`timing.base` di proyek, adegan, atau per track. Dikerjakan di branch `tahap-6-a-timeline` dari `main@b37862c` atas ACC terbatas pemilik (implementasi 30 Oktober 2026, commit, push, dan PR 31 Oktober 2026), lalu di-merge ke `main` lewat PR #26 (`1c34331`, 31 Oktober 2026). Keempat proyek resmi tidak memakainya dan representasi runtime-nya identik dengan `main@b37862c`. Kodenya sudah di `main`, tetapi sintaksnya belum aman untuk produksi atau perekaman baseline sampai uji browser 6A-2b dan persetujuan pemilik (keputusan D6). `compiledHash` manifest dan NT-STALE-2 dikerjakan di 6A-2a (baris berikut) |
+| Sidik kompilasi manifest (Tahap 6A-2a, BACKLOG T22) | `compiledHash` = `runtimeHash(config)` dicatat di manifest render dan diperiksa `manifestChecks`. Manifest tanpa `compiledHash` kedaluwarsa (opsi B, perubahan kontrak Blueprint 6A v2 §3.7). `--encode-only` dengan praperiksa TK1-TK6 dan penggantian MP4 serta manifest yang atomik. `RENDER_INPUTS` perekaman baseline mencakup kompiler Node. Dikerjakan di branch lokal `tahap-6-a-compiled-hash` dari `main@ffc8273` atas ACC terbatas pemilik (31 Oktober 2026), belum di-commit. Kode pipeline Node lain tetap tidak tercakup (BACKLOG T24) |
 | Pemeriksaan pose (PR D, T19, PR #14, `0f2b33d`) | `motion-joints`, `motion-limbs`, `motion-contact`, `motion-seat`, `motion-stable` untuk gerak natural skala 1 (lihat "Data pose untuk pengujian"); gerak klasik TIDAK DIPERIKSA. Laporan validasi punya status LULUS, GAGAL, KNOWN ISSUE, dan TIDAK DIPERIKSA |
 
 ## Gambaran besar
@@ -327,10 +328,10 @@ Adegan kustom mengambil aset lewat `assets.pick(scene.assets, type)`. Project A 
 | File | Tugas |
 |------|-------|
 | `cli.cjs` | argumen bersama: `--project`, `--scene`, `--frame`, `--frames a-b`, `--no-encode`, `--encode-only` |
-| `render.cjs` | satu pipeline untuk semua proyek: film penuh, satu adegan, frame terpilih, rentang frame |
-| `pipeline.cjs` | render frame lewat Playwright, encode H.264 (atomik: file `.partial` lalu ganti nama) |
+| `render.cjs` | satu pipeline untuk semua proyek: film penuh, satu adegan, frame terpilih, rentang frame. `--encode-only` hanya untuk film penuh dan hanya dari frame yang terbukti berasal dari kode dan konfigurasi saat ini (Tahap 6A-2a) |
+| `pipeline.cjs` | render frame lewat Playwright, encode H.264 (atomik: file `.partial` lalu ganti nama). `encodeToTemp` dan `replaceFile` memisahkan encode dari penggantian MP4, supaya `--encode-only` bisa memeriksa file sementara sebelum MP4 lama diganti |
 | `timing.cjs` | kompiler waktu relatif adegan (Tahap 6A-1) dan `runtimeView`/`runtimeHash` (bagian konfigurasi yang dibaca browser, kanonik) |
-| `manifest.cjs` | "struk" render: status `rendering` / `complete` / `failed` / `frames-only`, sidik jari konfigurasi, mesin, pustaka aset, frame, dan MP4 |
+| `manifest.cjs` | "struk" render: status `rendering` / `complete` / `failed` / `frames-only`, sidik jari konfigurasi, hasil kompilasi (`compiledHash`, Tahap 6A-2a), mesin, pustaka aset, frame, dan MP4. Ditulis atomik (file sementara lalu ganti nama) |
 | `validate.cjs`, `checks.cjs`, `browser-checks.cjs` | validasi generik + laporan + lembar kontak |
 | `negative-tests.cjs` | pengujian negatif per proyek |
 | `regression.cjs`, `fingerprint.cjs` | uji regresi terhadap versi baseline resmi (atau historis dengan `--baseline <versi>`) |
@@ -348,9 +349,38 @@ Setiap frame dihitung dari waktu global `time = frame / fps` dan `seed` proyek. 
 
 ### MP4 lama tidak bisa "menolong" render yang gagal
 
-`render.cjs` menulis manifest berstatus `rendering` sebelum mulai, `complete` setelah frame dan MP4 selesai, atau `failed` bila ada error. Validator hanya menerima MP4 bila manifest `complete` dan sidik jarinya masih cocok dengan konfigurasi proyek, mesin inti, pustaka aset, frame PNG, dan file MP4 saat ini. Pengujian negatif membuktikannya dengan sengaja menggagalkan render di salinan repository.
+`render.cjs` menulis manifest berstatus `rendering` sebelum mulai, `complete` setelah frame dan MP4 selesai, atau `failed` bila ada error. Validator hanya menerima MP4 bila manifest `complete` dan sidik jarinya masih cocok dengan konfigurasi proyek, hasil kompilasi, mesin inti, pustaka aset, frame PNG, dan file MP4 saat ini. Pengujian negatif membuktikannya dengan sengaja menggagalkan render di salinan repository.
 
-Batasnya (eksperimen E1, Tahap 6A): sidik jari manifest tidak mencakup kode kompiler Node (`src/render/*.cjs`). Perubahan di `timeline.cjs` atau `timing.cjs` bisa mengubah hasil render tanpa membuat manifest lama kedaluwarsa. Di 6A-1 risikonya ditahan unit test (hash `runtimeView` keempat proyek resmi dikunci dari `main@b37862c`, golden test sintaks baru, dan uji mutasi), bukan oleh manifest. `compiledHash` di manifest direncanakan di 6A-2 (BACKLOG T22).
+**Sidik kompilasi (Tahap 6A-2a, BACKLOG T22).** Eksperimen E1 (Tahap 6A) membuktikan kode kompiler Node bisa mengubah hasil render tanpa membuat manifest lama kedaluwarsa. Karena itu manifest kini juga mencatat `compiledHash` = `runtimeHash(config)`, yaitu hash kanonik bagian konfigurasi yang dibaca browser setelah kompiler Node (`timeline.cjs`, `timing.cjs`). Nilainya dihitung dari objek `config` yang sama dengan yang dikirim ke browser, dan render gagal bila nilainya berubah selama render. `manifestChecks` menghitungnya ulang dengan kode saat ini, jadi perubahan kompiler yang mengubah hasil kompilasi membuat MP4 lama ditolak ("berubah sejak render terakhir: hasil kompilasi"), dan regresi serta perekaman baseline ikut berhenti. Hash keempat proyek resmi tetap dikunci di unit test (`timing.test.js`, nilai `main@b37862c`).
+
+**Perubahan kontrak dari Blueprint 6A v2 §3.7 (keputusan pemilik D2, opsi B):** manifest tanpa `compiledHash` tidak lagi dianggap sah sampai render berikutnya. Manifest itu langsung kedaluwarsa ("sidik kompilasi tidak ada (manifest lama, render ulang)"), dan satu kali `npm run build:all` membuatnya ulang.
+
+**`--encode-only` (keputusan D3).** MP4 hanya dibuat dari frame yang terbukti berasal dari kode dan konfigurasi saat ini, dengan urutan berikut:
+
+1. Praperiksa manifest lama: TK1 manifest ada, TK2 status `frames-only` atau `complete`, TK3 film penuh, TK4 keempat sidik jari lengkap, TK5 sidik jari sama dengan saat ini, TK6 frame PNG sama.
+2. Encode ke file `.partial` di folder tujuan.
+3. Verifikasi file sementara: C1 tidak kosong, C2 frame tidak berubah selama encode, C3 FFprobe (H.264, resolusi, jumlah frame).
+4. MP4 diganti lewat rename atomik.
+5. Manifest ditulis atomik, dengan sidik jari yang diwariskan (tidak dihitung ulang lalu ditulis).
+
+Cara menangani kegagalan:
+
+- Penolakan praperiksa tidak menyentuh file apa pun.
+- Kegagalan sesudah praperiksa meninggalkan MP4 lama identik byte, menghapus file sementara, dan mencatat status `failed`.
+- MP4 dan manifest diganti lewat **dua operasi atomik terpisah, bukan satu transaksi.** Bila manifest gagal ditulis setelah MP4 baru terpasang, `manifest:fresh` tetap LULUS hanya bila MP4 baru identik byte dengan MP4 yang tercatat. Bila berbeda, hasilnya GAGAL "file MP4", dan menjalankan ulang `--encode-only` memulihkannya.
+- Bila pencatatan status `failed` sendiri gagal, pasangan manifest dan MP4 lama tetap utuh dan sah (integritas artefak). Percobaan yang gagal hanya dilaporkan lewat exit code dan pesan error, tidak tercatat di manifest.
+
+**Batas yang tersisa (BACKLOG T24).** Ada dua hal yang tidak tercakup sidik jari manifest:
+
+- kode pipeline Node lain (`render.cjs`, `pipeline.cjs`, `browser.cjs`, `server.cjs`),
+- field yang dibaca browser di luar daftar putih `runtimeView` (T23).
+
+Regresi dan perekaman baseline membandingkan frame dan MP4 yang sudah ada di disk, jadi **tidak** mendeteksi perubahan kode itu. Yang merender atau meng-encode ulang dengan kode saat ini hanya dua:
+
+- validasi lengkap: determinisme semua frame dan encode ulang, di `build:all` dan `npm test`,
+- uji asap CI: beberapa frame contoh, PNG saja.
+
+Kalau determinisme atau encode ulang gagal padahal manifest segar, validator menambahkan keterangan bahwa kemungkinan kode Node berubah sejak render (keputusan D7, M-c).
 
 ## Pengujian
 

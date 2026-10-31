@@ -14,7 +14,7 @@ Studio animasi pixel art berbasis kode. Tujuan jangka panjangnya adalah membuat 
 
 Versi mesin: **0.5.0** (`config/engine.json`, Tahap 5).
 
-Tahap 6A-1 (waktu relatif adegan, `src/render/timing.cjs`) sudah di-merge ke `main` lewat PR #26 (merge commit `1c34331`, 31 Oktober 2026). Implementasinya sudah ada di `main`, tetapi sintaks barunya (`duration`, `lead`, `timing`) belum siap produksi: manifest render belum mencatat hasil kompilasi (`compiledHash`, menunggu 6A-2, BACKLOG T22), jadi belum boleh dipakai proyek produksi atau untuk merekam baseline. Keempat baseline resmi tidak berubah, dan V31/V32 tetap KNOWN ISSUE.
+Tahap 6A-1 (waktu relatif adegan, `src/render/timing.cjs`) sudah di-merge ke `main` lewat PR #26 (merge commit `1c34331`, 31 Oktober 2026). Implementasinya sudah ada di `main`, tetapi sintaks barunya (`duration`, `lead`, `timing`) belum siap produksi dan belum boleh dipakai untuk merekam baseline. Sidik kompilasi manifest (`compiledHash`, Tahap 6A-2a, BACKLOG T22) sedang dikerjakan di branch lokal `tahap-6-a-compiled-hash` (belum di-commit), dan izin produksi masih menunggu uji browser 6A-2b serta persetujuan pemilik. Keempat baseline resmi tidak berubah, dan V31/V32 tetap KNOWN ISSUE.
 
 Pengelolaan baseline setelah Tahap 4: baseline regresi kini punya versi per proyek, dan Project B memakai baseline resmi Tahap 4 (`tahap-4`). Disetujui pemilik dan di-merge ke `main` lewat PR #5 (`d0f3f34`). Penjelasan: [`docs/BASELINES.md`](docs/BASELINES.md). Setelah Tahap 5, unit test baseline tidak lagi meninggalkan folder sementara (PR #10, `3d59391`), dan demo `character-lab` mendapat baseline resmi `tahap-5` dari `main@e6926d2` atas perintah pemilik (PR #12, `09d68e9`). Setelah perbaikan V29, pemilik menyetujui 74 frame V29 dan memerintahkan baseline baru `tahap-5-v29` dari `main@63eab4c`; versi ini direkam di branch `baseline-character-lab-tahap-5-v29` dan di-merge ke `main` lewat PR #21 (`a03f98d`), sedangkan `tahap-5` tetap tersimpan sebagai versi historis. Setelah perbaikan V30 di-merge lewat PR #23 (`4cee5fb`, 30 Oktober 2026 16.23 WIB), pemilik menyetujui 251 frame V30 dan memilih baseline baru `tahap-5-v30` dari `main@4cee5fb`. Versi ini direkam di branch `baseline-character-lab-tahap-5-v30` dan di-merge ke `main` lewat PR #24 (`e64a473`, 30 Oktober 2026 17.35 WIB), sehingga `tahap-5-v30` kini baseline resmi `character-lab`. `tahap-5` dan `tahap-5-v29` tetap tersimpan sebagai versi historis. PR D (T19, pemeriksaan pose karakter) dikerjakan atas persetujuan pemilik dan di-merge ke `main` (PR #14, `0f2b33d`); hasil render semua proyek tidak berubah.
 
@@ -135,6 +135,7 @@ npm run render -- --project old-town-morning --scene s02-morning-walk   # satu a
 npm run render -- --project old-town-morning --frame 180                # satu frame -> output/stills/
 npm run render -- --project old-town-morning --frames 100-140           # rentang frame -> output/stills/
 npm run render -- --project night-to-dawn --no-encode                   # hanya PNG, tanpa MP4
+npm run render -- --project night-to-dawn --encode-only                 # MP4 dari PNG yang ada; ditolak bila PNG tidak lagi cocok dengan kode/konfigurasi
 npm run preview -- --project night-to-dawn --scene s02-inside-train     # pratinjau satu adegan
 ```
 

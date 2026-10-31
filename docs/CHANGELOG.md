@@ -1,5 +1,43 @@
 # Riwayat Perubahan
 
+## Tahap 6A-2a: sidik kompilasi manifest dan `--encode-only` yang aman (branch lokal `tahap-6-a-compiled-hash`, belum di-commit)
+
+Pemilik meninjau review kesiapan 6A-2, rekonsiliasi, dan addendum `--encode-only`, lalu memecah 6A-2 menjadi 6A-2a (sidik kompilasi), 6A-2b (fixture browser multi-stage), dan 6A-2c (`castOverrides` dan kontinuitas). Pemilik memberi ACC terbatas implementasi lokal 6A-2a dengan keputusan D1-D8 (31 Oktober 2026). Dikerjakan dari `main@ffc8273`.
+
+Yang tidak berubah: mesin inti, aset, adegan, konfigurasi proyek, baseline, registry, `pending-changes.json`, known issues, workflow CI, semantik kompiler 6A-1, dan nilai LOCKED. Versi mesin tetap 0.5.0.
+
+- **Baru: sidik kompilasi.** `compiledHash` = `runtimeHash(config)` dicatat di manifest render (`manifest.cjs` `fingerprints`), dihitung dari objek `config` yang dikirim ke browser. Render gagal bila nilainya berubah selama render. `manifestChecks` membandingkannya dengan kode saat ini ("berubah sejak render terakhir: hasil kompilasi"), jadi validasi, regresi, dan perekaman baseline berhenti bila kompiler Node mengubah hasil kompilasi (menutup E1 untuk bagian kompiler, BACKLOG T22).
+- **Perubahan kontrak (D2, opsi B):** manifest tanpa `compiledHash` kedaluwarsa ("sidik kompilasi tidak ada (manifest lama, render ulang)"). Ini menggantikan aturan Blueprint 6A v2 §3.7 "manifest lama tetap sah sampai render berikutnya".
+- **`--encode-only` aman (D3).**
+  - Hanya untuk film penuh.
+  - Praperiksa TK1-TK6 dilakukan tanpa menulis file apa pun: manifest ada, status `frames-only` atau `complete`, film penuh, empat sidik jari lengkap dan sama dengan saat ini, frame PNG sama.
+  - Encode ke file sementara, lalu verifikasi C1-C3 (tidak kosong, frame tidak berubah selama encode, FFprobe).
+  - Rename MP4 atomik, lalu manifest atomik dengan sidik jari yang diwariskan. Keduanya dua operasi terpisah, bukan satu transaksi.
+  - Kegagalan sesudah praperiksa meninggalkan MP4 lama identik byte, tanpa file sementara, dengan status `failed`.
+  - Sebelumnya, `--encode-only` menulis sidik jari terbaru di atas frame lama (eksperimen X5).
+- **Diubah:**
+  - `pipeline.cjs`: `encodeVideo` dipecah menjadi `encodeToTemp` dan `replaceFile`. Perilaku untuk pemanggil lama tetap sama.
+  - `manifest.cjs`: `writeManifest` kini atomik.
+  - `baseline.cjs`: `RENDER_INPUTS` mencakup `src/render/timeline.cjs`, `timing.cjs`, `projects.cjs`, dan `schema.cjs` (D5), dan blok `render` file baseline baru memuat `compiledHash`.
+  - `checks.cjs` dan `validate.cjs`: keterangan diagnosis bila determinisme atau encode ulang gagal padahal manifest segar (D7, M-c).
+  - `render.cjs` dan `baseline.cjs` hanya menjalankan perintah bila dipanggil langsung, sehingga bisa diuji. Pemeriksaan pasca-render `render.cjs` dipindah ke fungsi `assertCompiledUnchanged` dengan kondisi dan pesan yang sama, supaya bisa diuji (AC2a-07).
+- **Uji baru:**
+  - `tests/engine/manifest.test.js` (16 tes, tanpa browser dan FFmpeg): `compiledHash` = LOCKED (SHA-256 penuh), determinisme (proses lain, path lain, urutan kunci JSON), NT-STALE-2S (mutasi XM-C1 dan XM-D1 pada fixture sintaks baru GAGAL "hasil kompilasi", kontrol XM-K1 LULUS), praperiksa TK1-TK6, C1-C3, ENC-6, ENC-9 (S4 dan S8), ENC-10 (S5: MP4 identik LULUS, berbeda GAGAL "file MP4", lalu pulih), opsi B, `writeManifest` dan `replaceFile` atomik, D5, M-c, dan AC2a-07 (config yang diubah setelah `compiledHash` dicatat ditolak, config yang tidak berubah dan field yang hanya dibaca Node lulus).
+  - Uji negatif (16 per proyek): `compiledHash` berbeda, manifest tanpa `compiledHash`, NT-STALE-2L (XM-L1 → `manifest:fresh` GAGAL "hasil kompilasi" dan regresi berhenti di cek manifest) + kontrol XM-K1, serta ENC-1 sampai ENC-5, ENC-6 sampai ENC-8, ENC-11, dan ENC-12 dengan FFmpeg asli di salinan repository (kegagalan disimulasikan lewat `FFMPEG_PATH`), serta AC2a-07: `renderFrames` salinan mengubah `config.seed` setelah frame 0 dirender sehingga render GAGAL, manifest `failed`, dan MP4 lama identik byte. Kontrolnya berhenti di titik yang sama tanpa mengubah config, dan render lulus dengan MP4 identik serta manifest segar.
+- **Hasil uji (lokal, pohon kode final):**
+  - lint lulus (93 JS, 31 JSON, 12 pemeriksaan registry), unit test 164/164 (148 lama + 16 baru),
+  - `build:all` 4/4,
+  - `npm test` 13/13 langkah tanpa kegagalan: validasi `character-lab` 43 lulus + 2 KNOWN ISSUE (V31, V32), proyek lain masing-masing 5 tidak diperiksa, uji negatif 77/77, 51/51, dan 57/57, regresi 40/40, uji antar-proyek 22/22, lab zoom 10/10,
+  - `test:ci` (uji asap 4/4) dan `build:prototype` lulus,
+  - regresi B vs `tahap-3` 11/11, `character-lab` vs `tahap-5-v29` 12/12 dan vs `tahap-5` 12/12,
+  - penjaga 3/3 vs `origin/main` dan vs `ffc8273`.
+
+  Keempat proyek identik dengan baseline resminya: framemd5 mandiri 1.320/1.320 dan MP4 4/4 SHA-256 penuh sama dengan `main`. Ketujuh file baseline, `registry.json`, `pending-changes.json`, dan `known-issues.cjs` identik byte.
+- **Manifest calon (D4):** keempat `output/reports/*-render.json` dibuat ulang dengan `compiledHash` = nilai LOCKED dan `manifest:fresh` LULUS. Disiapkan sebagai calon perubahan, belum di-commit.
+- **Belum dikerjakan:**
+  - 6A-2b (fixture browser, NT-STALE-2B, izin produksi sintaks baru, D6), 6A-2c, 6A-3, 6B, dan 6C.
+  - Mitigasi pipeline M-a dan M-b (BACKLOG T24, butuh ACC terpisah). Regresi atas frame lama tetap tidak mendeteksi perubahan kode pipeline Node yang tidak ter-hash.
+
 ## Tahap 6A-1: waktu relatif adegan (PR #26, branch `tahap-6-a-timeline`)
 
 Awal Tahap 6. Pemilik meninjau Blueprint Tahap 6A v2 (eksperimen E1-E6), menerima arsitektur Node-first, dan memberi ACC terbatas untuk implementasi 6A-1 di branch lokal beserta pengujian lengkap (30 Oktober 2026). Setelah dua putaran rekonsiliasi spesifikasi dan review patch, pemilik memberi ACC terbatas untuk commit, push, dan satu PR tanpa merge (31 Oktober 2026). PR #26 lalu di-merge pemilik ke `main` lewat merge commit `1c34331` (31 Oktober 2026 07.42 WIB). Dikerjakan di branch `tahap-6-a-timeline` dari `main@b37862c`. Mesin inti, aset, adegan, konfigurasi proyek, manifest, workflow CI, baseline, registry, dan known issues tidak berubah; versi mesin tetap 0.5.0.

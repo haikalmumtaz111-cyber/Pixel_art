@@ -7,7 +7,7 @@ const os = require('os');
 const path = require('path');
 const { spawnSync } = require('child_process');
 const { readConfig, buildConfig, frameFile } = require('./config.cjs');
-const { describeProjects } = require('./projects.cjs');
+const { describeProjects, ROOT } = require('./projects.cjs');
 const { parseArgs } = require('./cli.cjs');
 const { openStudio } = require('./browser.cjs');
 const { FFMPEG, run, renderFrames, encodeVideo } = require('./pipeline.cjs');
@@ -620,6 +620,232 @@ async function main() {
       const manifest = { ...M.readManifest(M.manifestFile(config)), inputsHash: 'konfigurasi-lama' };
       return expectFail(C.manifestChecks(config, manifest), ['manifest:fresh']);
     });
+
+    // ---------- sidik kompilasi dan --encode-only (Tahap 6A-2a, BACKLOG T22) ----------
+    // pemeriksaan manifest:fresh yang wajib GAGAL dengan keterangan tertentu
+    const expectStale = (checks, pattern) => {
+      const r = expectFail(checks, ['manifest:fresh']);
+      return { detected: r.detected && pattern.test(r.detail), detail: r.detail };
+    };
+
+    await test('Hasil kompilasi berbeda dari yang tercatat di manifest', () => {
+      const manifest = { ...M.readManifest(M.manifestFile(config)), compiledHash: '0'.repeat(64) };
+      return expectStale(C.manifestChecks(config, manifest), /hasil kompilasi/);
+    });
+
+    await test('Manifest lama tanpa compiledHash (wajib render ulang)', () => {
+      const { compiledHash, ...legacy } = M.readManifest(M.manifestFile(config));
+      return expectStale(C.manifestChecks(config, legacy), /sidik kompilasi tidak ada/);
+    });
+
+    {
+      // satu salinan repository + hasil render untuk semua uji di bawah. Setelah setiap uji dikembalikan ke keadaan render resmi
+      const realManifest = M.manifestFile(config);
+      const box = makeSandbox('pixel-encode-only-');
+      try {
+        box.copyOutputs(config, realManifest);
+        const inBox = (p) => path.join(box.dir, path.relative(ROOT, p));
+        const sManifest = inBox(realManifest);
+        const sVideo = inBox(config.paths.video);
+        const sConfig = inBox(path.resolve(ROOT, config.configFile));
+        const sFrame0 = frameFile(inBox(config.paths.frames), 0);
+        const videoDir = path.dirname(sVideo);
+        const source = (name) => path.join(box.dir, 'src', 'render', name);
+        const original = {
+          manifest: fs.readFileSync(realManifest), config: fs.readFileSync(sConfig), frame0: fs.readFileSync(sFrame0),
+          code: Object.fromEntries(['timeline.cjs', 'timing.cjs', 'pipeline.cjs'].map((name) => [name, fs.readFileSync(source(name), 'utf8')]))
+        };
+        const oldManifest = JSON.parse(original.manifest);
+        const videoSha = M.sha256(fs.readFileSync(config.paths.video));
+        const partials = () => fs.readdirSync(videoDir).filter((f) => f.endsWith('.partial'));
+        const reset = () => {
+          fs.writeFileSync(sManifest, original.manifest);
+          fs.copyFileSync(config.paths.video, sVideo);
+          fs.writeFileSync(sConfig, original.config);
+          fs.writeFileSync(sFrame0, original.frame0);
+          for (const [name, code] of Object.entries(original.code)) fs.writeFileSync(source(name), code);
+          for (const f of partials()) fs.rmSync(path.join(videoDir, f));
+        };
+        const mutate = (name, from, to) => {
+          if (original.code[name].split(from).length !== 2) throw new Error(`titik mutasi tidak ditemukan: ${from}`);
+          fs.writeFileSync(source(name), original.code[name].replace(from, to));
+        };
+        const XM_L1 = ['timeline.cjs', 'startFrame: start, endFrame: end, lastFrame: end - 1,', 'startFrame: start + 1, endFrame: end, lastFrame: end - 1,'];
+        const sandboxed = async (fn) => {
+          try {
+            return await fn();
+          } finally {
+            reset();
+          }
+        };
+        const node = (args, env = {}) => spawnSync(NODE, args, { encoding: 'utf8', env: { ...process.env, ...env } });
+        const encodeOnly = (env) => node([source('render.cjs'), '--project', config.id, '--encode-only'], env);
+        // status dan kesegaran manifest salinan, dibaca dengan kode salinan di proses baru
+        const boxCheck = () => {
+          const code = `const [root, id] = process.argv.slice(1);
+            const P = require(root + '/src/render/projects.cjs'); const C = require(root + '/src/render/checks.cjs'); const M = require(root + '/src/render/manifest.cjs');
+            const config = P.loadProject(id); const checks = C.manifestChecks(config, M.readManifest(M.manifestFile(config)));
+            console.log(JSON.stringify(Object.fromEntries(checks.map((c) => [c.id, { pass: c.pass, detail: c.detail }]))));`;
+          const r = node(['-e', code, box.dir, config.id]);
+          if (r.status !== 0) throw new Error(r.stderr);
+          return JSON.parse(r.stdout);
+        };
+        const manifestNow = () => (fs.existsSync(sManifest) ? fs.readFileSync(sManifest) : null);
+        // ditolak praperiksa: exit bukan 0, kode TK di pesan, manifest dan MP4 identik byte, tanpa file sementara
+        const refused = (r, code, before) => {
+          const now = manifestNow();
+          const same = before === null ? now === null : Boolean(now && now.equals(before));
+          const videoSame = M.sha256(fs.readFileSync(sVideo)) === videoSha;
+          const detected = r.status !== 0 && r.stderr.includes(`${code}:`) && same && videoSame && partials().length === 0;
+          return { detected, detail: `exit ${r.status}, ${(r.stderr.match(/TK\d: [^\n]*/) || ['tanpa kode TK'])[0]}; manifest ${same ? 'identik' : 'BERUBAH'}, MP4 ${videoSame ? 'identik' : 'BERUBAH'}, file sementara ${partials().length}` };
+        };
+        // gagal setelah praperiksa: MP4 lama identik byte, tanpa file sementara, manifest "failed" mewarisi sidik jari, validator menolak
+        const failedAfterCheck = (r, pattern) => {
+          const m = JSON.parse(manifestNow());
+          const videoSame = M.sha256(fs.readFileSync(sVideo)) === videoSha;
+          const inherited = M.FINGERPRINT_KEYS.every((k) => m[k] === oldManifest[k]);
+          const status = boxCheck()['manifest:status'];
+          const detected = r.status !== 0 && pattern.test(r.stderr) && videoSame && partials().length === 0 && m.status === 'failed' && inherited && !status.pass;
+          const oneLine = (text) => String(text || '-').replace(/\s+/g, ' ').trim();
+          return { detected, detail: `exit ${r.status}, manifest "${m.status}" (${oneLine(m.error)}), sidik jari ${inherited ? 'diwariskan' : 'BERUBAH'}, MP4 ${videoSame ? 'identik' : 'BERUBAH'}, file sementara ${partials().length}, validator: ${oneLine(status.detail)}` };
+        };
+        // FFMPEG_PATH tiruan: skrip shell di folder sementara uji
+        const realFfmpeg = FFMPEG;
+        const wrapper = (name, body) => {
+          const file = path.join(temp, name);
+          fs.writeFileSync(file, `#!/bin/sh\n${body}\n`, { mode: 0o755 });
+          return file;
+        };
+
+        await test('NT-STALE-2L: kompiler jalur lama berubah (XM-L1) setelah render, tanpa ubah JSON', () => sandboxed(() => {
+          mutate(...XM_L1);
+          const fresh = boxCheck()['manifest:fresh'];
+          const reg = node([source('regression.cjs'), '--project', config.id]);
+          const regStopped = reg.status !== 0 && /GAGAL\s+\S+: hasil render terbaru dan sukses/.test(reg.stdout);
+          return {
+            detected: !fresh.pass && /hasil kompilasi/.test(fresh.detail) && regStopped,
+            detail: `manifest:fresh ${fresh.pass ? 'LULUS' : 'GAGAL'} (${fresh.detail}); regresi ${regStopped ? 'berhenti di cek manifest' : `TIDAK berhenti (exit ${reg.status})`}`
+          };
+        }));
+
+        await test('NT-STALE-2L kontrol: mutasi komentar (XM-K1) tidak membuat manifest basi', () => sandboxed(() => {
+          for (const name of ['timeline.cjs', 'timing.cjs']) fs.writeFileSync(source(name), `// komentar tambahan uji\n${original.code[name]}\n/* komentar */\n`);
+          const fresh = boxCheck()['manifest:fresh'];
+          return { detected: fresh.pass, detail: `manifest:fresh ${fresh.pass ? 'LULUS' : 'GAGAL'} (${fresh.detail})` };
+        }));
+
+        await test('ENC-1: --encode-only setelah konfigurasi diubah ditolak (TK5)', () => sandboxed(() => {
+          const raw = JSON.parse(original.config);
+          fs.writeFileSync(sConfig, `${JSON.stringify({ ...raw, title: `${raw.title} (uji)` }, null, 2)}\n`);
+          return refused(encodeOnly(), 'TK5', original.manifest);
+        }));
+
+        await test('ENC-2: --encode-only setelah kompiler berubah (XM-L1) ditolak (TK5, compiledHash)', () => sandboxed(() => {
+          mutate(...XM_L1);
+          const r = encodeOnly();
+          const v = refused(r, 'TK5', original.manifest);
+          return { detected: v.detected && /compiledHash/.test(r.stderr), detail: v.detail };
+        }));
+
+        await test('ENC-3: --encode-only setelah frame PNG diganti ditolak (TK6)', () => sandboxed(() => {
+          fs.appendFileSync(sFrame0, 'x');
+          return refused(encodeOnly(), 'TK6', original.manifest);
+        }));
+
+        await test('ENC-4: --encode-only dengan manifest hilang, gagal, belum selesai, bukan film penuh, atau tanpa compiledHash ditolak', () => sandboxed(() => {
+          const variants = [
+            ['TK1', () => fs.rmSync(sManifest)],
+            ['TK2', () => fs.writeFileSync(sManifest, JSON.stringify({ ...oldManifest, status: 'failed' }))],
+            ['TK2', () => fs.writeFileSync(sManifest, JSON.stringify({ ...oldManifest, status: 'rendering' }))],
+            ['TK3', () => fs.writeFileSync(sManifest, JSON.stringify({ ...oldManifest, job: { ...oldManifest.job, count: config.totalFrames - 1 } }))],
+            ['TK4', () => fs.writeFileSync(sManifest, JSON.stringify({ ...oldManifest, compiledHash: undefined }))]
+          ];
+          const results = variants.map(([code, setup]) => {
+            reset();
+            setup();
+            return [code, refused(encodeOnly(), code, manifestNow())];
+          });
+          return { detected: results.every(([, v]) => v.detected), detail: results.map(([code, v]) => `${code}: ${v.detail}`).join(' | ') };
+        }));
+
+        await test('ENC-5: --no-encode lalu --encode-only menghasilkan MP4 identik byte dengan render penuh', () => sandboxed(() => {
+          const frames = node([source('render.cjs'), '--project', config.id, '--no-encode']);
+          if (frames.status !== 0) return { detected: false, detail: `--no-encode gagal: ${frames.stderr.slice(-300)}` };
+          const framesOnly = JSON.parse(manifestNow());
+          const r = encodeOnly();
+          const m = JSON.parse(manifestNow());
+          const fileSha = M.sha256(fs.readFileSync(sVideo));
+          const fresh = boxCheck()['manifest:fresh'];
+          const inherited = [...M.FINGERPRINT_KEYS, 'framesHash'].every((k) => m[k] === framesOnly[k]);
+          const detected = r.status === 0 && framesOnly.status === 'frames-only' && framesOnly.framesHash === oldManifest.framesHash && m.status === 'complete'
+            && inherited && m.videoSha256 === videoSha && fileSha === videoSha && partials().length === 0 && fresh.pass;
+          return { detected, detail: `exit ${r.status}, manifest ${m.status}, sidik jari ${inherited ? 'diwariskan dari frames-only' : 'BERUBAH'}, MP4 ${fileSha} (${fileSha === videoSha ? 'identik dengan render penuh' : 'BERBEDA'}), file sementara ${partials().length}, manifest:fresh ${fresh.pass ? 'LULUS' : 'GAGAL'}` };
+        }));
+
+        await test('ENC-6: FFmpeg gagal saat --encode-only, MP4 lama tetap identik byte', () => sandboxed(() => {
+          const r = encodeOnly({ FFMPEG_PATH: wrapper('ffmpeg-gagal.sh', 'exit 1') });
+          return failedAfterCheck(r, /FFmpeg gagal/);
+        }));
+
+        await test('ENC-7: frame berubah setelah encode selesai, sebelum MP4 diganti (C2)', () => sandboxed(() => {
+          const r = encodeOnly({ FFMPEG_PATH: wrapper('ffmpeg-ubah-frame.sh', `"$REAL_FFMPEG" "$@" || exit $?\nprintf x >> "$UBAH_FRAME"`), REAL_FFMPEG: realFfmpeg, UBAH_FRAME: sFrame0 });
+          return failedAfterCheck(r, /C2: frame PNG berubah selama encode/);
+        }));
+
+        await test('ENC-8: MP4 sementara terpotong sebelum MP4 diganti (C3)', () => sandboxed(() => {
+          const body = `"$REAL_FFMPEG" "$@" || exit $?\nfor out; do :; done\nsize=$(wc -c < "$out")\nhead -c $((size / 2)) "$out" > "$out.potong" && mv "$out.potong" "$out"`;
+          const r = encodeOnly({ FFMPEG_PATH: wrapper('ffmpeg-potong.sh', body), REAL_FFMPEG: realFfmpeg });
+          return failedAfterCheck(r, /C3: MP4 sementara tidak utuh/);
+        }));
+
+        await test('ENC-11: sisa file sementara dari proses lama tidak dipakai dan tidak tertinggal', () => sandboxed(() => {
+          fs.writeFileSync(path.join(videoDir, `.${path.basename(sVideo)}.partial`), 'sisa proses lama');
+          const r = encodeOnly();
+          const fileSha = M.sha256(fs.readFileSync(sVideo));
+          const fresh = boxCheck()['manifest:fresh'];
+          return {
+            detected: r.status === 0 && fileSha === videoSha && partials().length === 0 && fresh.pass,
+            detail: `exit ${r.status}, MP4 ${fileSha === videoSha ? 'identik dengan render penuh' : 'BERBEDA'}, file sementara ${partials().length}, manifest:fresh ${fresh.pass ? 'LULUS' : 'GAGAL'}`
+          };
+        }));
+
+        await test('ENC-12: encodeVideo untuk pemanggil lama tetap menghasilkan MP4 identik byte', () => sandboxed(() => {
+          const out = path.join(temp, 'enc12', 'ulang.mp4');
+          const code = `const [root, id, video] = process.argv.slice(1);
+            const P = require(root + '/src/render/projects.cjs'); const { encodeVideo } = require(root + '/src/render/pipeline.cjs');
+            const config = P.loadProject(id); encodeVideo(config, { framesDir: config.paths.frames, count: config.totalFrames, video });`;
+          const r = node(['-e', code, box.dir, config.id, out]);
+          const sha = fs.existsSync(out) ? M.sha256(fs.readFileSync(out)) : 'tidak ada';
+          const left = fs.readdirSync(path.dirname(out)).filter((f) => f.endsWith('.partial')).length;
+          return { detected: r.status === 0 && sha === videoSha && left === 0, detail: `exit ${r.status}, MP4 ${sha === videoSha ? 'identik' : 'BERBEDA'} (${sha}), file sementara ${left}` };
+        }));
+
+        // AC2a-07: renderFrames salinan berhenti setelah frame 0 dirender browser (frame lain tetap frame resmi).
+        // Uji utama mengubah config.seed di titik itu, sesudah compiledHash dicatat; kontrolnya berhenti di titik yang sama tanpa mengubah config.
+        const AC2A_07 = ['pipeline.cjs', '      if (onProgress) onProgress(i + 1, count);\n', '      if (onProgress) onProgress(i + 1, count);\n      if (i === 0) { MUTASI break; }\n'];
+        const renderStopped = (change) => {
+          const [name, from, to] = AC2A_07;
+          mutate(name, from, to.replace('MUTASI', change));
+          return node([source('render.cjs'), '--project', config.id]);
+        };
+
+        await test('AC2a-07: config diubah selama render, setelah compiledHash dicatat, ditolak pemeriksaan pasca-render', () => sandboxed(() => {
+          const r = renderStopped('config.seed += 1;');
+          return failedAfterCheck(r, /RENDER GAGAL: konfigurasi hasil kompilasi berubah selama render/);
+        }));
+
+        await test('AC2a-07 kontrol: render yang berhenti di titik sama tanpa mengubah config tetap lulus', () => sandboxed(() => {
+          const r = renderStopped('');
+          const m = JSON.parse(manifestNow());
+          const fileSha = M.sha256(fs.readFileSync(sVideo));
+          const fresh = boxCheck()['manifest:fresh'];
+          const detected = r.status === 0 && m.status === 'complete' && m.compiledHash === oldManifest.compiledHash && m.videoSha256 === videoSha && fileSha === videoSha && fresh.pass;
+          return { detected, detail: `exit ${r.status}, manifest ${m.status}, compiledHash ${m.compiledHash === oldManifest.compiledHash ? 'sama' : 'BERBEDA'}, MP4 ${fileSha === videoSha ? 'identik' : 'BERBEDA'}, manifest:fresh ${fresh.pass ? 'LULUS' : 'GAGAL'}` };
+        }));
+      } finally {
+        box.cleanup();
+      }
+    }
 
     // ---------- transisi dan aset ----------
     await test('Pergantian adegan dengan potongan kasar (hard cut)', async () => {
