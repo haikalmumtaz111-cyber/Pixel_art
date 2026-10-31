@@ -174,7 +174,7 @@ function checkCamera(def, label, ctx, issues, entityIds) {
     if (def.smoothing !== undefined && !(isInt(def.smoothing) && def.smoothing >= 1 && def.smoothing <= 120)) issues.push(`${label}: smoothing harus bilangan bulat 1..120`);
   }
   if (def.type === 'speed' && !isNum(def.framing)) issues.push(`${label}: framing wajib berupa angka`);
-  const zooms = (def.zoom || []).filter((k) => Array.isArray(k) && k[1] !== 1);
+  const zooms = (Array.isArray(def.zoom) ? def.zoom : []).filter((k) => Array.isArray(k) && k[1] !== 1);
   if (zooms.length && ctx.upscale !== 'browser') issues.push(`${label}: zoom kamera hanya didukung bila rendering.upscale = "browser" (agar piksel tetap tajam)`);
 }
 
@@ -197,4 +197,4 @@ function paletteNeeds(def, ctx) {
   return { keys, arrays };
 }
 
-module.exports = { isInt, isNum, isSlug, isColor, checkNumericKeys, checkStepKeys, checkParams, checkAssets, checkEntity, checkCamera, paletteNeeds };
+module.exports = { isInt, isNum, isSlug, isColor, isKeys, checkNumericKeys, checkStepKeys, checkParams, checkAssets, checkEntity, checkCamera, paletteNeeds };

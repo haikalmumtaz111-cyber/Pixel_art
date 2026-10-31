@@ -15,6 +15,7 @@ Dokumen ini menjelaskan cara mesin animasi bekerja sejak Tahap 3 (mesin reusable
 | Baseline regresi | Versi per proyek di `tests/baselines/registry.json` ([`BASELINES.md`](BASELINES.md)). Resmi: Project A dan prototipe `tahap-2` (`main@cfed35a`), Project B `tahap-4` (`main@a1fd4a1`, perubahan 124 frame Tahap 4 yang disetujui pemilik), demo `character-lab` `tahap-5-v30` (`main@4cee5fb`, perubahan 251 frame V30 yang disetujui pemilik, di-merge lewat PR #24, `e64a473`). Historis: Project B `tahap-3` (`main@9d7a144`), `character-lab` `tahap-5` (`main@e6926d2`) dan `tahap-5-v29` (`main@63eab4c`, 74 frame V29, PR #21, `a03f98d`). File baseline tidak pernah diubah; perubahan yang disengaja dicatat di `tests/baselines/pending-changes.json` dan versi baru dibuat lewat `npm run baseline` setelah pemilik menyetujui |
 | Proteksi branch | Ruleset GitHub aktif untuk `main` (26005617: wajib PR, hanya merge commit, dua check CI wajib, tidak boleh dihapus atau force push) dan branch `tahap-1` sampai `tahap-5` (26006150, pola `tahap-[1-4]-*`, `tahap-5-*`, dan `tahap-6-*` yang disiapkan 29 Oktober 2026 untuk Tahap 6 yang belum dimulai: tidak boleh dihapus atau force push). Konfigurasi terverifikasi lewat API GitHub; penolakan push nyata belum diuji. Detail: [`BASELINES.md`](BASELINES.md), BACKLOG T18 |
 | Keterbatasan yang diketahui | [`BACKLOG.md`](BACKLOG.md), termasuk V23 (dua ukuran piksel di zoom pecahan), V24 (warna baru dari lapisan semi-transparan), V25 (batas antar lapisan memotong piksel art), V26-V28 (batas gerak dan cahaya karakter Tahap 5), V29-V32 (temuan pemeriksaan pose PR D; V29 diperbaiki di `character-lab` lewat PR #19, Project B menunggu V26; V30 diperbaiki lewat PR #23 (`4cee5fb`) dan baseline resmi `tahap-5-v30`-nya direkam lewat PR #24; V31 dan V32 dilaporkan sebagai KNOWN ISSUE), T13 (deteksi tokoh "pop"), dan T19 (cakupan pemeriksaan gerak) |
+| Waktu relatif adegan (Tahap 6A-1) | Kompiler Node `src/render/timing.cjs`: adegan berbasis `duration`, transisi `duration` + `lead`, `timing.unit`/`timing.base` di proyek, adegan, atau per track. Dikerjakan di branch `tahap-6-a-timeline` dari `main@b37862c` atas ACC terbatas pemilik (implementasi 30 Oktober 2026, commit, push, dan PR 31 Oktober 2026), belum di-merge. Keempat proyek resmi tidak memakainya dan representasi runtime-nya identik dengan `main`. Belum aman untuk produksi atau perekaman baseline sampai `compiledHash` manifest (6A-2, BACKLOG T22) |
 | Pemeriksaan pose (PR D, T19, PR #14, `0f2b33d`) | `motion-joints`, `motion-limbs`, `motion-contact`, `motion-seat`, `motion-stable` untuk gerak natural skala 1 (lihat "Data pose untuk pengujian"); gerak klasik TIDAK DIPERIKSA. Laporan validasi punya status LULUS, GAGAL, KNOWN ISSUE, dan TIDAK DIPERIKSA |
 
 ## Gambaran besar
@@ -75,6 +76,19 @@ Jika proyek tidak diisi atau tidak ditemukan, semua perintah menampilkan daftar 
 - Keyframe: `[[frame, nilai, easing?], ...]`, frame berurutan naik dan berada di dalam film. Easing ditulis di key tujuan.
 
 `src/engine/schedule.js` menjawab "frame ini milik adegan atau transisi mana" untuk setiap frame. Di transisi, `p = 0` di frame pertama dan `p = 1` di frame terakhir.
+
+### Waktu relatif adegan (Tahap 6A-1, `src/render/timing.cjs`)
+
+Kompiler ini berjalan di Node sebelum pemeriksaan timeline, jadi browser tetap hanya menerima frame bulat global dan mesin inti tidak berubah. Urutannya di `timeline.cjs`:
+
+1. `checkGlobalTracks`: objek timing di track global (`environment`, `cameraTracks`, `stages`, `cast`) ditolak, karena track global tetap frame film. `checkTimingKeys`: kunci `timing` hanya dibaca di tingkat proyek dan adegan, jadi kunci itu di tempat lain (data film seperti `lighting` dan `validation`, track global, entitas, pencahayaan, kamera, lensa, dan transisi adegan) ditolak apa pun nilainya. Pemeriksaan ini juga berjalan di konfigurasi tanpa timeline.
+2. `planTimeline`: menentukan mode timeline. Mode `start`/`end` dihitung persis seperti sebelumnya. Mode `duration` menjumlahkan frame bulat setiap adegan (bukan detik pecahan), memeriksa durasi positif, minimal satu frame, dan total sama dengan `durationSeconds`, lalu menghitung transisi dari `duration` dan `lead` (bawaan setengah durasi bila frame bulat): `startFrame = batas adegan - lead`. Kedua mode tidak boleh dicampur. Hasilnya juga rentang tampil setiap adegan: adegan itu sendiri ditambah bagian transisi masuk dan keluar yang sah.
+3. `compileScenes`: menyalin setiap adegan dan mengubah track milik adegan tersusun (kamera inline, `lens.zoom`, `motion`, `paramTracks`, `visible`/`state`/`color`/`flip`/`frame` entitas adegan) ke frame film. Timing efektif per track: track > adegan > proyek > bawaan (`frames`, `film`). Untuk `base: "scene"`, `frame film = awal adegan + frame lokal`, dan hasilnya wajib di rentang tampil adegan (waktu lokal negatif hanya di jendela transisi masuk). Waktu yang tidak jatuh di frame bulat ditolak. Kamera `{ "track": ... }` tidak dikonversi. Adegan kustom hanya menerima timing bawaan, dan `params.sinceFrame` ditolak di adegan berbasis `scene`.
+4. Pemeriksaan lama (`schema.cjs`: urutan naik, `0..totalFrames-1`, nilai, easing) berjalan pada hasil konversi, tanpa mengubah semantiknya.
+
+Adegan tanpa timing dan tanpa objek timing menghasilkan salinan dangkal yang sama dengan sebelumnya, dan track dengan timing bawaan dikembalikan tanpa disalin. Jalur lama terkunci di `tests/engine/timing.test.js`: hash `runtimeView` keempat proyek resmi sama dengan hash yang dihitung dari kode kompiler `main@b37862c`.
+
+`runtimeView(config)` adalah bagian konfigurasi yang dibaca browser saat render, dalam bentuk kanonik (kunci objek terurut): ukuran dan FPS, `totalFrames`, `seed`, `rendering`, palet, aset beserta modul katalognya, stage, cast, environment, `cameraTracks`, `lighting`, `sceneParams`, dan timeline yang sudah dikompilasi (field adegan dan transisi yang dibaca mesin). Field yang hanya dibaca Node atau sudah dikompilasi (`start`, `end`, `duration`, `timing`, `transitionOut`, nama, validasi, encoding) tidak ikut. Unit test memindai kode browser untuk memastikan setiap field konfigurasi yang dibacanya ada di daftar ini.
 
 ## Validasi skema (`src/render/schema.cjs`, `timeline.cjs`)
 
@@ -315,6 +329,7 @@ Adegan kustom mengambil aset lewat `assets.pick(scene.assets, type)`. Project A 
 | `cli.cjs` | argumen bersama: `--project`, `--scene`, `--frame`, `--frames a-b`, `--no-encode`, `--encode-only` |
 | `render.cjs` | satu pipeline untuk semua proyek: film penuh, satu adegan, frame terpilih, rentang frame |
 | `pipeline.cjs` | render frame lewat Playwright, encode H.264 (atomik: file `.partial` lalu ganti nama) |
+| `timing.cjs` | kompiler waktu relatif adegan (Tahap 6A-1) dan `runtimeView`/`runtimeHash` (bagian konfigurasi yang dibaca browser, kanonik) |
 | `manifest.cjs` | "struk" render: status `rendering` / `complete` / `failed` / `frames-only`, sidik jari konfigurasi, mesin, pustaka aset, frame, dan MP4 |
 | `validate.cjs`, `checks.cjs`, `browser-checks.cjs` | validasi generik + laporan + lembar kontak |
 | `negative-tests.cjs` | pengujian negatif per proyek |
@@ -335,13 +350,15 @@ Setiap frame dihitung dari waktu global `time = frame / fps` dan `seed` proyek. 
 
 `render.cjs` menulis manifest berstatus `rendering` sebelum mulai, `complete` setelah frame dan MP4 selesai, atau `failed` bila ada error. Validator hanya menerima MP4 bila manifest `complete` dan sidik jarinya masih cocok dengan konfigurasi proyek, mesin inti, pustaka aset, frame PNG, dan file MP4 saat ini. Pengujian negatif membuktikannya dengan sengaja menggagalkan render di salinan repository.
 
+Batasnya (eksperimen E1, Tahap 6A): sidik jari manifest tidak mencakup kode kompiler Node (`src/render/*.cjs`). Perubahan di `timeline.cjs` atau `timing.cjs` bisa mengubah hasil render tanpa membuat manifest lama kedaluwarsa. Di 6A-1 risikonya ditahan unit test (hash `runtimeView` keempat proyek resmi dikunci dari `main@b37862c`, golden test sintaks baru, dan uji mutasi), bukan oleh manifest. `compiledHash` di manifest direncanakan di 6A-2 (BACKLOG T22).
+
 ## Pengujian
 
 | Perintah | Isi | Butuh render? |
 |----------|-----|---------------|
 | `npm run lint` | sintaks JS, JSON, determinisme, kemurnian mesin inti, file baseline cocok dengan registry | tidak |
 | `npm run test:baseline-guard` | file baseline lama, versi registry, dan riwayat persetujuan sama dengan `origin/main` | tidak |
-| `npm run test:engine` | unit test `tests/engine/*.test.js`: track, easing, PRNG, jadwal setengah terbuka, entitas (urutan bebas), kamera, registry, palet, loader dan skema, gerak dan pencahayaan karakter (`character.test.js`), registry dan penjaga baseline (`baselines.test.js`, folder sementaranya dihapus otomatis walau tes gagal), data pose, soket, `layoutAt`, dan analisis pose (`pose.test.js`) | tidak |
+| `npm run test:engine` | unit test `tests/engine/*.test.js`: track, easing, PRNG, jadwal setengah terbuka, entitas (urutan bebas), kamera, registry, palet, loader dan skema, kompiler waktu relatif adegan dan kunci `runtimeView` keempat proyek resmi (`timing.test.js`), gerak dan pencahayaan karakter (`character.test.js`), registry dan penjaga baseline (`baselines.test.js`, folder sementaranya dihapus otomatis walau tes gagal), data pose, soket, `layoutAt`, dan analisis pose (`pose.test.js`) | tidak |
 | `npm run test:smoke` | render beberapa frame per proyek, cocokkan dengan baseline | tidak (render kecil) |
 | `npm run validate -- --project <id>` | validasi lengkap satu proyek (video, frame, transisi, adegan terpisah, konsistensi aset, gerak karakter, pose karakter, modul terisolasi, determinisme, manifest) | ya |
 | `npm run test:negative -- --project <id>` | kesalahan yang disengaja harus ditolak | ya |

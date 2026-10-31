@@ -158,6 +158,42 @@ Pixel art dibesarkan tanpa blur, jadi satu piksel art selalu berukuran bulat di 
 - **Hati-hati dengan lapisan semi-transparan dan parallax berbeda di zoom pecahan.** Setiap lapisan punya grid sendiri. Cahaya atau bayangan semi-transparan bisa menghasilkan sedikit warna baru (V24). Tepi objek di atas lapisan dengan parallax berbeda bisa menyisakan potongan piksel selebar 1-3 piksel layar (V25). Untuk shot penting, taruh cahaya di parallax yang sama dengan subjeknya, atau tahan zoom di kelipatan 0,25.
 - Validator memeriksa otomatis bahwa grid piksel tidak merayap (pemeriksaan "Grid piksel kamera stabil"). `npm run test:zoom` mengukur semua mode dengan pola kalibrasi `calibration-grid`.
 
+### Waktu relatif adegan (Tahap 6A-1, belum untuk produksi)
+
+**Status:** kompilernya (`src/render/timing.cjs`) sudah diuji lewat unit test, tetapi manifest render belum mencatat hasil kompilasinya (`compiledHash`, direncanakan di 6A-2, BACKLOG T22). Selama itu sintaks ini belum aman untuk proyek produksi dan belum boleh dipakai untuk merekam baseline resmi. Proyek yang tidak memakainya tidak berubah sama sekali.
+
+Alih-alih menulis `start`/`end` dan keyframe dalam frame film, adegan boleh ditulis dengan durasi dan waktu yang dihitung dari awal adegan:
+
+```json
+"timing": { "unit": "seconds", "base": "scene" },
+"timeline": { "scenes": [
+  { "id": "datang", "name": "Datang", "module": "compose", "stage": "pasar", "duration": 4, "cast": ["bu-ani"],
+    "camera": { "type": "keys", "x": [[0, 0], [3.5, 120, "inOutSine"]], "zoom": { "unit": "frames", "keys": [[0, 1], [119, 1.25]] } },
+    "transitionOut": { "type": "dissolve", "duration": 0.8 } },
+  { "id": "pasar", "name": "Pasar", "module": "compose", "stage": "pasar", "duration": 6, "cast": ["bu-ani"], "timing": { "unit": "frames" },
+    "camera": { "track": "ikut-ani" },
+    "entities": [{ "id": "lampu-1", "asset": "lampu", "layer": "jalan", "position": [300, 200], "color": [[-12, "off"], [30, "on"]] }] }
+] }
+```
+
+Aturannya:
+
+- `duration` (detik) menggantikan `start`/`end`. Posisi awal adegan dihitung dari jumlah frame bulat adegan sebelumnya, dan total semua durasi wajib sama dengan `durationSeconds`. Satu timeline hanya boleh memakai salah satu cara, `duration` atau `start`/`end`.
+- `duration` adegan, `transitionOut.duration`, dan `transitionOut.lead` selalu dalam detik, apa pun unit keyframe-nya.
+- `lead` = berapa detik transisi mulai sebelum batas adegan. Bawaannya setengah durasi transisi, asalkan hasilnya frame bulat (0,8 detik di 30 FPS = 24 frame, lead 12 frame). Adegan berbasis `duration` tidak menerima `start` di transisinya, dan adegan `start`/`end` tidak menerima `lead`.
+- `timing.unit` bernilai `"frames"` (bawaan) atau `"seconds"`, dan `timing.base` bernilai `"film"` (bawaan, waktu 0 = awal film) atau `"scene"` (waktu 0 = awal adegan). Timing boleh ditulis di proyek, di adegan, atau per track sebagai `{ "unit": ..., "base": ..., "keys": [...] }`, dan yang paling dekat ke track yang menang: track, adegan, proyek, lalu bawaan. Kunci `timing` di tempat lain (entitas, `lighting`, `validation`, `cast`, stage, kamera, transisi) ditolak, bukan diabaikan.
+- Timing juga boleh dipakai di timeline `start`/`end`. Posisi adegan dan transisi tetap dari `start`/`end`, hanya keyframe yang dikonversi, dengan pemeriksaan rentang dan frame bulat yang sama.
+- Dengan `base: "scene"`, keyframe harus berada di rentang tampil adegan, termasuk transisi masuk dan keluarnya. Waktu negatif hanya sah selama transisi masuk berjalan (di contoh, -12 frame = 0,4 detik sebelum adegan `pasar` mulai). Keyframe di frame akhir film tidak sah.
+- Setiap waktu harus jatuh tepat di frame bulat. Tidak ada pembulatan diam-diam, jadi 0,01 detik di 30 FPS ditolak.
+- Yang ikut dikonversi adalah track milik adegan tersusun (`compose`): kamera inline, `lens.zoom`, `motion`, `paramTracks`, dan `visible`/`state`/`color`/`flip`/`frame` entitas adegan.
+
+Hal berikut belum didukung di 6A-1 dan ditolak dengan pesan yang menyebut letaknya:
+
+- Track global (`environment`, `cameraTracks`, entitas `stages`, dan `cast`) tetap ditulis dalam frame film. Adegan yang memakai `camera: { "track": ... }` memakai track global itu apa adanya.
+- Adegan kustom (modul sendiri) boleh memakai `duration` dan `lead`, tetapi keyframe-nya tetap frame film.
+- `params.sinceFrame` pada entitas adegan berbasis `scene`.
+- Animasi yang digerakkan jam (`frame.cycle`, kedip, napas, ayunan sapu, awan, dan burung) tetap mengikuti jam film (`scene.clock`, 6A-3). Fase langkah kaki dihitung dari posisi karakter, jadi ikut keyframe `motion`. Gerak pemeran per adegan (`castOverrides`) menunggu 6A-2.
+
 ### Langkah 4: jaga kualitas
 
 - Tambah aturan konsistensi supaya tokoh utama dijamin tampil sama di semua adegan:
