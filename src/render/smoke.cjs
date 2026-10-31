@@ -2,6 +2,7 @@
 // (awal, tengah, akhir, dan satu frame transisi), tanpa membuat MP4.
 // - frame harus berukuran benar dan tidak kosong
 // - proyek yang punya baseline resmi (tests/baselines/registry.json) harus identik piksel demi piksel di frame tersebut
+// Ditambah subset ringan uji browser fixture Tahap 6A-2b (src/render/fixture-tests.cjs, fungsi smoke).
 // Pemakaian: npm run test:smoke
 const fs = require('fs');
 const os = require('os');
@@ -11,6 +12,7 @@ const { renderFrames } = require('./pipeline.cjs');
 const { md5List } = require('./fingerprint.cjs');
 const { frameFile } = require('./config.cjs');
 const B = require('./baselines.cjs');
+const { smoke: smokeFixture } = require('./fixture-tests.cjs');
 
 async function main() {
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'pixel-smoke-'));
@@ -48,6 +50,12 @@ async function main() {
   } finally {
     fs.rmSync(temp, { recursive: true, force: true });
   }
+  // fixture uji Tahap 6A-2b (bukan proyek resmi): subset ringan uji browser fixture (keputusan K9).
+  // Uji penuh 270 frame dan NT-STALE-2B dijalankan lokal dengan npm run test:fixtures.
+  const started = Date.now();
+  const fixture = await smokeFixture();
+  console.log(`Blok fixture: ${fixture.lines.length - fixture.failed}/${fixture.lines.length} langkah LULUS (${((Date.now() - started) / 1000).toFixed(1)} detik)`);
+  failed += fixture.failed;
   if (failed) process.exitCode = 1;
 }
 

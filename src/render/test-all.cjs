@@ -2,6 +2,7 @@
 // Butuh hasil render semua proyek (npm run build -- --all) untuk validasi, uji negatif, regresi, dan uji antar-proyek.
 // Pemakaian: npm test
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const { spawnSync } = require('child_process');
 const { listProjects, loadProject } = require('./projects.cjs');
@@ -28,6 +29,20 @@ for (const p of projects) if (loadProject(p.id).timeline.scenes.length > 1) step
 steps.push(['Uji regresi terhadap baseline resmi (registry versi)', () => script('regression.cjs')]);
 steps.push(['Uji antar-proyek (mesin bersama, isolasi)', () => script('project-tests.cjs')]);
 steps.push(['Lab zoom: grid piksel kamera (semua pendekatan)', () => script('zoom-tests.cjs')]);
+// uji browser fixture Tahap 6A-2b (merender fixture sendiri di output/frames/<fixture>/, lalu membersihkannya).
+// Pemeriksaan TIDAK DIPERIKSA (cakupan kosong motion-feet/motion-bob, BACKLOG T26) dicatat, tidak dihitung LULUS.
+const fixtureSummary = path.join(os.tmpdir(), `pixel-fixture-summary-${process.pid}.json`);
+steps.push(['Uji browser fixture uji-6a2b (Tahap 6A-2b)', () => script('fixture-tests.cjs', '--summary', fixtureSummary), () => {
+  try {
+    const s = JSON.parse(fs.readFileSync(fixtureSummary, 'utf8'));
+    const skipped = s.results.filter((r) => r.status === 'TIDAK DIPERIKSA');
+    return skipped.length ? `${s.passed} LULUS, ${skipped.length} TIDAK DIPERIKSA (${skipped.map((r) => r.id).join(', ')})` : '';
+  } catch {
+    return 'ringkasan uji fixture tidak terbaca';
+  } finally {
+    fs.rmSync(fixtureSummary, { force: true });
+  }
+}]);
 
 const results = [];
 for (const [name, run, noteOf] of steps) {
@@ -35,6 +50,7 @@ for (const [name, run, noteOf] of steps) {
   const pass = run();
   results.push({ name, pass, note: pass && noteOf ? noteOf() : '' });
 }
+fs.rmSync(fixtureSummary, { force: true });
 console.log('\n========== Ringkasan ==========');
 for (const r of results) console.log(`${!r.pass ? 'GAGAL' : r.note ? 'TANPA KEGAGALAN' : 'LULUS'}  ${r.name}${r.note ? `: ${r.note}` : ''}`);
 const failed = results.filter((r) => !r.pass).length;
